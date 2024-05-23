@@ -11,10 +11,11 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('favorite_product_variation', function (Blueprint $table) {
-      $table->foreignId('favorite_product_id')->constrained(table: 'favorites');
+    Schema::create('order_product_variations', function (Blueprint $table) {
+      $table->foreignId('product_order_id')->constrained(table: 'user_product_orders');
       $table->foreignId('variation_id')->nullable()->constrained(table: 'products_variations')
         ->nullOnDelete();
+      $table->timestamps();
     });
   }
 
@@ -23,6 +24,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('favorite_product_variation');
+    Schema::dropIfExists('order_product_variations');
   }
 };

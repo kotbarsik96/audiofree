@@ -15,6 +15,7 @@ return new class extends Migration
       $table->foreignId('cart_product_id')->constrained(table: 'cart');
       $table->foreignId('variation_id')->nullable()->constrained(table: 'products_variations')
         ->nullOnDelete();
+      $table->timestamps();
     });
   }
 

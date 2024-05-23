@@ -3,20 +3,19 @@
 namespace App\Http\Requests\Product;
 
 use App\Models\Product;
-use App\Validations\ImageValidation;
+use App\Validations\ProductValidation;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
-class ProductGalleryRequest extends FormRequest
+
+class ProductRatingRequest extends FormRequest
 {
   public Product $product;
 
-  /**
-   * Determine if the user is authorized to make this request.
-   */
   public function authorize(): bool
   {
     $this->product = Product::getOrAbort(request()->product_id);
-    return Product::allowsStore($this->product);
+    return Gate::allows('set-rating');
   }
 
   /**
@@ -27,14 +26,12 @@ class ProductGalleryRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'images.*' => ImageValidation::image()
+      'rating_value' => ProductValidation::ratingValue()
     ];
   }
 
   public function messages()
   {
-    return [
-      'images' => __('validation.image_path')
-    ];
+    return ProductValidation::messages();
   }
 }

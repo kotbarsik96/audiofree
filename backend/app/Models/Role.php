@@ -14,7 +14,7 @@ class Role extends Model
     'priority'
   ];
 
-  public static function getPriorty($name)
+  public static function getPriority($name)
   {
     $arr = config('constants.roles');
     array_key_exists($name, $arr) ? $arr[$name] : false;
@@ -27,16 +27,16 @@ class Role extends Model
 
   public static function isAdmin(User $user)
   {
-    return $user->role === 'ADMINISTRATOR';
+    return self::getPriority($user->role) <= self::getPriority('ADMINISTRATOR');
   }
 
   public static function isManager(User $user)
   {
-    return $user->role === 'MANAGER';
+    return self::getPriority($user->role) <= self::getPriority('MANAGER');
   }
 
   public static function isUser(User $user)
   {
-    return $user->role === 'USER';
+    return self::getPriority($user->role) <= self::getPriority('USER');
   }
 }

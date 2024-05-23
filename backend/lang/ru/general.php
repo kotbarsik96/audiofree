@@ -1,8 +1,8 @@
 <?php
 
 return [
-  'deletedProduct' => 'Товар был удален',
-  'notFound' => 'Товар не найден',
+  'deletedProduct' => 'Товар :name был удален',
+  'notFoundProduct' => 'Товар не найден',
   'loggedOut' => 'Выполнен выход из профиля',
   'codeSentToEmail' => 'Код отправлен на почту',
   'emailVerified' => 'Почта :email подтверждена',
@@ -13,4 +13,6 @@ return [
   'dataUpdated' => 'Данные обновлены',
   'emailAlreadySent' => 'Письмо уже отправлено',
   'invalidCode' => 'Недействительный код',
+  'ratingSet' => 'Оценка :value выставлена товару :product',
+  'ratingRemoved' => 'Убрана оценка товару :product',
 ];

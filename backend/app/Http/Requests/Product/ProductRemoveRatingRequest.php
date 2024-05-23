@@ -3,20 +3,23 @@
 namespace App\Http\Requests\Product;
 
 use App\Models\Product;
-use App\Validations\ImageValidation;
+use App\Models\Product\ProductRating;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
-class ProductGalleryRequest extends FormRequest
+class ProductRemoveRatingRequest extends FormRequest
 {
   public Product $product;
+  public ProductRating | null $ratingData;
 
-  /**
-   * Determine if the user is authorized to make this request.
-   */
   public function authorize(): bool
   {
+    $user = auth()->user();
+    if (!$user) return false;
+
     $this->product = Product::getOrAbort(request()->product_id);
-    return Product::allowsStore($this->product);
+    $this->ratingData = ProductRating::getOrAbort($this->product->id, $user->id);
+    return Gate::allows('remove-rating', $this->ratingData);
   }
 
   /**
@@ -27,14 +30,7 @@ class ProductGalleryRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'images.*' => ImageValidation::image()
-    ];
-  }
-
-  public function messages()
-  {
-    return [
-      'images' => __('validation.image_path')
+      //
     ];
   }
 }

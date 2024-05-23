@@ -4,7 +4,6 @@ namespace App\Models\Gallery;
 
 use App\Models\Image;
 use App\Models\Product;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,7 +18,7 @@ class Gallery extends Model
 
   public static function getProductGallery($productId)
   {
-    $gallery = self::where('product_id', $productId);
+    $gallery = self::where('product_id', $productId)->first();
     if ($gallery)
       return $gallery;
 
@@ -36,9 +35,14 @@ class Gallery extends Model
   public static function uploadForProduct(array $images, Product $product)
   {
     $path = $product->getImagePath();
+    $gallery = self::getProductGallery($product->id);
 
     foreach ($images as $img) {
-      Image::upload($img, $path);
+      $storedImg = Image::upload($img, $path);
+      GalleryImage::create([
+        'gallery_id' => $gallery->id,
+        'image_path' => $storedImg->path
+      ]);
     }
   }
 }

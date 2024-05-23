@@ -26,8 +26,10 @@ class AppServiceProvider extends ServiceProvider
     Gate::define('create-product', [ProductPolicy::class, 'create']);
     Gate::define('update-product', [ProductPolicy::class, 'update']);
     Gate::define('delete-product', [ProductPolicy::class, 'delete']);
+    Gate::define('set-rating', [ProductPolicy::class, 'setRating']);
+    Gate::define('remove-rating', [ProductPolicy::class, 'removeRating']);
     
-    // 
+    // image
     Gate::define('upload-image', [ImagePolicy::class, 'upload']);
     Gate::define('delete-image', [ImagePolicy::class, 'delete']);
   }

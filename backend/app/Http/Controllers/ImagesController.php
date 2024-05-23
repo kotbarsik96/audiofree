@@ -10,10 +10,13 @@ class ImagesController extends Controller
 {
   public function upload(ImageStoreRequest $request)
   {
-    Image::upload($request->image);
+    $image = Image::upload($request->image);
 
     return [
-      'ok' => true
+      'ok' => true,
+      'data' => [
+        'path' => $image->path
+      ]
     ];
   }
 

@@ -15,7 +15,7 @@ return new class extends Migration
       $table->id();
       $table->string("name");
       $table->unsignedInteger('price');
-      $table->unsignedInteger('discount_price')->nullable();
+      $table->unsignedInteger('discount')->nullable();
       $table->unsignedInteger('quantity');
       $table->text('description')->nullable();
       $table->string('status')->nullable();

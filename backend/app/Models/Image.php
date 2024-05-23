@@ -24,14 +24,16 @@ class Image extends Model
     if (!$path) $path = $user->id;
     if (!preg_match('/\/$/', $path)) $path .= '/';
 
-    $imageName = md5(time()) . '.' . $image->getClientOriginalExtension();
+    $imageName = md5(time() . $image->getClientOriginalName() . rand()) . '.' . $image->getClientOriginalExtension();
     $imagePathRelative = 'images/' . $path;
     $imagePath = public_path($imagePathRelative);
     $image->move($imagePath, $imageName);
-    Image::create([
+    $stored = Image::create([
       'path' => $imagePathRelative . $imageName,
       'uploaded_by_user' => $user->id
     ]);
+
+    return $stored;
   }
 
   public static function deleteImage(self $image)

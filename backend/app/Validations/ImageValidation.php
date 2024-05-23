@@ -8,4 +8,9 @@ class ImageValidation
   {
     return 'required|image|mimes:png,jpg,jpeg|max:2048';
   }
+
+  public static function imagePath()
+  {
+    return 'exists:images,path';
+  }
 }

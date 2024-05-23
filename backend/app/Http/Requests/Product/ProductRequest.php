@@ -5,15 +5,16 @@ namespace App\Http\Requests\Product;
 use App\Validations\ProductValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Product;
+use App\Validations\ImageValidation;
 
 class ProductRequest extends FormRequest
 {
-  /**
-   * Determine if the user is authorized to make this request.
-   */
+  public Product | null $product;
+
   public function authorize(): bool
   {
-    return Product::allowsStore();
+    $this->product = Product::find(request()->product_id);
+    return Product::allowsStore($this->product);
   }
 
   /**
@@ -23,15 +24,18 @@ class ProductRequest extends FormRequest
    */
   public function rules(): array
   {
+    $hasProduct = !request()->product_id;
+
     return [
-      'name' => ProductValidation::name(),
-      'price' => ProductValidation::price(),
+      'name' => ProductValidation::name($hasProduct),
+      'price' => ProductValidation::price($hasProduct),
       'discount_price' => ProductValidation::discountPrice(),
       'quantity' => ProductValidation::quantity(),
-      'status' => ProductValidation::taxonomy(),
-      'type' => ProductValidation::taxonomy(),
-      'status' => ProductValidation::taxonomy(),
-      'category' => ProductValidation::taxonomy(),
+      'status' => ProductValidation::taxonomy($hasProduct),
+      'type' => ProductValidation::taxonomy($hasProduct),
+      'status' => ProductValidation::taxonomy($hasProduct),
+      'category' => ProductValidation::taxonomy($hasProduct),
+      'image_path' => ImageValidation::imagePath()
     ];
   }
 
