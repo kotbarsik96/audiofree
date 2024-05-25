@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ProductFilter;
-use App\Http\Requests\Product\ProductGalleryRequest;
+use App\Http\Requests\Product\VariationGalleryRequest;
 use App\Http\Requests\Product\ProductInfoRequest;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Http\Requests\Product\ProductRemoveRatingRequest;
 use App\Http\Requests\Product\ProductRequest;
-use App\Models\Gallery\Gallery;
-use App\Models\Image;
+use App\Http\Requests\Product\ProductVariationRequest;
 use App\Models\Product;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
@@ -23,9 +22,6 @@ class ProductsController extends Controller
       'created_by' => auth()->user()->id
     ]);
     $product = Product::create($validated);
-    Gallery::create([
-      'product_id' => $product->id
-    ]);
 
     return response([
       'ok' => true,
@@ -37,10 +33,10 @@ class ProductsController extends Controller
   {
     $validated = $request->validated();
 
-    $product = Product::find($request->product_id);
-    if (!$product) {
-      abort(400, __('general.notFoundProduct'));
-    }
+    $product = $request->product;
+    if (!$product)
+      abort(404, __('general.notFoundProduct'));
+
     $product->update(array_merge($validated, [
       'updated_by' => auth()->user()->id,
     ]));
@@ -53,16 +49,12 @@ class ProductsController extends Controller
 
   public function delete()
   {
-    $product = Product::find(request()->product_id);
-    if (!$product) {
-      abort(400, __('general.notFoundProduct'));
+    $product = Product::getOrAbort(request()->product_id);
+
+    $variations = ProductVariation::where('product_id', $product->id)->get();
+    foreach ($variations as $variation) {
+      $variation->deleteVariation();
     }
-
-    if (request()->remove_images)
-      Image::deleteForProduct($product);
-
-    $gallery = Gallery::where('product_id', $product->id);
-    if ($gallery) $gallery->delete();
 
     $name = $product->name;
     $product->delete();
@@ -73,22 +65,49 @@ class ProductsController extends Controller
     ];
   }
 
-  public function storeVariations()
+  public function storeVariation(ProductVariationRequest $request)
   {
-    $productId = request()->product_id;
-    $variations = request()->variations;
+    $validated = $request->validated();
+    $product = $request->product;
 
-    ProductVariation::removeNotInRequest($variations, $productId);
-    ProductVariation::storeFromRequest($variations, $productId);
+    $uploadedImage = $validated['image'];
+    $image = $validated['image'] ? ProductVariation::uploadImage($product, $uploadedImage) : null;
+
+    $data = array_merge(['quantity' => 0], $validated);
+    if ($image)
+      $data['image_path'] = $image->path;
+
+    $variation = ProductVariation::createOrUpdate($product, $data);
+    $variation->createOrUpdateGallery();
+
+    $images = $validated['images'];
+    if (is_array($images))
+      $variation->uploadGallery($images, $product, $variation);
 
     return response([
       'ok' => true
     ], 200);
   }
 
-  public function uploadGallery(ProductGalleryRequest $request)
+  public function deleteVariation(ProductVariationRequest $request)
   {
-    Gallery::uploadForProduct($request->images, $request->product);
+    $variation = $request->variation;
+    if (!$variation)
+      abort(404, __('abortions.variationNotFound', ['value' => $request->value]));
+
+    $variation->deleteVariation();
+
+    return response([
+      'ok' => true
+    ], 200);
+  }
+
+  public function uploadGallery(VariationGalleryRequest $request)
+  {
+    $request->variation->uploadGallery(
+      $request->images,
+      $request->product
+    );
 
     return [
       'ok' => true
@@ -133,6 +152,64 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    return Product::filter($request)->get();
+    return Product::filter($request)->catalog()->get();
+  }
+
+  public function productPage()
+  {
+    $product = Product::forPage(request()->product_id)
+      ->first();
+    if (!$product)
+      abort(404, __('general.notFoundProduct'));
+
+    return response([
+      'ok' => true,
+      'data' => [
+        'product' => $product,
+        'variations' => ProductVariation::forProduct($product->id, true),
+        'info' => ProductInfo::forProduct($product->id)->get()
+      ]
+    ]);
+  }
+
+  public function productsList(ProductFilter $request)
+  {
+    if (!Product::allowsStore())
+      abort(401, __('abortions.unauthorized'));
+
+    $products = Product::filter($request)
+      ->catalog(config('constants.product.statuses'))
+      ->get();
+
+    return response([
+      'ok' => true,
+      'data' => [
+        'products' => $products
+      ]
+    ]);
+  }
+
+  public function toCart()
+  {
+  }
+
+  public function getCart()
+  {
+  }
+
+  public function removeFromCart()
+  {
+  }
+
+  public function toFavorites()
+  {
+  }
+
+  public function getFavorites()
+  {
+  }
+
+  public function removeFromFavorites()
+  {
   }
 }

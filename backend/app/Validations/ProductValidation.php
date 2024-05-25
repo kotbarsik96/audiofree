@@ -4,9 +4,9 @@ namespace App\Validations;
 
 class ProductValidation
 {
-  public static function name($required = false)
+  public static function name($required = false, $ignoreId = null)
   {
-    $array = ['string', 'min:3'];
+    $array = ['string', 'min:3', 'unique:products,name,' . $ignoreId];
     if ($required) array_push($array, 'required');
     return $array;
   }
@@ -18,9 +18,9 @@ class ProductValidation
     return $array;
   }
 
-  public static function discountPrice()
+  public static function discount()
   {
-    return "lt:price|numeric|min:1";
+    return "numeric|min:0|max:100";
   }
 
   public static function quantity()
@@ -38,7 +38,12 @@ class ProductValidation
   public static function ratingValue()
   {
     $max = config('constants.product.rating.max');
-    return ['numeric', 'min:1', 'max:' . $max];
+    return ['numeric', 'min:0', 'max:' . $max];
+  }
+
+  public static function imagePath()
+  {
+    return 'exists:images,path';
   }
 
   public static function messages()
@@ -46,18 +51,18 @@ class ProductValidation
     return [
       'name.required' => __('validation.name.required'),
       'name.min' => __('validation.name.min'),
+      'name.unique' => __('validation.productName.unique'),
       'price.numeric' => __('validation.price.numeric'),
-      'discount_price.numeric' => __('validation.price.numeric'),
+      'discount' => __('validation.discount'),
       'price.min' => __('validation.price.min'),
-      'discount_price.min' => __('validation.price.min'),
       'quantity' => __('validation.quantity'),
-      'discount_price.lt' => __('validation.discount_price.lt'),
       'status.exists' => __('validation.status.exists'),
       'type.exists' => __('validation.type.exists'),
       'category.exists' => __('validation.category.exists'),
+      'brand.exists' => __('validation.brand.exists'),
       'required' => __('validation.required'),
       'image_path' => __('validation.image_path'),
-      'rating_value' => __('validation.rating_value')
+      'rating_value' => __('validation.rating_value'),
     ];
   }
 }

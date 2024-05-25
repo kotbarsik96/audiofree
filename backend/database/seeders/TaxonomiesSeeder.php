@@ -69,23 +69,23 @@ class TaxonomiesSeeder extends Seeder
     ]);
 
     // product_status
-    DB::table('taxonomies')->insert([
-      'name' => 'active',
-      'type' => 'product_status',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomies')->insert([
-      'name' => 'inactive',
-      'type' => 'product_status',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomies')->insert([
-      'name' => 'moderation',
-      'type' => 'product_status',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
+    foreach (config('constants.product.statuses') as $name) {
+      DB::table('taxonomies')->insert([
+        'name' => $name,
+        'type' => 'product_status',
+        'created_at' => $now,
+        'updated_at' => $now
+      ]);
+    }
+
+    // order_status
+    foreach (config('constants.order.statuses') as $name) {
+      DB::table('taxonomies')->insert([
+        'name' => $name,
+        'type' => 'order_status',
+        'created_at' => $now,
+        'updated_at' => $now
+      ]);
+    }
   }
 }

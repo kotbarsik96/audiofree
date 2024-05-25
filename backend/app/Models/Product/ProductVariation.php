@@ -2,67 +2,155 @@
 
 namespace App\Models\Product;
 
-use App\Helpers\AppHelper;
+use App\Models\Gallery\Gallery;
+use App\Models\Gallery\GalleryImage;
+use App\Models\Image;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\UploadedFile;
 
 class ProductVariation extends Model
 {
   use HasFactory;
 
   protected $fillable = [
-    'name',
-    'value',
     'product_id',
-    'active'
+    'price',
+    'discount',
+    'image_path',
+    'quantity',
+    'value',
   ];
 
-  protected $table = 'products_variations';
+  protected $casts = [
+    'price' => 'integer',
+    'discount' => 'integer',
+    'current_price' => 'integer',
+    'quantity' => 'integer',
+  ];
 
-  public static function removeNotInRequest(array $variations, $productId)
+  protected $table = 'product_variation_values';
+
+  public static function getByValue($productId, $variationValue)
   {
-    $collection = self::where('product_id', $productId)->get();
-    foreach ($collection as $item) {
-      $values = AppHelper::array_find($variations, fn ($data) => $data['name'] === $item->name, []);
-      if (!in_array($item->value, $values ?? [])) {
-        $item->update([
-          'active' => false
-        ]);
-      }
+    return self::where('product_id', $productId)
+      ->where('value', $variationValue)
+      ->first();
+  }
+
+  public static function getByValueOrAbort($productId, $variationValue)
+  {
+    $variation = self::getByName($productId, $variationValue);
+    if (!$variation)
+      abort(404, __('abortions.variationNotFound', ['value' => $variationValue]));
+    return $variation;
+  }
+
+  public function deleteVariation()
+  {
+    $this->deleteGallery();
+    $this->delete();
+  }
+
+  public static function createOrUpdate(Product $product, $data)
+  {
+    $variation = self::where('product_id', $product->id)
+      ->where('value', $data['value'])
+      ->first();
+    if ($variation && $data)
+      $variation->update($data);
+    else {
+      $variation = ProductVariation::create(
+        array_merge($data, ['product_id' => $product->id])
+      );
+    }
+
+    return $variation;
+  }
+
+  public function getGallery()
+  {
+    $gallery = Gallery::where('variation_id', $this->id)->first();
+
+    if (!$gallery)
+      return [];
+
+    return GalleryImage::where('gallery_id', $gallery->id)
+      ->get();
+  }
+
+  public function createOrUpdateGallery()
+  {
+    $gallery = Gallery::where('variation_id', $this->id)->first();
+
+    if ($gallery && $gallery->name !== $this->value)
+      $gallery->update(['name' => $this->value]);
+    else {
+      $gallery = self::create([
+        'name' => $this->value,
+        'variation_id' => $this->id
+      ]);
+    }
+
+    return $gallery;
+  }
+
+  public static function uploadImage(Product $product, UploadedFile $image)
+  {
+    $path = $product->getImagePath();
+    return Image::upload($image, $path);
+  }
+
+  public function uploadGallery(array $images, Product $product)
+  {
+    $path = $product->getImagePath();
+    $gallery = self::createOrUpdateGallery($this);
+
+    foreach ($images as $img) {
+      $storedImg = Image::upload($img, $path);
+      GalleryImage::create([
+        'gallery_id' => $gallery->id,
+        'image_path' => $storedImg->path
+      ]);
     }
   }
 
-  public static function storeFromRequest(array $variations, $productId)
+  public function deleteGallery()
   {
-    foreach ($variations as $data) {
-      $name = $data['name'];
-      $values = $data['values'];
+    $gallery = Gallery::where('variation_id', $this->id)->first();
+    if (!$gallery)
+      return;
 
-      foreach ($values as $value) {
-        $data = [
-          'name' => $name,
-          'value' => $value,
-          'product_id' => $productId
-        ];
+    $imagesToDelete = self::whereIn('path', function (Builder $query) use ($gallery) {
+      $query->select('image_path')->from('galleries_images')
+        ->where('gallery_id', $gallery->id);
+    })->get();
 
-        $exists = ProductVariation::where($data)->first();
-
-        if (!$exists) {
-          ProductVariation::create(array_merge($data, ['active' => true]));
-        } elseif (!$exists->active) {
-          $exists->update([
-            'active' => true
-          ]);
-        }
-      }
+    foreach ($imagesToDelete as $image) {
+      self::deleteImage($image);
     }
   }
 
-  public function scopeNotInManyToMany(Builder $query)
+  public function scopeForProduct(Builder $query, $productId)
   {
-    // $query->whereNotIn('id', function(Builder $subquery) {
-    //   $subquery->join()
-    // });
+    $variations = $query
+      ->select([
+        'value',
+        'price',
+        'discount',
+        'quantity',
+        DB::raw('product_variation_values.price - (product_variation_values.price / 100 * product_variation_values.discount) as current_price'),
+        'product_variation_values.image_path',
+      ])
+      ->where('product_id', $productId)->get();
+
+    foreach ($variations as $variation) {
+      $variation->gallery = $variation->getGallery();
+    }
+
+    return $variations;
   }
 }

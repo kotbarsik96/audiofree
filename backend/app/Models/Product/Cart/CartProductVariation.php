@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Models\Gallery;
+namespace App\Models\Product\Cart;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Gallery extends Model
+class CartProductVariation extends Model
 {
   use HasFactory;
 
-  protected $fillable = [
-    'name',
-    'variation_id'
-  ];
+  protected $table = 'cart_product_variation';
 }

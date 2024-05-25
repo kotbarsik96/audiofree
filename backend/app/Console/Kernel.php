@@ -16,11 +16,6 @@ class Kernel extends ConsoleKernel
     $schedule->call(function () {
       ScheduleTask::clearExpiredEmailConfirmations();
     })->everyMinute();
-
-    // не готово
-    // $schedule->call(function () {
-    //   ScheduleTask::clearInactiveVariations();
-    // })->daily();
   }
 
   /**

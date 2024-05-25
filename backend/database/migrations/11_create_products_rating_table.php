@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('products_rating', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained(table: 'products');
-            $table->foreignId('user_id')->constrained(table: 'users');
+            $table->foreignId('product_id')->constrained(table: 'products')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained(table: 'users')->cascadeOnDelete();
             $table->unsignedSmallInteger('value');
             $table->timestamps();
         });

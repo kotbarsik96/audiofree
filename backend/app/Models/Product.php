@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class Product extends FilterableModel
 {
@@ -13,8 +15,7 @@ class Product extends FilterableModel
   protected $fillable = [
     'name',
     'price',
-    'discount_price',
-    'quantity',
+    'discount',
     'description',
     'status',
     'brand',
@@ -27,8 +28,10 @@ class Product extends FilterableModel
 
   protected $casts = [
     'price' => 'integer',
-    'discount_price' => 'integer',
-    'quantity' => 'integer'
+    'discount' => 'integer',
+    'current_price' => 'float',
+    'quantity' => 'integer',
+    'rating' => 'integer'
   ];
 
   public static function getOrAbort($productId)
@@ -50,5 +53,26 @@ class Product extends FilterableModel
       ? Gate::allows('update-product', $product)
       : Gate::allows('create-product');
     return $allows;
+  }
+
+  public function scopeCatalog(Builder $query, $statuses = ['active'])
+  {
+    $query->select([
+      'products.id',
+      'products.name',
+      'products.category',
+      'products.type',
+      DB::raw('AVG(products_rating.value) as rating')
+    ]);
+    $query->whereIn('status', $statuses)
+      ->leftJoin('products_rating', 'products_rating.product_id', '=', 'products.id')
+      ->groupBy('products.id');
+  }
+
+  public function scopeForPage(Builder $query, $productId)
+  {
+    $query->catalog()
+      ->addSelect(['products.status', 'products.description'])
+      ->where('products.id', $productId);
   }
 }

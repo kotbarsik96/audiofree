@@ -173,7 +173,6 @@ return [
   'price.numeric' => 'Incorrect price format',
   'price.min' => 'Price is at least :min',
   'quantity' => 'Incorrect amount',
-  'discount_price.lt' => 'Discount price must not be more than general price',
   'status.exists' => 'Status does not exists',
   'type.exists' => 'Type does not exist',
   'category.exists' => 'Category does not exist',

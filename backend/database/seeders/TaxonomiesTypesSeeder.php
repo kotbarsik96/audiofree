@@ -34,5 +34,10 @@ class TaxonomiesTypesSeeder extends Seeder
       'created_at' => $now,
       'updated_at' => $now
     ]);
+    DB::table('taxonomies_types')->insert([
+      'type' => 'order_status',
+      'created_at' => $now,
+      'updated_at' => $now
+    ]);
   }
 }

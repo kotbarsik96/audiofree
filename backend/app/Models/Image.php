@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Gallery\Gallery;
+use App\Models\Product\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -40,17 +42,5 @@ class Image extends Model
   {
     File::delete(public_path($image->path));
     $image->delete();
-  }
-
-  public static function deleteForProduct(Product $product)
-  {
-    $imagesToDelete = self::whereIn('path', function (Builder $query) use ($product) {
-      $query->select('image_path')->from('galleries_images')
-        ->where('product_id', $product->id);
-    })->get();
-
-    foreach ($imagesToDelete as $image) {
-      self::deleteImage($image);
-    }
   }
 }

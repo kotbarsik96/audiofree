@@ -6,6 +6,7 @@ use App\Helpers\AppHelper;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductInfo extends Model
 {
@@ -49,5 +50,12 @@ class ProductInfo extends Model
         ]);
       }
     }
+  }
+
+  public function scopeForProduct(Builder $query, $productId)
+  {
+    $query
+      ->select(['name', 'value'])
+      ->where('product_id', $productId);
   }
 }

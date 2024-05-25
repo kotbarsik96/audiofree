@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Models\Gallery;
+namespace App\Models\Taxonomy;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Gallery extends Model
+class TaxonomyType extends Model
 {
   use HasFactory;
 
   protected $fillable = [
-    'name',
-    'variation_id'
+    'type'
   ];
+
+  protected $table = 'taxonomies_types';
 }

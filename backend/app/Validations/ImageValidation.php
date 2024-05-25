@@ -13,4 +13,12 @@ class ImageValidation
   {
     return 'exists:images,path';
   }
+
+  public static function messages()
+  {
+    return [
+      'image' => __('validation.image'),
+      'images.*' => __('validation.images')
+    ];
+  }
 }

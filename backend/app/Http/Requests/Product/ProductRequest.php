@@ -9,11 +9,12 @@ use App\Validations\ImageValidation;
 
 class ProductRequest extends FormRequest
 {
-  public Product | null $product;
+  public Product | null $product = null;
 
   public function authorize(): bool
   {
-    $this->product = Product::find(request()->product_id);
+    $productId = request()->product_id;
+    if($productId) $this->product = Product::getOrAbort($productId);
     return Product::allowsStore($this->product);
   }
 
@@ -24,23 +25,23 @@ class ProductRequest extends FormRequest
    */
   public function rules(): array
   {
-    $hasProduct = !request()->product_id;
+    $isUpdate = !request()->product_id;
+    $taxonomyValidation = ProductValidation::taxonomy($isUpdate);
+    $ignoreId = $this->product? $this->product->id : null;
 
     return [
-      'name' => ProductValidation::name($hasProduct),
-      'price' => ProductValidation::price($hasProduct),
-      'discount_price' => ProductValidation::discountPrice(),
-      'quantity' => ProductValidation::quantity(),
-      'status' => ProductValidation::taxonomy($hasProduct),
-      'type' => ProductValidation::taxonomy($hasProduct),
-      'status' => ProductValidation::taxonomy($hasProduct),
-      'category' => ProductValidation::taxonomy($hasProduct),
-      'image_path' => ImageValidation::imagePath()
+      'name' => ProductValidation::name($isUpdate, $ignoreId),
+      'status' => $taxonomyValidation,
+      'type' => $taxonomyValidation,
+      'brand' => $taxonomyValidation,
+      'category' => $taxonomyValidation,
+      'image' => ImageValidation::image(),
+      'images.*' => ImageValidation::image()
     ];
   }
 
   public function messages()
   {
-    return ProductValidation::messages();
+    return array_merge(ProductValidation::messages(), ImageValidation::messages());
   }
 }
