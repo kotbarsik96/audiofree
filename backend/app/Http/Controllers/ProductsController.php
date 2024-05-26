@@ -70,8 +70,8 @@ class ProductsController extends Controller
     $validated = $request->validated();
     $product = $request->product;
 
-    $uploadedImage = $validated['image'];
-    $image = $validated['image'] ? ProductVariation::uploadImage($product, $uploadedImage) : null;
+    $uploadedImage = array_key_exists('image', $validated) ? $validated['image'] : null;
+    $image = $uploadedImage ? ProductVariation::uploadImage($product, $uploadedImage) : null;
 
     $data = array_merge(['quantity' => 0], $validated);
     if ($image)
@@ -80,9 +80,10 @@ class ProductsController extends Controller
     $variation = ProductVariation::createOrUpdate($product, $data);
     $variation->createOrUpdateGallery();
 
-    $images = $validated['images'];
+    $images = array_key_exists('images', $validated)
+      ? $validated['images'] : null;
     if (is_array($images))
-      $variation->uploadGallery($images, $product, $variation);
+      $variation->uploadGallery($images, $product);
 
     return response([
       'ok' => true
@@ -152,7 +153,15 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    return Product::filter($request)->catalog()->get();
+    $products =  Product::filter($request)->catalog()->get();
+    foreach ($products as $product) {
+      $priceAndDiscount = ProductVariation::minPriceAndDiscount($product->id)
+        ->first();
+      $product->price = $priceAndDiscount?->price;
+      $product->current_min_price = $priceAndDiscount?->current_price;
+      $product->discount = $priceAndDiscount?->discount;
+    }
+    return $products;
   }
 
   public function productPage()

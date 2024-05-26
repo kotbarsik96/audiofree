@@ -57,6 +57,9 @@ class ProductVariation extends Model
 
   public static function createOrUpdate(Product $product, $data)
   {
+    if (!array_key_exists('value', $data))
+      abort(400, __('abortions.variationValueNotSpecified'));
+
     $variation = self::where('product_id', $product->id)
       ->where('value', $data['value'])
       ->first();
@@ -78,7 +81,8 @@ class ProductVariation extends Model
     if (!$gallery)
       return [];
 
-    return GalleryImage::where('gallery_id', $gallery->id)
+    return GalleryImage::select(['image_path', 'order'])
+      ->where('gallery_id', $gallery->id)
       ->get();
   }
 
@@ -88,8 +92,8 @@ class ProductVariation extends Model
 
     if ($gallery && $gallery->name !== $this->value)
       $gallery->update(['name' => $this->value]);
-    else {
-      $gallery = self::create([
+    elseif (!$gallery) {
+      $gallery = Gallery::create([
         'name' => $this->value,
         'variation_id' => $this->id
       ]);
@@ -107,7 +111,7 @@ class ProductVariation extends Model
   public function uploadGallery(array $images, Product $product)
   {
     $path = $product->getImagePath();
-    $gallery = self::createOrUpdateGallery($this);
+    $gallery = $this->createOrUpdateGallery();
 
     foreach ($images as $img) {
       $storedImg = Image::upload($img, $path);
@@ -138,6 +142,7 @@ class ProductVariation extends Model
   {
     $variations = $query
       ->select([
+        'id',
         'value',
         'price',
         'discount',
@@ -152,5 +157,15 @@ class ProductVariation extends Model
     }
 
     return $variations;
+  }
+
+  public function scopeMinPriceAndDiscount(Builder $query, $productId)
+  {
+    $query->select([
+      'price',
+      'discount',
+      DB::raw('product_variation_values.price - (product_variation_values.price / 100 * product_variation_values.discount) as current_price')
+    ])->where('product_variation_values.product_id', $productId)
+      ->orderBy('current_price');
   }
 }

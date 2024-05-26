@@ -29,7 +29,7 @@ class Product extends FilterableModel
   protected $casts = [
     'price' => 'integer',
     'discount' => 'integer',
-    'current_price' => 'float',
+    'current_min_price' => 'float',
     'quantity' => 'integer',
     'rating' => 'integer'
   ];
@@ -62,10 +62,11 @@ class Product extends FilterableModel
       'products.name',
       'products.category',
       'products.type',
-      DB::raw('AVG(products_rating.value) as rating')
-    ]);
-    $query->whereIn('status', $statuses)
+      DB::raw('AVG(products_rating.value) as rating'),
+      // DB::raw('MIN(product_variation_values.price) as price')
+    ])->whereIn('status', $statuses)
       ->leftJoin('products_rating', 'products_rating.product_id', '=', 'products.id')
+      // ->leftJoin('product_variation_values', 'products.id', '=', 'product_variation_values.product_id')
       ->groupBy('products.id');
   }
 

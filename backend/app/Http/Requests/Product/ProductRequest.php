@@ -14,7 +14,7 @@ class ProductRequest extends FormRequest
   public function authorize(): bool
   {
     $productId = request()->product_id;
-    if($productId) $this->product = Product::getOrAbort($productId);
+    if ($productId) $this->product = Product::getOrAbort($productId);
     return Product::allowsStore($this->product);
   }
 
@@ -27,21 +27,19 @@ class ProductRequest extends FormRequest
   {
     $isUpdate = !request()->product_id;
     $taxonomyValidation = ProductValidation::taxonomy($isUpdate);
-    $ignoreId = $this->product? $this->product->id : null;
+    $ignoreId = $this->product ? $this->product->id : null;
 
     return [
       'name' => ProductValidation::name($isUpdate, $ignoreId),
       'status' => $taxonomyValidation,
       'type' => $taxonomyValidation,
       'brand' => $taxonomyValidation,
-      'category' => $taxonomyValidation,
-      'image' => ImageValidation::image(),
-      'images.*' => ImageValidation::image()
+      'category' => $taxonomyValidation
     ];
   }
 
   public function messages()
   {
-    return array_merge(ProductValidation::messages(), ImageValidation::messages());
+    return ProductValidation::messages();
   }
 }

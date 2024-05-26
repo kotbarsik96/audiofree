@@ -23,6 +23,8 @@ class ProductVariationRequest extends FormRequest
 
   public function rules(): array
   {
+    $ignoreId = $this->variation ? $this->variation->id : null;
+    
     return [
       'price' => ProductValidation::price(),
       'discount' => ProductValidation::discount(),
@@ -30,7 +32,8 @@ class ProductVariationRequest extends FormRequest
       'quantity' => ProductValidation::quantity(),
       'value' => [
         Rule::unique('product_variation_values', 'value')
-          ->where(fn ($query) => $query->where('product_id', $this->product->id)),
+          ->where(fn ($query) => $query->where('product_id', $this->product->id))
+          ->ignore($ignoreId),
         'min:2'
       ],
       'image' => ImageValidation::image(),
@@ -40,6 +43,6 @@ class ProductVariationRequest extends FormRequest
 
   public function messages()
   {
-    return ProductValidation::messages();
+    return array_merge(ProductValidation::messages(), ImageValidation::messages());
   }
 }
