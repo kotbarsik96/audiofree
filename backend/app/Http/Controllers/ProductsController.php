@@ -197,28 +197,4 @@ class ProductsController extends Controller
       ]
     ]);
   }
-
-  public function toCart()
-  {
-  }
-
-  public function getCart()
-  {
-  }
-
-  public function removeFromCart()
-  {
-  }
-
-  public function toFavorites()
-  {
-  }
-
-  public function getFavorites()
-  {
-  }
-
-  public function removeFromFavorites()
-  {
-  }
 }

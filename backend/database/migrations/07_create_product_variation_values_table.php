@@ -17,7 +17,7 @@ return new class extends Migration
         ->cascadeOnDelete();
       $table->string('value');
       $table->unsignedInteger('price');
-      $table->unsignedInteger('discount')->nullable();
+      $table->unsignedSmallInteger('discount')->nullable();
       $table->string('image_path')->nullable();
       $table->unsignedInteger('quantity');
       $table->timestamps();

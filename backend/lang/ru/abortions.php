@@ -8,5 +8,8 @@ return [
   'userDidNotSetProductRating' => 'Пользователь не оценивал этот товар',
   'unauthorized' => 'Ошибка авторизации',
   'variationNotFound' => 'Вариация ":value" не найдена',
-  'variationValueNotSpecified' => 'Не указано значение вариации'
+  'variationValueNotSpecified' => 'Не указано значение вариации',
+  'notEnoughInStock' => 'Такого количества товара нет в наличии',
+  'productIsInactive' => 'Товар неактивен',
+  'notInCart' => 'Товара нет в корзине'
 ];

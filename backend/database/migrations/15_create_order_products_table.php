@@ -20,6 +20,9 @@ return new class extends Migration
       $table->foreignId('variation_id')->nullable()->constrained(table: 'product_variation_values')
         ->nullOnDelete();
       $table->unsignedInteger('quantity');
+      $table->unsignedSmallInteger('discount');
+      $table->unsignedInteger('original_price');
+      $table->unsignedInteger('price');
       $table->timestamps();
     });
   }
