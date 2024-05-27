@@ -64,7 +64,8 @@ Route::middleware('auth:sanctum')->group(function () {
   // Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 7.3
 
   // 8. Product order
-  // Route::post('product/order', [OrdersController::class, 'store']); // 8.1
-  // Route::get('product/order', [OrdersController::class, 'get']); // 8.2
-  // Route::delete('product/order', [OrdersController::class, 'delete']); // 8.3 ??
+  Route::post('product/order', [OrdersController::class, 'store']); // 8.1
+  Route::get('product/order', [OrdersController::class, 'getSingle']); // 8.2
+  Route::get('product/orders', [OrdersController::class, 'getList']); // 8.3
+  Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
 });

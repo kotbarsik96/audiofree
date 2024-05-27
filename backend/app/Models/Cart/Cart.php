@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Product\Cart;
+namespace App\Models\Cart;
 
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
@@ -59,6 +59,7 @@ class Cart extends Model
       'cart.created_at',
       'cart.updated_at',
       'products.name',
+      'products.status',
       'product_variation_values.value',
       'product_variation_values.price',
       DB::raw(ProductVariation::getCurrentPriceQuery()),
