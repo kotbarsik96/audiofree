@@ -3,27 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Cart\CartRequest;
-use App\Models\Product;
 use App\Models\Product\Cart\Cart;
-use App\Models\Product\ProductVariation;
 use App\Models\User;
 
 class CartController extends Controller
 {
   public function store(CartRequest $request)
   {
-    $cartItem = Cart::byProductVariation($request->product->id, $request->variation->id)
-      ->first();
+    $cartItem = Cart::byProductVariation(
+      $request->product->id,
+      $request->variation->id,
+      $request->is_oneclick
+    )->first();
 
     if ($cartItem) {
-      $notEnoughInStock = $cartItem->quantity + $request->quantity
-        > $request->variation->quantity;
-      if ($notEnoughInStock)
-        abort(400, __('abortions.notEnoughInStock'));
-
-      $cartItem->update([
-        'quantity' => $request->quantity + $cartItem->quantity
-      ]);
+      $cartItem->plusOneOrMore($request->quantity, $request->variation);
     } else {
       Cart::create([
         'user_id' => auth()->user()->id,
@@ -62,28 +56,12 @@ class CartController extends Controller
     ]);
   }
 
-  public function plusOne(CartRequest $request)
-  {
-    $cartItem = Cart::byProductVariationOrAbort(
-      $request->product->id,
-      $request->variation->id
-    );
-
-    if ($cartItem->quantity + 1 > $request->variation->quantity)
-      abort(403, __('abortions.notEnoughInStock'));
-
-    $cartItem->plusOne();
-
-    return [
-      'ok' => true
-    ];
-  }
-
   public function minusOne(CartRequest $request)
   {
     $cartItem = Cart::byProductVariationOrAbort(
       $request->product->id,
-      $request->variation->id
+      $request->variation->id,
+      $request->is_oneclick
     );
 
     $cartItem->minusOne();
@@ -97,7 +75,8 @@ class CartController extends Controller
   {
     $cartItem = Cart::byProductVariationOrAbort(
       $request->product->id,
-      $request->variation->id
+      $request->variation->id,
+      $request->is_oneclick
     );
 
     $cartItem->delete();

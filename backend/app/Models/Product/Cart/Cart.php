@@ -23,19 +23,20 @@ class Cart extends Model
     'quantity'
   ];
 
-  public function scopeByProductVariation(Builder $query, $productId, $variationId)
+  public function scopeByProductVariation(Builder $query, $productId, $variationId, $isOneclick = false)
   {
     $user = User::authUser();
 
     return $query
       ->where('cart.user_id', $user->id)
       ->where('cart.product_id', $productId)
-      ->where('cart.variation_id', $variationId);
+      ->where('cart.variation_id', $variationId)
+      ->where('cart.is_oneclick', $isOneclick);
   }
 
-  public function scopeByProductVariationOrAbort($productId, $variationId)
+  public function scopeByProductVariationOrAbort($productId, $variationId, $isOneclick = false)
   {
-    $item = self::byProductVariation($productId, $variationId)->first();
+    $item = self::byProductVariation($productId, $variationId, $isOneclick)->first();
     if (!$item)
       abort(400, __('abortions.notInCart'));
 
@@ -81,17 +82,23 @@ class Cart extends Model
     return $takenAway;
   }
 
-  public function plusOne()
+  public function plusOneOrMore(int $plusQuantity = 1, ProductVariation | null $variation = null)
   {
+    if (!$variation)
+      $variation = ProductVariation::find($this->variation_id);
+
+    if ($this->quantity + $plusQuantity > $variation->quantity)
+      abort(403, __('abortions.notEnoughInStock'));
+
     $this->update([
-      'quantity' => $this->quantity + 1
+      'quantity' => $this->quantity + $plusQuantity
     ]);
   }
 
   public function minusOne()
   {
     $newQuantity = $this->quantity - 1;
-    if ($newQuantity <= 0)
+    if ($newQuantity < 1)
       $this->delete();
     else
       $this->update(['quantity' => $newQuantity]);
