@@ -41,35 +41,19 @@ class User extends Authenticatable
     'password' => 'hashed',
   ];
 
-  /**
-   * Get the identifier that will be stored in the subject claim of the JWT.
-   *
-   * @return mixed
-   */
-  public function getJWTIdentifier()
-  {
-    return $this->getKey();
-  }
-
-  /**
-   * Return a key value array, containing any custom claims to be added to the JWT.
-   *
-   * @return array
-   */
-  public function getJWTCustomClaims()
-  {
-    return [];
-  }
-
   public static function authUser()
   {
     $user = auth()->user();
 
-    if (!$user) {
-      abort(401, 'Ошибка авторизации');
-    }
+    if (!$user)
+      abort(401, __('abortions.unauthorized'));
 
-    return User::find($user->id);
+    return $user;
+  }
+
+  public static function authUserEloquent()
+  {
+    return User::find(self::authUser()->id);
   }
 
   public static function sendEmailVerifyCode(string | null $reason = null)
@@ -164,7 +148,7 @@ class User extends Authenticatable
 
   public static function changeEmail($newEmail)
   {
-    $user = self::authUser();
+    $user = self::authUserEloquent();
     $user->update([
       'email_verified_at' => null,
       'email' => $newEmail
@@ -174,7 +158,7 @@ class User extends Authenticatable
 
   public static function changePassword($newPassword)
   {
-    $user = self::authUser();
+    $user = self::authUserEloquent();
     $user->update([
       'password' => Hash::make($newPassword)
     ]);

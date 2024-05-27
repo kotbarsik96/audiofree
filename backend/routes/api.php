@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TaxonomiesController;
 use App\Http\Controllers\UsersController;
@@ -50,17 +53,18 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('product/rating', [ProductsController::class, 'removeRating']); // 5.2
 
   // 6. Product cart
-  Route::post('product/cart', [ProductsController::class, 'toCart']); // 6.1
-  Route::get('product/cart', [ProductsController::class, 'getCart']); // 6.2
-  Route::delete('product/cart', [ProductsController::class, 'removeFromCart']); // 6.3
+  Route::post('product/cart', [CartController::class, 'store']); // 6.1
+  Route::get('product/cart', [CartController::class, 'get']); // 6.2
+  Route::delete('product/cart', [CartController::class, 'delete']); // 6.3
+  Route::delete('product/cart/quantity', [CartController::class, 'minusOne']); // 6.4 
 
   // 7. Product favorites
-  // Route::post('product/favorites', [ProductsController::class, 'toFavorites']); // 7.1
-  // Route::get('product/favorites', [ProductsController::class, 'getFavorites']); // 7.2
-  // Route::delete('product/favorites', [ProductsController::class, 'removeFromFavorites']); // 7.3
+  // Route::post('product/favorites', [FavoritesController::class, 'store']); // 7.1
+  // Route::get('product/favorites', [FavoritesController::class, 'get']); // 7.2
+  // Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 7.3
 
   // 8. Product order
-  // Route::post('product/order', [ProductsController::class, 'order']); // 8.1
-  // Route::get('product/order', [ProductsController::class, 'getOrders']); // 8.2
-  // Route::delete('product/order', [ProductsController::class, 'removeOrder']); // 8.3 ??
+  // Route::post('product/order', [OrdersController::class, 'store']); // 8.1
+  // Route::get('product/order', [OrdersController::class, 'get']); // 8.2
+  // Route::delete('product/order', [OrdersController::class, 'delete']); // 8.3 ??
 });
