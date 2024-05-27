@@ -11,6 +11,7 @@ class CartRequest extends FormRequest
 {
   public Product $product;
   public ProductVariation $variation;
+  public bool $is_oneclick;
 
   public function __construct()
   {
@@ -23,6 +24,11 @@ class CartRequest extends FormRequest
       $this->product->id,
       request()->variation
     );
+
+    if (!request()->is_oneclick)
+      $this->is_oneclick = false;
+    else
+      $this->is_oneclick = true;
   }
 
   public function authorize(): bool

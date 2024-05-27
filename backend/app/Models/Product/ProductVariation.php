@@ -34,6 +34,11 @@ class ProductVariation extends Model
 
   protected $table = 'product_variation_values';
 
+  public function scopeGetCurrentPriceQuery()
+  {
+    return "{$this->table}.price - ({$this->table}.price / 100 * {$this->table}.discount) as current_price";
+  }
+
   public static function getByValue($productId, $variationValue)
   {
     return self::where('product_id', $productId)
@@ -43,7 +48,7 @@ class ProductVariation extends Model
 
   public static function getByValueOrAbort($productId, $variationValue)
   {
-    $variation = self::getByName($productId, $variationValue);
+    $variation = self::getByValue($productId, $variationValue);
     if (!$variation)
       abort(404, __('abortions.variationNotFound', ['value' => $variationValue]));
     return $variation;
@@ -147,7 +152,7 @@ class ProductVariation extends Model
         'price',
         'discount',
         'quantity',
-        DB::raw('product_variation_values.price - (product_variation_values.price / 100 * product_variation_values.discount) as current_price'),
+        DB::raw($this->getCurrentPriceQuery()),
         'product_variation_values.image_path',
       ])
       ->where('product_id', $productId)->get();
@@ -164,7 +169,7 @@ class ProductVariation extends Model
     $query->select([
       'price',
       'discount',
-      DB::raw('product_variation_values.price - (product_variation_values.price / 100 * product_variation_values.discount) as current_price')
+      DB::raw($this->getCurrentPriceQuery())
     ])->where('product_variation_values.product_id', $productId)
       ->orderBy('current_price');
   }

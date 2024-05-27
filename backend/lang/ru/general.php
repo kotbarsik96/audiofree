@@ -15,5 +15,6 @@ return [
   'invalidCode' => 'Недействительный код',
   'ratingSet' => 'Оценка :value выставлена товару :product',
   'ratingRemoved' => 'Убрана оценка товару :product',
-  'productAddedToCart' => 'Товар :product (:variation) добавлен в корзину'
+  'productAddedToCart' => 'Товар :product (:variation) добавлен в корзину',
+  'productRemovedFromCart' => 'Товар удален из корзины'
 ];

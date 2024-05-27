@@ -19,11 +19,14 @@ class CartController extends Controller
     if ($cartItem) {
       $cartItem->plusOneOrMore($request->quantity, $request->variation);
     } else {
-      Cart::create([
+      if ($request->quantity > $request->variation->quantity)
+        abort(403, __('abortions.notEnoughInStock'));
+
+      $cartItem = Cart::create([
         'user_id' => auth()->user()->id,
         'product_id' => $request->product->id,
         'variation_id' => $request->variation->id,
-        'is_oneclick' => $request->is_oneclick,
+        'is_oneclick' => $request->is_oneclick ?? 0,
         'quantity' => $request->quantity
       ]);
     }
@@ -44,8 +47,9 @@ class CartController extends Controller
   {
     $user = User::authUser();
 
-    $cart = Cart::where('user_id', $user->id)->get();
-    $takenAway = $cart->takeAwayExtra();
+    $isOneclick = request()->is_oneclick ?? false;
+    $cart = Cart::getCart($user->id, $isOneclick)->get();
+    $takenAway = Cart::takeAwayExtra($cart);
 
     return response([
       'ok' => true,
@@ -80,5 +84,10 @@ class CartController extends Controller
     );
 
     $cartItem->delete();
+
+    return [
+      'ok' => true,
+      'message' => __('general.productRemovedFromCart')
+    ];
   }
 }
