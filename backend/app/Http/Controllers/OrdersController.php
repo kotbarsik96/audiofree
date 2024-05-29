@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Order\OrderStoreRequest;
+use App\Http\Requests\OrderCancelRequest;
 use App\Models\Order\Order;
 use App\Models\Cart\Cart;
-use App\Models\OrderProduct\OrderProduct;
-use App\Models\User;
+use App\Models\Order\OrderProduct;
+use App\Models\Product;
 
 class OrdersController extends Controller
 {
@@ -19,14 +20,26 @@ class OrdersController extends Controller
     if (count($cart) < 1)
       abort(403, __('abortions.noProductsInCart'));
 
-    $inactive = $cart->filter(fn (Cart $cartItem) => $cartItem->status !== 'active');
+    $inactive = $cart->filter(
+      fn (Cart $cartItem)
+      => !$cartItem->product_id || $cartItem->status !== 'active'
+    );
     if (count($inactive) > 0)
       abort(403, __('abortions.productIsInactive', ['product' => $inactive->first()->name]));
 
     $takenAway = Cart::takeAwayExtra($cart);
 
-    $order = Order::create($validated);
+    $data = array_merge($validated, [
+      'user_id' => auth()->user()->id,
+      'status' => config('constants.order.statuses')[0]
+    ]);
+    $order = Order::create($data);
     foreach ($cart as $cartItem) {
+      $product = Product::find($cartItem->product_id);
+      $product->update([
+        'quantity' => $product->quantity - $cartItem->quantity
+      ]);
+
       OrderProduct::create([
         'order_id' => $order->id,
         'product_id' => $cartItem->product_id,
@@ -36,6 +49,8 @@ class OrdersController extends Controller
         'original_price' => $cartItem->price,
         'price' => $cartItem->current_price,
       ]);
+
+      $cartItem->delete();
     }
 
     return [
@@ -52,7 +67,7 @@ class OrdersController extends Controller
     $order = Order::forUser(auth()->user()->id, request()->order_id)->first();
 
     if (!$order)
-      abort(404);
+      abort(404, __('abortions.orderNotFound'));
 
     $orderProducts = OrderProduct::forOrder($order->id)->get();
 
@@ -65,22 +80,25 @@ class OrdersController extends Controller
     ];
   }
 
-  public function getList()
+  public function getProducts()
   {
-    $orders = Order::forUser(auth()->user()->id)->get();
-    $orders = $orders->map(function (Order $order) {
-      $order->items = OrderProduct::forOrder($order->id)->get();
-    });
+    $products = OrderProduct::productsList(auth()->user()->id)->get();
 
     return [
       'ok' => true,
       'data' => [
-        'orders' => $orders
+        'products' => $products
       ]
     ];
   }
 
-  public function cancel()
+  public function cancel(OrderCancelRequest $request)
   {
+    $request->order->cancel();
+
+    return [
+      'ok' => true,
+      'message' => __('general.orderCanceled')
+    ];
   }
 }

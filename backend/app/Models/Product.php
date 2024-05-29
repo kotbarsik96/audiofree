@@ -63,11 +63,17 @@ class Product extends FilterableModel
       'products.category',
       'products.type',
       DB::raw('AVG(products_rating.value) as rating'),
-      // DB::raw('MIN(product_variation_values.price) as price')
     ])->whereIn('status', $statuses)
       ->leftJoin('products_rating', 'products_rating.product_id', '=', 'products.id')
-      // ->leftJoin('product_variation_values', 'products.id', '=', 'product_variation_values.product_id')
       ->groupBy('products.id');
+  }
+
+  public function scopeOnlyInStock(Builder $query)
+  {
+    $query->addSelect([
+      DB::raw('MAX(product_variation_values.quantity) as max_quantity'),
+    ])->leftJoin('product_variation_values', 'product_variation_values.product_id', '=', 'products.id')
+      ->having('max_quantity', '>', 0);
   }
 
   public function scopeForPage(Builder $query, $productId)

@@ -53,4 +53,11 @@ class Order extends Model
     if ($orderId)
       $query->where('id', $orderId);
   }
+
+  public function cancel()
+  {
+    $this->update([
+      'status' => 'canceled'
+    ]);
+  }
 }

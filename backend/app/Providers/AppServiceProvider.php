@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Policies\ImagePolicy;
+use App\Policies\OrderPolicy;
 use App\Policies\ProductPolicy;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -28,9 +29,12 @@ class AppServiceProvider extends ServiceProvider
     Gate::define('delete-product', [ProductPolicy::class, 'delete']);
     Gate::define('set-rating', [ProductPolicy::class, 'setRating']);
     Gate::define('remove-rating', [ProductPolicy::class, 'removeRating']);
-    
+
     // image
     Gate::define('upload-image', [ImagePolicy::class, 'upload']);
     Gate::define('delete-image', [ImagePolicy::class, 'delete']);
+
+    // order
+    Gate::define('cancel-third-person-order', [OrderPolicy::class, 'cancelThirdPersonOrder']);
   }
 }

@@ -33,7 +33,8 @@ return [
       'paid',
       'rejected',
       'waiting_return',
-      'returned'
+      'returned',
+      'canceled'
     ]
   ]
 ];

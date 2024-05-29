@@ -6,6 +6,8 @@ return [
   'variationAndGalleryNotFound' => 'Не найдена вариация товара при попытке найти ее галерею',
   'productNotFound' => 'Не найден товар',
   'userDidNotSetProductRating' => 'Пользователь не оценивал этот товар',
+  'userNotFound' => 'Пользователь не найден',
+  'orderNotFound' => 'Заказ не найден',
   'unauthorized' => 'Ошибка авторизации',
   'variationNotFound' => 'Вариация ":value" не найдена',
   'variationValueNotSpecified' => 'Не указано значение вариации',

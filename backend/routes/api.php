@@ -66,6 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
   // 8. Product order
   Route::post('product/order', [OrdersController::class, 'store']); // 8.1
   Route::get('product/order', [OrdersController::class, 'getSingle']); // 8.2
-  Route::get('product/orders', [OrdersController::class, 'getList']); // 8.3
+  Route::get('product/orders/products', [OrdersController::class, 'getProducts']); // 8.3
   Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
 });
