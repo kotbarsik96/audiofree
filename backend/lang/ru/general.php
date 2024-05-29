@@ -18,5 +18,5 @@ return [
   'productAddedToCart' => 'Товар :product (:variation) добавлен в корзину',
   'productRemovedFromCart' => 'Товар удален из корзины',
   'orderAccepted' => 'Заказ оформлен',
-  'orderCanceled' => 'Заказ отменен'
+  'orderCanceled' => 'Заказ отменен',
 ];

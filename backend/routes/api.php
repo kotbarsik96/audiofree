@@ -59,9 +59,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('product/cart/quantity', [CartController::class, 'minusOne']); // 6.4 
 
   // 7. Product favorites
-  // Route::post('product/favorites', [FavoritesController::class, 'store']); // 7.1
-  // Route::get('product/favorites', [FavoritesController::class, 'get']); // 7.2
-  // Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 7.3
+  Route::post('product/favorites', [FavoritesController::class, 'store']); // 7.1
+  Route::get('product/favorites', [FavoritesController::class, 'get']); // 7.2
+  Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 7.3
 
   // 8. Product order
   Route::post('product/order', [OrdersController::class, 'store']); // 8.1

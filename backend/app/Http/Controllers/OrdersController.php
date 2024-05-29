@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Order\OrderStoreRequest;
-use App\Http\Requests\OrderCancelRequest;
+use App\Http\Requests\Order\OrderCancelRequest;
 use App\Models\Order\Order;
 use App\Models\Cart\Cart;
 use App\Models\Order\OrderProduct;

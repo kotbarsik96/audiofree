@@ -15,5 +15,7 @@ return [
   'productIsInactive' => 'Товар неактивен',
   'notInCart' => 'Товара нет в корзине',
   'productIsInactive' => 'Товар :product неактивен и его нельзя заказать',
-  'noProductsInCart' => 'Не товаров в корзине'
+  'noProductsInCart' => 'Не товаров в корзине',
+  'alreadyInFavorites' => 'Товар уже в избранном',
+  'notInFavorites' => 'Товара нет в избранном'
 ];
