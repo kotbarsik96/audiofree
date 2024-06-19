@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Favorite;
+use App\Models\Product\ProductVariation;
 
 class FavoritesController extends Controller
 {
   public function store()
   {
-    $userId = request()->user->id;
-    $prodId = request()->product_id;
+    $userId = auth()->user()->id;
     $variationId = request()->variation_id;
 
+    $variation = ProductVariation::find($variationId);
+    if(!$variation)
+      abort(404, __('abortions.variationNotFound2'));
+
     $item = Favorite::where('user_id', $userId)
-      ->where('product_id', $prodId)
       ->where('variation_id', $variationId)
       ->first();
     if ($item)
@@ -21,7 +24,6 @@ class FavoritesController extends Controller
 
     Favorite::create([
       'user_id' => $userId,
-      'product_id' => $prodId,
       'variation_id' => $variationId
     ]);
 
@@ -42,16 +44,16 @@ class FavoritesController extends Controller
 
   public function delete()
   {
-    $userId = request()->user->id;
-    $prodId = request()->product_id;
+    $userId = auth()->user()->id;
     $variationId = request()->variation_id;
 
     $item = Favorite::where('user_id', $userId)
-      ->where('product_id', $prodId)
       ->where('variation_id', $variationId)
       ->first();
     if (!$item)
       abort(404, __('general.notInFavorites'));
+
+    $item->delete();
 
     return [
       'ok' => true

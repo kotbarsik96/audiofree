@@ -10,6 +10,7 @@ return [
   'orderNotFound' => 'Заказ не найден',
   'unauthorized' => 'Ошибка авторизации',
   'variationNotFound' => 'Вариация ":value" не найдена',
+  'variationNotFound2' => 'Вариация не найдена',
   'variationValueNotSpecified' => 'Не указано значение вариации',
   'notEnoughInStock' => 'Такого количества товара нет в наличии',
   'productIsInactive' => 'Товар неактивен',

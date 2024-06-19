@@ -16,20 +16,23 @@ class Favorite extends Model
 
   protected $fillable = [
     'user_id',
-    'product_id',
     'variation_id'
+  ];
+
+  protected $casts = [
+    'current_price' => 'integer',
   ];
 
   public function scopeList(Builder $query, $userId)
   {
     $query->select([
-      'favorites.product_id',
       'favorites.variation_id',
       'products.name',
       'products.status',
       'products.brand',
       'products.category',
       'products.type',
+      'product_variation_values.product_id',
       'product_variation_values.value',
       'product_variation_values.price',
       'product_variation_values.discount',
@@ -37,7 +40,7 @@ class Favorite extends Model
       'product_variation_values.image_path',
       'product_variation_values.quantity',
     ])->where('user_id', $userId)
-      ->leftJoin('products', 'products.id', '=', 'favorites.product_id')
-      ->leftJoin('products', 'product_variation_values.id', '=', 'favorites.variation_id');
+      ->leftJoin('product_variation_values', 'product_variation_values.id', '=', 'favorites.variation_id')
+      ->leftJoin('products', 'products.id', '=', 'product_variation_values.product_id');
   }
 }

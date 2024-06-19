@@ -30,6 +30,7 @@ class Product extends FilterableModel
     'price' => 'integer',
     'discount' => 'integer',
     'current_min_price' => 'float',
+    'current_price' => 'integer',
     'quantity' => 'integer',
     'rating' => 'integer'
   ];

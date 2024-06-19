@@ -19,4 +19,5 @@ return [
   'productRemovedFromCart' => 'Товар удален из корзины',
   'orderAccepted' => 'Заказ оформлен',
   'orderCanceled' => 'Заказ отменен',
+  'notInFavorites' => 'Товар не в избранном'
 ];
