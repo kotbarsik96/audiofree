@@ -1,0 +1,44 @@
+:root {
+  font-size: 16px;
+  line-height: 120%;
+  font-weight: 400;
+  @include scrollbar();
+  font-family: var(--font-roboto);
+
+  * {
+    @include scrollbar();
+  }
+}
+
+:root:has(.firefox) {
+  @include scrollbarFirefox();
+
+  * {
+    @include scrollbarFirefox();
+  }
+}
+
+.container {
+  --container-width: 1170px;
+  --container-padding-x: 15px;
+
+  margin: 0 auto;
+  width: 100%;
+  max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
+  padding: 0 var(--container-padding-x);
+}
+
+.link {
+  text-decoration: none;
+  @include fRegular(14);
+  color: var(--text-color);
+  transition: var(--general-transition);
+
+  &:hover {
+    color: var(--green-2);
+  }
+
+  &--white {
+    color: var(--white);
+  }
+}

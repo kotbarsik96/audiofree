@@ -1,0 +1,85 @@
+@mixin adaptive($size) {
+  @if $size ==phone-small {
+    @media screen and (max-width: 359px) {
+      @content;
+    }
+  } @else if $size ==phone {
+    @media screen and (max-width: 478px) {
+      @content;
+    }
+  } @else if $size ==phone-big {
+    @media screen and (max-width: 619px) {
+      @content;
+    }
+  } @else if $size ==tablet-small {
+    @media screen and (max-width: 766px) {
+      @content;
+    }
+  } @else if $size ==tablet-big {
+    @media screen and (max-width: 990px) {
+      @content;
+    }
+  } @else if $size ==desktop-small {
+    @media screen and (max-width: 1199px) {
+      @content;
+    }
+  } @else if $size ==desktop-mid {
+    @media screen and (max-width: 1599px) {
+      @content;
+    }
+  } @else if $size ==min-phone-small {
+    @media screen and (min-width: 360px) {
+      @content;
+    }
+  } @else if $size ==min-phone {
+    @media screen and (min-width: 479px) {
+      @content;
+    }
+  } @else if $size ==min-phone-big {
+    @media screen and (min-width: 620px) {
+      @content;
+    }
+  } @else if $size ==min-tablet-small {
+    @media screen and (min-width: 767px) {
+      @content;
+    }
+  } @else if $size ==min-tablet-big {
+    @media screen and (min-width: 991px) {
+      @content;
+    }
+  } @else if $size ==min-desktop-small {
+    @media screen and (min-width: 1200px) {
+      @content;
+    }
+  } @else if $size ==min-desktop-mid {
+    @media screen and (min-width: 1600px) {
+      @content;
+    }
+  }
+}
+
+@mixin scrollbar() {
+  &::-webkit-scrollbar {
+    height: 2px;
+    width: 7px;
+    background-color: var(--white);
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--purple);
+    border-radius: 8px;
+    width: 2px;
+    height: 2px;
+  }
+}
+@mixin scrollbarFirefox() {
+  scrollbar-width: thin;
+  scrollbar-color: var(--purple) var(--white);
+}
+
+@mixin noScrollbar() {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+}
