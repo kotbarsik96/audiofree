@@ -18,7 +18,7 @@
   }
 }
 
-.container {
+._container {
   --container-width: 1170px;
   --container-padding-x: 15px;
 
@@ -28,7 +28,7 @@
   padding: 0 var(--container-padding-x);
 }
 
-.link {
+._link {
   text-decoration: none;
   @include fRegular(14);
   color: var(--text-color);

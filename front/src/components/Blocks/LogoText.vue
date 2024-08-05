@@ -32,7 +32,7 @@ const className = computed(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .logo-text {
   display: flex;
   align-items: center;

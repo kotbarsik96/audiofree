@@ -2,12 +2,12 @@
   <header class="header" :class="headerClassName">
     <template v-if="platform === 'desktop'">
       <div class="header__top">
-        <div class="header__container container">
-          <LogoText link />
+        <div class="header__container _container">
+          <LogoText class="header__top-logo" link />
           <ul class="header__top-links">
             <li v-for="obj in topLinks">
               <RouterLink
-                class="header__top-link link link--white"
+                class="header__top-link _link _link--white"
                 :to="obj.to"
               >
                 {{ obj.title }}
@@ -17,16 +17,16 @@
         </div>
       </div>
       <div class="header__main">
-        <div class="header__container container">
+        <div class="header__container _container">
           <FreeCall />
           <InputWrapper
             class="header__search"
-            id="header-search"
             rounded
             icon="search"
             iconPos="left"
-            placeholder="Поиск товара"
-          />
+          >
+            <TextInput placeholder="Поиск товара" />
+          </InputWrapper>
           <ul class="header__main-icon-links">
             <li v-for="item in iconLinks" :key="item.icon">
               <ButtonIcon
@@ -41,9 +41,9 @@
         </div>
       </div>
       <div class="header__bottom">
-        <div class="header__container container">
+        <div class="header__container _container">
           <div class="header__bottom-catalog">
-            <RouterLink class="link" :to="{ name: 'Catalog' }">
+            <RouterLink class="_link" :to="{ name: 'Catalog' }">
               <Icon type="menu" />
               <span> Каталог товаров</span>
             </RouterLink>
@@ -74,11 +74,9 @@
           <Icon type="search" />
         </button>
         <div class="header-mobile__search-input-wrapper">
-          <InputWrapper
-            class="header-mobile__search-input"
-            id="search"
-            placeholder="Поиск товара"
-          />
+          <InputWrapper class="header-mobile__search-input">
+            <TextInput placeholder="Поиск товара" />
+          </InputWrapper>
         </div>
       </div>
       <div class="header-mobile">
@@ -179,6 +177,7 @@ import { useMediaQueries } from "@/utils/useMediaQueries"
 import ButtonIcon from "@/components/Blocks/ButtonIcon.vue"
 import HeaderAuthBlock from "@/components/Blocks/Header/HeaderAuthBlock.vue"
 import vClickAway from "@/directives/vClickAway"
+import TextInput from "@/components/Blocks/FormElements/TextInput.vue"
 
 const mobileMedia = 991
 const mediaQueries = useMediaQueries({
@@ -219,7 +218,7 @@ function closeMenu(e: Event) {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header {
   --header-height: 165px;
 
@@ -346,6 +345,26 @@ function closeMenu(e: Event) {
       border-bottom-left-radius: 0;
     }
   }
+
+  @include adaptive(desktop-small) {
+    &__top-logo {
+      :deep(.logo-text__logo) span:last-child {
+        display: none;
+      }
+      :deep(.logo-text__text) {
+        display: none;
+      }
+    }
+
+    &__bottom-catalog {
+      border-left: 0;
+      padding-left: 0;
+    }
+    &__auth {
+      padding-right: 0;
+      border-right: 0;
+    }
+  }
 }
 
 .header-mobile {
@@ -360,7 +379,7 @@ function closeMenu(e: Event) {
   &__search {
     height: 100%;
     position: absolute;
-    left: 45px;
+    left: 50px;
     right: 0;
     top: 0;
     z-index: 100;
@@ -370,7 +389,7 @@ function closeMenu(e: Event) {
 
   &__search-button {
     position: relative;
-    top: -3px;
+    top: 0;
     z-index: 50;
     font-size: var(--search-btn-size);
     color: var(--purple-dark);
@@ -402,13 +421,13 @@ function closeMenu(e: Event) {
   &__search-input {
     width: 100%;
 
-    .input {
+    :deep(.input) {
       padding-left: calc(var(--search-btn-size) + 15px);
     }
   }
 
   &__menu-btn {
-    font-size: 16px;
+    font-size: 21px;
     color: var(--purple-dark);
   }
 
@@ -451,7 +470,7 @@ function closeMenu(e: Event) {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     transition: var(--general-transition);
   }
   .header.shown &__menu {

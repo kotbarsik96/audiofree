@@ -5,54 +5,27 @@
     </label>
     <div class="input-wrapper__wrap">
       <Icon v-if="icon" :type="icon" class="input-wrapper__icon" />
-      <component
-        :is="inputComponent"
-        :placeholder="placeholder"
-        :id="id"
-        v-bind="inputProps"
-        @input="onInput"
-      />
+      <slot />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import Icon from "@/components/Blocks/Icon.vue"
-import TextInput from "@/components/Blocks/FormElements/TextInput.vue"
-import NumberInput from "@/components/Blocks/FormElements/NumberInput.vue"
 import { computed } from "vue"
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: string | number
-    type?: "text" | "number"
     label?: string
-    id: string
-    inputProps?: { [key: string]: any }
+    id?: string
     icon?: string
     iconPos?: "right" | "left"
-    placeholder?: string
     rounded?: boolean
   }>(),
   {
-    type: "text",
     iconPos: "right",
   }
 )
-
-const emit = defineEmits<{
-  (e: "update:modelValue", value: typeof props.modelValue): void
-}>()
-
-const inputComponent = computed(() => {
-  switch (props.type) {
-    case "number":
-      return NumberInput
-    case "text":
-    default:
-      return TextInput
-  }
-})
 
 const className = computed(() => {
   return {
@@ -60,13 +33,9 @@ const className = computed(() => {
     "input-wrapper--rounded": props.rounded,
   }
 })
-
-function onInput(value?: string | number) {
-  emit("update:modelValue", value)
-}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .input-wrapper {
   --input-icon-size: 23px;
   --input-padding-x: 17px;
@@ -96,10 +65,10 @@ function onInput(value?: string | number) {
     color: var(--purple-dark);
     font-size: var(--input-icon-size);
   }
-  &__icon + .input {
+  &__icon + :deep(.input) {
     padding-right: var(--input-w-icon-padding);
   }
-  &--icon-left &__icon + .input {
+  &--icon-left &__icon + :deep(.input) {
     padding-right: var(--input-padding-x);
     padding-left: var(--input-w-icon-padding);
   }
@@ -109,23 +78,22 @@ function onInput(value?: string | number) {
     left: var(--input-icon-padding);
   }
 
-  &--rounded .input {
-    border-radius: 23px;
+  :deep(.input) {
+    border-radius: 9px;
+    border: 1px solid #dadada;
+    background-color: transparent;
+    @include fRegular(14);
+    padding: var(--input-padding-y) var(--input-padding-x);
+    outline: none;
+    width: 100%;
+    color: var(--text-color);
   }
-}
-
-.input {
-  border-radius: 9px;
-  border: 1px solid #dadada;
-  background-color: transparent;
-  @include fRegular(14);
-  padding: var(--input-padding-y) var(--input-padding-x);
-  outline: none;
-  width: 100%;
-  color: var(--text-color);
-
-  &::placeholder {
+  :deep(.input)::placeholder {
     color: #b9b9b9;
+  }
+
+  &--rounded :deep(.input) {
+    border-radius: 23px;
   }
 }
 </style>

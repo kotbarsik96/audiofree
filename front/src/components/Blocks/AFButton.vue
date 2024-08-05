@@ -58,7 +58,7 @@ const attrs = computed(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .btn {
   // styles
   position: relative;

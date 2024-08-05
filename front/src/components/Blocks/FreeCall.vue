@@ -18,7 +18,7 @@
 import ButtonIcon from "@/components/Blocks/ButtonIcon.vue"
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .free-call {
   display: flex;
   gap: 15px;

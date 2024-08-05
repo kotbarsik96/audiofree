@@ -79,7 +79,7 @@ function updateValue(option: DropdownOption) {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dropdown {
   --s-border: 1px solid var(--grey-stroke);
   --s-bg: var(--grey-bg-2);

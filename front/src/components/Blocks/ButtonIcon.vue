@@ -48,7 +48,7 @@ const className = computed(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .btn-icon {
   position: relative;
   display: inline-flex;
