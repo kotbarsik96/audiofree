@@ -1,0 +1,19 @@
+.notification-anim {
+  &-enter-active,
+  &-leave-active,
+  &-move {
+    transition: var(--general-transition);
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(200%);
+  }
+
+  &-enter-to,
+  &-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

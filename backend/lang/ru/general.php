@@ -16,5 +16,8 @@ return [
   'ratingSet' => 'Оценка :value выставлена товару :product',
   'ratingRemoved' => 'Убрана оценка товару :product',
   'productAddedToCart' => 'Товар :product (:variation) добавлен в корзину',
-  'productRemovedFromCart' => 'Товар удален из корзины'
+  'productRemovedFromCart' => 'Товар удален из корзины',
+  'orderAccepted' => 'Заказ оформлен',
+  'orderCanceled' => 'Заказ отменен',
+  'notInFavorites' => 'Товар не в избранном'
 ];

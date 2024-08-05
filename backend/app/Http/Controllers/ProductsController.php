@@ -153,7 +153,7 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $products =  Product::filter($request)->catalog()->get();
+    $products =  Product::filter($request)->catalog()->onlyInStock()->get();
     foreach ($products as $product) {
       $priceAndDiscount = ProductVariation::minPriceAndDiscount($product->id)
         ->first();
