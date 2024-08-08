@@ -1,19 +1,19 @@
 <template>
   <component :is="component" class="btn-icon" :class="className" v-bind="attrs">
     <div v-if="badge || badge === 0" class="btn-icon__badge">{{ badge }}</div>
-    <Icon :type="icon" />
+    <AFIcon :icon="icon" />
   </component>
 </template>
 
 <script setup lang="ts">
-import Icon from "@/components/Blocks/Icon.vue"
+import AFIcon from "@/components/Blocks/AFIcon.vue";
 import { computed } from "vue"
 import { RouterLink } from "vue-router"
 
 const props = withDefaults(
   defineProps<{
     type?: "button" | "link" | "router-link"
-    icon: string
+    icon: string | any
     shadow?: boolean
     badge?: string | number
   }>(),

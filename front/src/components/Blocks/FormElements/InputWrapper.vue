@@ -4,21 +4,21 @@
       {{ label }}
     </label>
     <div class="input-wrapper__wrap">
-      <Icon v-if="icon" :type="icon" class="input-wrapper__icon" />
+      <AFIcon v-if="icon" class="input-wrapper__icon" :icon="icon" />
       <slot />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Icon from "@/components/Blocks/Icon.vue"
+import AFIcon from "@/components/Blocks/AFIcon.vue"
 import { computed } from "vue"
 
 const props = withDefaults(
   defineProps<{
     label?: string
     id?: string
-    icon?: string
+    icon?: string | any
     iconPos?: "right" | "left"
     rounded?: boolean
   }>(),
@@ -64,6 +64,8 @@ const className = computed(() => {
     transform: translateY(-55%);
     color: var(--purple-dark);
     font-size: var(--input-icon-size);
+    width: var(--input-icon-size);
+    height: var(--input-icon-size);
   }
   &__icon + :deep(.input) {
     padding-right: var(--input-w-icon-padding);

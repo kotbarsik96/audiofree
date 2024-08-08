@@ -1,6 +1,6 @@
 <template>
   <div class="h-auth-block">
-    <Icon class="h-auth-block__icon" type="user" />
+    <AFIcon class="h-auth-block__icon" :icon="UserIcon" />
     <div v-if="isAuth" class="h-auth-block__links">
       <RouterLink
         class="h-auth-block__btn link"
@@ -19,11 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import Icon from "@/components/Blocks/Icon.vue";
-import AFButton from "@/components/Blocks/AFButton.vue";
-import { computed } from "vue";
+import UserIcon from "@/assets/images/icons/user.svg"
+import AFIcon from "@/components/Blocks/AFIcon.vue"
+import { computed } from "vue"
 
-const isAuth = computed(() => true);
+const isAuth = computed(() => true)
 </script>
 
 <style lang="scss">
@@ -35,6 +35,8 @@ const isAuth = computed(() => true);
 
   &__icon {
     font-size: 18px;
+    width: 18px;
+    height: 18px;
     color: var(--purple-dark);
   }
 

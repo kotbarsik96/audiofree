@@ -1,14 +1,13 @@
 <template>
   <ul class="socials-list">
     <li v-for="item in socials" :key="item.title">
-      <Icon class="socials-list__icon" :type="item.icon" />
+      <component class="socials-list__icon" :is="item.icon" />
     </li>
   </ul>
 </template>
 
 <script setup lang="ts">
 import socials from "@/enums/socials"
-import Icon from "@/components/Blocks/Icon.vue"
 </script>
 
 <style lang="scss" scoped>

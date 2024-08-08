@@ -1,10 +1,13 @@
+import HeartIcon from "@/assets/images/icons/heart.svg"
+import CartIcon from "@/assets/images/icons/cart.svg"
+
 export default [
   {
-    icon: "heart",
+    icon: HeartIcon,
     to: { name: "Favorites" },
   },
   {
-    icon: "cart",
+    icon: CartIcon,
     to: { name: "Cart" },
   },
 ]

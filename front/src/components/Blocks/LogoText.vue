@@ -1,7 +1,7 @@
 <template>
   <component :is="component" class="logo-text" :class="className" :to="to">
     <span class="logo-text__logo">
-      <Icon v-if="!hideIcon" type="headphones" />
+      <AFIcon v-if="!hideIcon" :icon="HeadphonesIcon" />
       Audiofree
       <span v-if="!hideText">|</span>
     </span>
@@ -12,7 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from "@/components/Blocks/Icon.vue"
+import AFIcon from "@/components/Blocks/AFIcon.vue"
+import HeadphonesIcon from "@/assets/images/icons/headphones.svg"
 import { RouterLink } from "vue-router"
 import { computed } from "vue"
 

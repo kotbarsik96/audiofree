@@ -22,7 +22,7 @@
           <InputWrapper
             class="header__search"
             rounded
-            icon="search"
+            :icon="SearchIcon"
             iconPos="left"
           >
             <TextInput placeholder="Поиск товара" />
@@ -44,7 +44,7 @@
         <div class="header__container _container">
           <div class="header__bottom-catalog">
             <RouterLink class="_link" :to="{ name: 'Catalog' }">
-              <Icon type="menu" />
+              <AFIcon :icon="MenuIcon" />
               <span> Каталог товаров</span>
             </RouterLink>
           </div>
@@ -71,7 +71,7 @@
           aria-label="Открыть поиск"
           @click="toggleMobileSearch"
         >
-          <Icon type="search" />
+          <AFIcon :icon="SearchIcon" />
         </button>
         <div class="header-mobile__search-input-wrapper">
           <InputWrapper class="header-mobile__search-input">
@@ -87,7 +87,7 @@
           ref="headerMobileMenuBtnEl"
           @click="toggleMenu"
         >
-          <Icon type="menu" />
+          <AFIcon :icon="MenuIcon" />
         </button>
         <div class="header-mobile__logo-wrapper">
           <LogoText class="header-mobile__logo" hideIcon hideText link />
@@ -111,7 +111,7 @@
                 class="header-mobile__menu-item-inner --iconed --close"
                 type="button"
               >
-                <Icon type="chevron-right" rotate="180deg" />
+                <AFIcon :icon="ChevronRightIcon" rotate="180deg" />
                 <span>Меню</span>
               </button>
             </li>
@@ -120,7 +120,7 @@
                 class="header-mobile__menu-item-inner --iconed"
                 :to="{ name: 'Home' }"
               >
-                <Icon type="headphones" />
+                <AFIcon :icon="HeadphonesIcon" />
                 <span>Главная</span>
               </RouterLink>
             </li>
@@ -129,7 +129,7 @@
                 class="header-mobile__menu-item-inner --iconed"
                 :to="{ name: 'Catalog' }"
               >
-                <Icon type="menu" />
+                <AFIcon :icon="MenuIcon" />
                 <span>Каталог</span>
               </RouterLink>
             </li>
@@ -165,7 +165,11 @@
 </template>
 
 <script setup lang="ts">
-import Icon from "@/components/Blocks/Icon.vue"
+import MenuIcon from "@/assets/images/icons/menu.svg"
+import SearchIcon from "@/assets/images/icons/search.svg"
+import ChevronRightIcon from "@/assets/images/icons/chevron-right.svg"
+import HeadphonesIcon from "@/assets/images/icons/headphones.svg"
+import AFIcon from "@/components/Blocks/AFIcon.vue"
 import LogoText from "@/components/Blocks/LogoText.vue"
 import topLinks from "@/enums/header/top-links"
 import FreeCall from "@/components/Blocks/FreeCall.vue"

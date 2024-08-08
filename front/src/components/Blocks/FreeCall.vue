@@ -2,7 +2,7 @@
   <div class="free-call">
     <ButtonIcon
       class="free-call__icon"
-      icon="phone"
+      :icon="PhoneIcon"
       type="link"
       href="tel:7777777777"
       shadow
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import ButtonIcon from "@/components/Blocks/ButtonIcon.vue"
+import PhoneIcon from "@/assets/images/icons/phone.svg"
 </script>
 
 <style lang="scss" scoped>

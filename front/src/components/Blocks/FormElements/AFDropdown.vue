@@ -11,7 +11,7 @@
             : selectedOption.value
         }}
       </div>
-      <Icon class="dropdown__icon" type="triangle-right" rotate="90deg" />
+      <AFIcon class="dropdown__icon" :icon="TriangleRightIcon" rotate="90deg" />
     </div>
     <Transition name="dropdown">
       <ul v-show="shown" class="dropdown__options">
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-// import Icon from ""
+import TriangleRightIcon from "@/assets/images/icons/chevron-right.svg"
 import { onMounted, onUnmounted, ref } from "vue"
 
 interface IDropdownOption {

@@ -1,14 +1,14 @@
 <template>
   <component :is="component" class="btn" :class="className" v-bind="attrs">
     <span class="btn__inner">
-      <Icon v-if="icon" :type="icon" class="btn__icon" />
+      <AFIcon :icon="icon" class="btn__icon" />
       <span v-if="label" class="btn__label">{{ label }}</span>
     </span>
   </component>
 </template>
 
 <script setup lang="ts">
-import Icon from "@/components/Blocks/Icon.vue"
+import AFIcon from "@/components/Blocks/AFIcon.vue"
 import { computed } from "vue"
 import { RouterLink } from "vue-router"
 
@@ -16,7 +16,7 @@ const props = withDefaults(
   defineProps<{
     type?: "button" | "submit" | "reset" | "router-link"
     label?: string
-    icon?: string
+    icon: string | any
     iconPos?: "left" | "right"
     bg?: "green" | "yellow"
   }>(),
@@ -94,6 +94,8 @@ const attrs = computed(() => {
 
   &__icon {
     font-size: 20px;
+    width: 20px;
+    height: 20px;
   }
 
   // modifiers
