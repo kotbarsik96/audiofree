@@ -2,3 +2,5 @@
 .vscode
 .env
 _figma-exports
+tmp/
+.sql
