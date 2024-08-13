@@ -23,7 +23,7 @@ const props = withDefaults(
     rounded?: boolean
   }>(),
   {
-    iconPos: "right",
+    iconPos: "left",
   }
 )
 
@@ -37,12 +37,12 @@ const className = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper {
-  --input-icon-size: 23px;
-  --input-padding-x: 17px;
-  --input-padding-y: 10px;
-  --input-icon-padding: 10px;
+  --input-icon-size: 1.25rem;
+  --input-padding-x: 1rem;
+  --input-padding-y: 0.6rem;
+  --input-icon-padding: 1rem;
   --input-w-icon-padding: calc(
-    var(--input-padding-x) + var(--input-icon-padding) + var(--input-icon-size)
+    var(--input-padding-x) + var(--input-icon-padding) + calc(var(--input-icon-size) / 1.5)
   );
 
   @include fRegular(14);
@@ -61,9 +61,10 @@ const className = computed(() => {
     position: absolute;
     right: var(--input-icon-padding);
     top: 50%;
-    transform: translateY(-55%);
-    color: var(--purple-dark);
-    font-size: var(--input-icon-size);
+    transform: translateY(-50%);
+    color: var(--primary);
+    width: var(--input-icon-size);
+    height: var(--input-icon-size);
     width: var(--input-icon-size);
     height: var(--input-icon-size);
   }

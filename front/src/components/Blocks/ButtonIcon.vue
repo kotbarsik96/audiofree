@@ -58,7 +58,7 @@ const className = computed(() => {
   height: 2.43rem;
   border-radius: 50%;
   background-color: var(--white);
-  color: var(--purple-dark);
+  color: var(--primary-dark);
   transition: var(--general-transition);
 
   .icon {
@@ -70,7 +70,7 @@ const className = computed(() => {
   }
 
   &:hover {
-    background-color: var(--green-2);
+    background-color: var(--secondary-2);
     color: var(--white);
   }
 
@@ -84,7 +84,7 @@ const className = computed(() => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--green-3);
+    background-color: var(--secondary-3);
     color: var(--white);
     font-size: 0.7rem;
     font-weight: 700;

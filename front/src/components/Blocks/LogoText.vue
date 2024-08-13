@@ -59,7 +59,7 @@ const className = computed(() => {
 
   &--link:hover &__logo,
   &--link:hover &__text {
-    color: var(--green-2);
+    color: var(--secondary-2);
   }
 }
 </style>

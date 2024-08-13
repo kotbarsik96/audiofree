@@ -177,7 +177,7 @@ import InputWrapper from "@/components/Blocks/FormElements/InputWrapper.vue"
 import iconLinks from "@/enums/header/icon-links"
 import bottomLinks from "@/enums/header/bottom-links"
 import { computed, ref } from "vue"
-import { useMediaQueries } from "@/utils/useMediaQueries"
+import { useMediaQueries } from "@/composables/useMediaQueries"
 import ButtonIcon from "@/components/Blocks/ButtonIcon.vue"
 import HeaderAuthBlock from "@/components/Blocks/Header/HeaderAuthBlock.vue"
 import vClickAway from "@/directives/vClickAway"
@@ -237,7 +237,7 @@ function closeMenu(e: Event) {
   }
 
   &__top {
-    background-color: var(--purple-dark);
+    background-color: var(--primary-dark);
     padding: 5px 0;
   }
   &__top &__container {
@@ -326,7 +326,7 @@ function closeMenu(e: Event) {
 
     &.active,
     &.router-link-exact-active {
-      color: var(--green);
+      color: var(--secondary);
 
       &::after {
         opacity: 1;
@@ -334,7 +334,7 @@ function closeMenu(e: Event) {
     }
 
     &:hover {
-      color: var(--green);
+      color: var(--secondary);
     }
   }
 
@@ -396,7 +396,7 @@ function closeMenu(e: Event) {
     top: 0;
     z-index: 50;
     font-size: var(--search-btn-size);
-    color: var(--purple-dark);
+    color: var(--primary-dark);
   }
 
   &__search-input-wrapper {
@@ -432,7 +432,7 @@ function closeMenu(e: Event) {
 
   &__menu-btn {
     font-size: 21px;
-    color: var(--purple-dark);
+    color: var(--primary-dark);
   }
 
   &__logo-wrapper,
@@ -442,7 +442,7 @@ function closeMenu(e: Event) {
 
   &__logo {
     @include fBold(18);
-    color: var(--purple-dark);
+    color: var(--primary-dark);
   }
 
   &__icons {
@@ -496,7 +496,7 @@ function closeMenu(e: Event) {
       @include fMedium(14);
 
       .icon {
-        color: var(--purple);
+        color: var(--primary);
         opacity: 0.3;
         font-size: 21px;
       }

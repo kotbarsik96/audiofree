@@ -2,9 +2,9 @@
   font-size: 16px;
   line-height: 120%;
   font-weight: 400;
-  @include scrollbar();
   font-family: var(--font-roboto);
 
+  @include scrollbar();
   * {
     @include scrollbar();
   }
@@ -35,7 +35,7 @@
   transition: var(--general-transition);
 
   &:hover {
-    color: var(--green-2);
+    color: var(--secondary-2);
   }
 
   &--white {

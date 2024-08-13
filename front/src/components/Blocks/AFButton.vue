@@ -16,7 +16,7 @@ const props = withDefaults(
   defineProps<{
     type?: "button" | "submit" | "reset" | "router-link"
     label?: string
-    icon: string | any
+    icon?: string | any
     iconPos?: "left" | "right"
     bg?: "green" | "yellow"
   }>(),
@@ -63,7 +63,7 @@ const attrs = computed(() => {
   // styles
   position: relative;
   transition: var(--general-transition);
-  background-color: var(--purple);
+  background-color: var(--primary);
   color: var(--bg);
   padding: 20px;
   border-radius: 12px;
@@ -73,7 +73,7 @@ const attrs = computed(() => {
   justify-content: center;
 
   &:hover:not(:disabled) {
-    background-color: var(--green-1);
+    background-color: var(--secondary-1);
   }
 
   &__inner {
@@ -116,7 +116,7 @@ const attrs = computed(() => {
     background-color: var(--yellow);
   }
   &--bg-green {
-    background-color: var(--green-1);
+    background-color: var(--secondary-1);
   }
 
   &:disabled,

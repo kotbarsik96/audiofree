@@ -31,7 +31,7 @@ const props = defineProps<{
 }>()
 
 const presentationData = computed(() => {
-  let _data = { icon: SuccessIcon, color: "var(--green-2)" }
+  let _data = { icon: SuccessIcon, color: "var(--secondary-2)" }
 
   switch (props.data.severity) {
     case "error":
@@ -49,7 +49,7 @@ const presentationData = computed(() => {
     case "success":
       _data = {
         icon: SuccessIcon,
-        color: "var(--green-2)",
+        color: "var(--secondary-2)",
       }
       break
   }

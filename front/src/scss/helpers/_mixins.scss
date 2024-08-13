@@ -59,22 +59,24 @@
 }
 
 @mixin scrollbar() {
-  &::-webkit-scrollbar {
-    height: 2px;
-    width: 7px;
-    background-color: var(--white);
-    border-radius: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--purple);
-    border-radius: 8px;
-    width: 2px;
-    height: 2px;
+  & {
+    &::-webkit-scrollbar {
+      height: 2px;
+      width: 7px;
+      background-color: var(--white);
+      border-radius: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 8px;
+      width: 2px;
+      height: 2px;
+    }
   }
 }
 @mixin scrollbarFirefox() {
   scrollbar-width: thin;
-  scrollbar-color: var(--purple) var(--white);
+  scrollbar-color: var(--primary) var(--white);
 }
 
 @mixin noScrollbar() {

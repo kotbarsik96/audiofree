@@ -11,19 +11,42 @@
       </RouterLink>
     </div>
     <div v-else class="h-auth-block__links">
-      <button class="h-auth-block__btn link" type="button">Вход</button>
+      <button
+        class="h-auth-block__btn link"
+        type="button"
+        @click="showDialog('login')"
+      >
+        Вход
+      </button>
       <div class="h-auth-block__delimeter">/</div>
-      <button class="h-auth-block__btn link" type="button">Регистрация</button>
+      <button
+        class="h-auth-block__btn link"
+        type="button"
+        @click="showDialog('signup')"
+      >
+        Регистрация
+      </button>
     </div>
+
+    <AuthDialog v-model:tab="tab" v-model:shown="dialogShown" />
   </div>
 </template>
 
 <script setup lang="ts">
 import UserIcon from "@/assets/images/icons/user.svg"
 import AFIcon from "@/components/Blocks/AFIcon.vue"
-import { computed } from "vue"
+import AuthDialog from "@/components/Blocks/Dialog/AuthDialog.vue"
+import type { authTabs } from "@/enums/auth/authTabs"
+import { computed, ref } from "vue"
 
-const isAuth = computed(() => true)
+const isAuth = computed(() => false)
+const dialogShown = ref(false)
+const tab = ref<authTabs>("signup")
+
+function showDialog(_tab: authTabs) {
+  tab.value = _tab
+  dialogShown.value = true
+}
 </script>
 
 <style lang="scss">
@@ -37,7 +60,7 @@ const isAuth = computed(() => true)
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--purple-dark);
+    color: var(--primary-dark);
   }
 
   &__links {

@@ -134,7 +134,7 @@ function login() {
 
   &__main {
     padding: 70px 0 50px 0;
-    background-color: var(--purple-dark);
+    background-color: var(--primary-dark);
   }
 
   &__main-container {
@@ -173,14 +173,14 @@ function login() {
 
     :deep(.icon),
     .icon {
-      color: var(--purple-dark);
+      color: var(--primary-dark);
     }
 
     :deep(.btn-icon) {
-      background-color: var(--green);
+      background-color: var(--secondary);
     }
     :deep(.btn-icon):hover {
-      background-color: var(--green-2);
+      background-color: var(--secondary-2);
     }
   }
 

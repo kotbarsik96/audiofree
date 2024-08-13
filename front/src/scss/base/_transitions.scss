@@ -17,3 +17,20 @@
     transform: translateX(0);
   }
 }
+
+.fade-in {
+  &-enter-active,
+  &-leave-active {
+    transition: var(--general-transition);
+  }
+  
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+  }
+  
+  &-enter-to,
+  &-leave-from {
+    opacity: 1;
+  }
+}
