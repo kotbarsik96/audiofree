@@ -3,7 +3,7 @@
     <AFIcon class="h-auth-block__icon" :icon="UserIcon" />
     <div v-if="isAuth" class="h-auth-block__links">
       <RouterLink
-        class="h-auth-block__btn link"
+        class="h-auth-block__btn _link"
         type="button"
         :to="{ name: 'Profile' }"
       >
@@ -12,7 +12,7 @@
     </div>
     <div v-else class="h-auth-block__links">
       <button
-        class="h-auth-block__btn link"
+        class="h-auth-block__btn _link"
         type="button"
         @click="showDialog('login')"
       >
@@ -20,7 +20,7 @@
       </button>
       <div class="h-auth-block__delimeter">/</div>
       <button
-        class="h-auth-block__btn link"
+        class="h-auth-block__btn _link"
         type="button"
         @click="showDialog('signup')"
       >
