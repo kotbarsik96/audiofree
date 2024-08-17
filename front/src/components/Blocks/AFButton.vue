@@ -15,14 +15,15 @@ import { RouterLink } from "vue-router"
 const props = withDefaults(
   defineProps<{
     type?: "button" | "submit" | "reset" | "router-link"
+    styleType?: "primary" | "secondary"
     label?: string
     icon?: string | any
     iconPos?: "left" | "right"
-    bg?: "green" | "yellow"
   }>(),
   {
     type: "button",
     iconPos: "left",
+    styleType: "primary",
   }
 )
 
@@ -37,9 +38,8 @@ const component = computed(() => {
 
 const className = computed(() => {
   return [
+    `btn--${props.styleType}`,
     {
-      "btn--bg-green": props.bg === "green",
-      "btn--bg-yellow": props.bg === "yellow",
       "btn--icon-right": props.iconPos === "right",
       "btn--icon-only": !props.label && props.icon,
     },
@@ -62,18 +62,27 @@ const attrs = computed(() => {
 .btn {
   // styles
   position: relative;
-  transition: var(--general-transition);
   background-color: var(--primary);
-  color: var(--bg);
-  padding: 20px;
-  border-radius: 12px;
+  color: var(--white);
+  padding: 12px 16px;
+  border-radius: 20px;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid transparent;
+  @include fBold(14);
+  transition: var(--general-transition);
 
   &:hover:not(:disabled) {
-    background-color: var(--secondary-1);
+    box-shadow: 0px 8px 30px rgba(139, 117, 200, 0.5);
+  }
+
+  &--secondary {
+    background-color: transparent;
+    box-shadow: none;
+    border-color: #a9a9a9;
+    color: var(--text-color);
   }
 
   &__inner {
@@ -103,14 +112,6 @@ const attrs = computed(() => {
     border-radius: 50%;
     width: 40px;
     height: 40px;
-  }
-  &[class*="btn--bg-"] {
-    &::before {
-      opacity: 0;
-    }
-    &:hover:not(:disabled) {
-      background-color: var(--blue);
-    }
   }
   &--bg-yellow {
     background-color: var(--yellow);

@@ -1,14 +1,30 @@
 <template>
-  <input class="input text-input" type="text" @input="onInput" />
+  <input class="input text-input" :type="type" v-model="value" />
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
+
+const props = withDefaults(
+  defineProps<{
+    type?: "text" | "email"
+    modelValue: string
+  }>(),
+  {
+    type: "text",
+  }
+)
+
 const emit = defineEmits<{
-  (e: "input", value: string): void
+  (e: "update:modelValue", value: string): void
 }>()
 
-function onInput(event: Event) {
-  const { value } = event.target as HTMLInputElement
-  emit("input", value)
-}
+const value = computed({
+  get() {
+    return props.modelValue
+  },
+  set(val) {
+    emit("update:modelValue", val)
+  },
+})
 </script>

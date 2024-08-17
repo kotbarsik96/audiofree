@@ -1,1 +1,1 @@
-export type authTabs = "login" | "signup"
+export type authTabs = "login" | "signup" | "reset"

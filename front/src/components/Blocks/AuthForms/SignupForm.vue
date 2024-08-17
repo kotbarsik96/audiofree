@@ -1,7 +1,7 @@
 <template>
   <div class="login-form">
     <form class="login-form__form auth-form" @submit.prevent="onSubmit">
-      <InputWrapper class="auth-form__input" :icon="UserIcon">
+      <InputWrapper class="auth-form__input" type="email" :icon="UserIcon">
         <TextInput v-model="name" placeholder="Ваше имя" />
       </InputWrapper>
       <InputWrapper class="auth-form__input" :icon="MailIcon">
@@ -24,9 +24,12 @@ import UserIcon from "@/assets/images/icons/user.svg"
 import MailIcon from "@/assets/images/icons/mail.svg"
 import PasswordInput from "@/components/Blocks/FormElements/PasswordInput.vue"
 import { ref } from "vue"
+import { storeToRefs } from "pinia"
+import { useAuthStore } from "@/stores/authStore"
+
+const { email } = storeToRefs(useAuthStore())
 
 const name = ref("")
-const email = ref("")
 const password = ref("")
 const passwordRepeat = ref("")
 
@@ -35,4 +38,8 @@ function onSubmit() {}
 
 <style lang="scss" scoped>
 @import "@/scss/components/_AuthForm";
+
+.signup-form {
+  min-height: 19rem;
+}
 </style>

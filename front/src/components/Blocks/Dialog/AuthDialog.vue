@@ -1,24 +1,26 @@
 <template>
   <AFDialog class="auth-dialog" v-model:shown="_shown">
     <div class="auth-dialog__inner">
-      <div class="auth-dialog__tabs">
-        <button
-          class="auth-dialog__tab-btn"
-          :class="{ active: _tab === 'login' }"
-          type="button"
-          @click="_tab = 'login'"
-        >
-          Вход
-        </button>
-        <button
-          class="auth-dialog__tab-btn"
-          :class="{ active: _tab === 'signup' }"
-          type="button"
-          @click="_tab = 'signup'"
-        >
-          Регистрация
-        </button>
-      </div>
+      <Transition name="fade-in">
+        <div v-if="tab !== 'reset'" class="auth-dialog__tabs">
+          <button
+            class="auth-dialog__tab-btn"
+            :class="{ active: tab === 'login' }"
+            type="button"
+            @click="tab = 'login'"
+          >
+            Вход
+          </button>
+          <button
+            class="auth-dialog__tab-btn"
+            :class="{ active: tab === 'signup' }"
+            type="button"
+            @click="tab = 'signup'"
+          >
+            Регистрация
+          </button>
+        </div>
+      </Transition>
       <div class="auth-dialog__body">
         <div class="auth-dialog__title">Авторизация</div>
         <Transition name="fade-in" mode="out-in">
@@ -33,11 +35,13 @@
 import AFDialog from "@/components/Blocks/Dialog/AFDialog.vue"
 import LoginForm from "@/components/Blocks/AuthForms/LoginForm.vue"
 import SignupForm from "@/components/Blocks/AuthForms/SignupForm.vue"
+import ResetPasswordForm from "@/components/Blocks/AuthForms/ResetPasswordForm.vue"
 import type { authTabs } from "@/enums/auth/authTabs"
 import { computed } from "vue"
+import { useAuthStore } from "@/stores/authStore"
+import { storeToRefs } from "pinia"
 
 const props = defineProps<{
-  tab: authTabs
   shown?: boolean
 }>()
 
@@ -45,6 +49,8 @@ const emit = defineEmits<{
   (e: "update:shown", bool: boolean): void
   (e: "update:tab", newTab: authTabs): void
 }>()
+
+const { tab } = storeToRefs(useAuthStore())
 
 const _shown = computed({
   get() {
@@ -55,24 +61,21 @@ const _shown = computed({
   },
 })
 
-const _tab = computed({
-  get() {
-    return props.tab
-  },
-  set(newTab) {
-    emit("update:tab", newTab)
-  },
-})
-
 const component = computed(() => {
-  let _component: typeof SignupForm | typeof LoginForm
+  let _component:
+    | typeof SignupForm
+    | typeof LoginForm
+    | typeof ResetPasswordForm
 
-  switch (props.tab) {
+  switch (tab.value) {
     case "login":
       _component = LoginForm
       break
     case "signup":
       _component = SignupForm
+      break
+    case "reset":
+      _component = ResetPasswordForm
       break
   }
 

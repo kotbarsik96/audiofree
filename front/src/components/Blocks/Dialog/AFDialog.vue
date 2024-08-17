@@ -77,6 +77,9 @@ function onPointerdown(event: PointerEvent) {
   display: none;
   position: fixed;
   inset: 0;
+  background-color: var(--white);
+  border-radius: 8px;
+  max-height: 90%;
   animation: hideDialog 0.3s ease-in-out;
 
   &::backdrop {
@@ -89,10 +92,14 @@ function onPointerdown(event: PointerEvent) {
   }
 
   &__head {
+    position: sticky;
+    top: 0;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding: 5px 10px;
+    background-color: var(--white);
+    z-index: 50;
     border-bottom: 1px solid var(--stroke);
 
     button {
@@ -107,11 +114,6 @@ function onPointerdown(event: PointerEvent) {
       width: 100%;
       height: 100%;
     }
-  }
-
-  &__inner {
-    background-color: var(--white);
-    border-radius: 8px;
   }
 }
 

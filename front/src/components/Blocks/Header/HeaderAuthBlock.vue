@@ -28,7 +28,7 @@
       </button>
     </div>
 
-    <AuthDialog v-model:tab="tab" v-model:shown="dialogShown" />
+    <AuthDialog v-model:shown="dialogShown" />
   </div>
 </template>
 
@@ -37,11 +37,14 @@ import UserIcon from "@/assets/images/icons/user.svg"
 import AFIcon from "@/components/Blocks/AFIcon.vue"
 import AuthDialog from "@/components/Blocks/Dialog/AuthDialog.vue"
 import type { authTabs } from "@/enums/auth/authTabs"
+import { useAuthStore } from "@/stores/authStore"
+import { storeToRefs } from "pinia"
 import { computed, ref } from "vue"
 
 const isAuth = computed(() => false)
 const dialogShown = ref(false)
-const tab = ref<authTabs>("signup")
+
+const { tab } = storeToRefs(useAuthStore())
 
 function showDialog(_tab: authTabs) {
   tab.value = _tab

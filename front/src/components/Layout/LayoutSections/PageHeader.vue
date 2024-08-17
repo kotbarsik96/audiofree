@@ -25,7 +25,7 @@
             :icon="SearchIcon"
             iconPos="left"
           >
-            <TextInput placeholder="Поиск товара" />
+            <TextInput placeholder="Поиск товара" v-model="searchValue" />
           </InputWrapper>
           <ul class="header__main-icon-links">
             <li v-for="item in iconLinks" :key="item.icon">
@@ -75,7 +75,7 @@
         </button>
         <div class="header-mobile__search-input-wrapper">
           <InputWrapper class="header-mobile__search-input">
-            <TextInput placeholder="Поиск товара" />
+            <TextInput placeholder="Поиск товара" v-model="searchValue" />
           </InputWrapper>
         </div>
       </div>
@@ -187,6 +187,8 @@ const mobileMedia = 991
 const mediaQueries = useMediaQueries({
   media: mobileMedia,
 })
+
+const searchValue = ref("")
 
 const platform = computed<"mobile" | "desktop">(() =>
   mediaQueries.matches[mobileMedia] ? "mobile" : "desktop"
