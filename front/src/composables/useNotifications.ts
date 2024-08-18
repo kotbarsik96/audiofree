@@ -8,8 +8,6 @@ const _default_notification_hold_time = 7500
 const _max_notifications = 10
 
 export function useNotifications() {
-  const { timeSource } = useTimer()
-
   function addNotification(
     severity: NotificationSeverity,
     content: string,
@@ -24,6 +22,8 @@ export function useNotifications() {
     })
   }
   function getNotificationsList() {
+    const { timeSource } = useTimer()
+
     return computed(() => {
       return notifications.value
         .filter(

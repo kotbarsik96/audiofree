@@ -42,3 +42,8 @@
     color: var(--white);
   }
 }
+
+._error {
+  color: var(--red);
+  @include fRegular(14);
+}

@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <NotificationsContainer />
+    <NotificationsContainer class="layout__notifications" />
     <div class="layout__content">
       <PageHeader />
       <main class="layout__main">
@@ -17,13 +17,17 @@ import PageFooter from "@/components/Layout/LayoutSections/PageFooter.vue"
 import NotificationsContainer from "@/components/Blocks/Notifications/NotificationsContainer.vue"
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .layout {
   &__content {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+  }
+
+  &:has(dialog[open]) &__notifications {
+    display: none;
   }
 }
 </style>

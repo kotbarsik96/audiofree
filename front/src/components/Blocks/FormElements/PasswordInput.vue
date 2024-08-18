@@ -6,6 +6,9 @@
       v-model="password"
       :placeholder="placeholder"
     />
+    <template v-if="slots.error" #error>
+      <slot name="error" />
+    </template>
     <Transition name="fade-in">
       <button
         v-if="password.length > 0"
@@ -24,6 +27,7 @@ import InputWrapper from "@/components/Blocks/FormElements/InputWrapper.vue"
 import KeyIcon from "@/assets/images/icons/key.svg"
 import EyeIcon from "@/assets/images/icons/eye.svg"
 import { computed, ref } from "vue"
+import { useSlots } from "vue"
 
 const props = withDefaults(
   defineProps<{
@@ -34,6 +38,7 @@ const props = withDefaults(
     placeholder: "Пароль",
   }
 )
+const slots = useSlots()
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void

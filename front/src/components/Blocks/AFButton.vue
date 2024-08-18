@@ -75,7 +75,7 @@ const attrs = computed(() => {
   transition: var(--general-transition);
 
   &:hover:not(:disabled) {
-    box-shadow: 0px 8px 30px rgba(139, 117, 200, 0.5);
+    box-shadow: 0px 8px 5px rgba(139, 117, 200, 0.25);
   }
 
   &--secondary {

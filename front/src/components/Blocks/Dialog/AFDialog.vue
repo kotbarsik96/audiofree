@@ -13,10 +13,13 @@
       </div>
       <slot />
     </div>
+
+    <NotificationsContainer />
   </dialog>
 </template>
 
 <script setup lang="ts">
+import NotificationsContainer from "@/components/Blocks/Notifications/NotificationsContainer.vue"
 import AFIcon from "@/components/Blocks/AFIcon.vue"
 import CloseIcon from "@/assets/images/icons/close.svg"
 import { setBodyScroll, hideBodyScroll } from "@/utils/scrollbarHelpers"
@@ -81,6 +84,7 @@ function onPointerdown(event: PointerEvent) {
   border-radius: 8px;
   max-height: 90%;
   animation: hideDialog 0.3s ease-in-out;
+  z-index: 9000;
 
   &::backdrop {
     background-color: rgba(0, 0, 0, 0.35);

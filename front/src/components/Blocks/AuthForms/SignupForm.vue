@@ -3,14 +3,28 @@
     <form class="login-form__form auth-form" @submit.prevent="onSubmit">
       <InputWrapper class="auth-form__input" type="email" :icon="UserIcon">
         <TextInput v-model="name" placeholder="Ваше имя" />
+        <template v-if="errors?.name" #error>
+          {{ errors.name }}
+        </template>
       </InputWrapper>
       <InputWrapper class="auth-form__input" :icon="MailIcon">
         <TextInput v-model="email" placeholder="Email" />
+        <template v-if="errors?.email" #error>
+          {{ errors.email }}
+        </template>
       </InputWrapper>
-      <PasswordInput class="auth-form__input" v-model="password" />
-      <PasswordInput class="auth-form__input" v-model="passwordRepeat" placeholder="Пароль еще раз" />
+      <PasswordInput class="auth-form__input" v-model="password">
+        <template v-if="errors?.password" #error>
+          {{ errors.password }}
+        </template>
+      </PasswordInput>
+      <PasswordInput
+        class="auth-form__input"
+        v-model="passwordRepeat"
+        placeholder="Пароль еще раз"
+      />
       <div class="auth-form__buttons">
-        <AFButton type="submit" label="Войти" />
+        <AFButton type="submit" label="Войти" :disabled="isLoading" />
       </div>
     </form>
   </div>
@@ -26,14 +40,30 @@ import PasswordInput from "@/components/Blocks/FormElements/PasswordInput.vue"
 import { ref } from "vue"
 import { storeToRefs } from "pinia"
 import { useAuthStore } from "@/stores/authStore"
+import UserService from "@/services/User/UserService"
 
+const userService = new UserService()
 const { email } = storeToRefs(useAuthStore())
 
 const name = ref("")
 const password = ref("")
 const passwordRepeat = ref("")
+const errors = ref<Record<string, string[]>>()
+const isLoading = ref(false)
 
-function onSubmit() {}
+async function onSubmit() {
+  isLoading.value = true
+
+  const response = await userService.signup({
+    email: email.value,
+    name: name.value,
+    password: password.value,
+    password_confirmation: passwordRepeat.value,
+  })
+  if (response?.errors) errors.value = response.errors
+
+  isLoading.value = false
+}
 </script>
 
 <style lang="scss" scoped>

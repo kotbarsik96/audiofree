@@ -6,6 +6,9 @@
     <div class="input-wrapper__wrap">
       <AFIcon v-if="icon" class="input-wrapper__icon" :icon="icon" />
       <slot />
+      <span v-if="slots.error" class="_error">
+        <slot name="error" />
+      </span>
     </div>
   </div>
 </template>
@@ -13,6 +16,7 @@
 <script setup lang="ts">
 import AFIcon from "@/components/Blocks/AFIcon.vue"
 import { computed } from "vue"
+import { useSlots } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -26,6 +30,7 @@ const props = withDefaults(
     iconPos: "left",
   }
 )
+const slots = useSlots()
 
 const className = computed(() => {
   return {

@@ -13,11 +13,10 @@
 <script setup lang="ts">
 import NotificationItem from "@/components/Blocks/Notifications/NotificationItem.vue"
 import { useNotifications } from "@/composables/useNotifications"
-import { computed } from "vue"
 
 const { getNotificationsList } = useNotifications()
 
-const notifications = computed(() => getNotificationsList().value)
+const notifications = getNotificationsList()
 </script>
 
 <style lang="scss" scoped>

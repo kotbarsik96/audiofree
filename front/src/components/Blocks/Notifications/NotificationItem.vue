@@ -10,7 +10,7 @@
       </span>
     </div>
     <div class="notification__timer">
-      <span></span>
+      <span :style="timerStyles"></span>
     </div>
   </div>
 </template>
@@ -23,8 +23,10 @@ import CloseIcon from "@/assets/images/icons/close.svg"
 import { useNotifications } from "@/composables/useNotifications"
 import type INotification from "@/interfaces/notification/INotification"
 import { computed } from "vue"
+import { useTimer } from "@/composables/useTimer"
 
 const { removeNotification } = useNotifications()
+const { timeSource } = useTimer(250)
 
 const props = defineProps<{
   data: INotification
@@ -57,10 +59,20 @@ const presentationData = computed(() => {
   return _data
 })
 
+const timerPercent = computed(() => {
+  const passedTime = timeSource.value - props.data.createdAt.getTime()
+  return passedTime / (props.data.holdTime / 100)
+})
+
 const styles = computed(() => {
   return {
     "--timer-duration": `${props.data.holdTime / 1000}s`,
     "--n-severity-color": presentationData.value.color,
+  }
+})
+const timerStyles = computed(() => {
+  return {
+    width: `${timerPercent.value}%`,
   }
 })
 
@@ -126,25 +138,15 @@ function close() {
       left: 0;
       top: 0;
       bottom: 0;
-      width: 100%;
+      width: var(--timer-percent);
       background-color: var(--n-severity-color);
-      animation: notificationAnim var(--timer-duration) linear;
-      transition: all 1s ease;
+      transition: all 250ms linear;
     }
   }
 
   &__icon {
     width: 1.25rem;
     height: 1.25rem;
-  }
-
-  @keyframes notificationAnim {
-    0% {
-      width: 0%;
-    }
-    100% {
-      width: 100%;
-    }
   }
 }
 </style>
