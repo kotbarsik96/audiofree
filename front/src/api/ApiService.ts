@@ -2,6 +2,7 @@ import { apiInstance } from "@/api/Api"
 import type IRequestParams from "@/api/interfaces/IRequestParams"
 import type IResponseData from "@/api/interfaces/IResponseData"
 import { useNotifications } from "@/composables/useNotifications"
+import { LStorageKeys } from "@/enums/LStorageKeys"
 
 class ApiService {
   api: typeof apiInstance
@@ -37,7 +38,8 @@ class ApiService {
     let errors
 
     if (!response.ok) {
-      if (!data?.error && !data?.errors) throw new Error()
+      if (!data?.error && !data?.errors && !data?.message) throw new Error()
+      if (data?.message) throw new Error(data.message)
 
       // выведет текст в нотификацию, выбросит ошибку: данные не будут переданы по цепочке
       if (params.errorHandling === "notification") {
@@ -57,12 +59,18 @@ class ApiService {
   handleError(err: any) {
     let message = "Произошла ошибка"
     if (err.name === "Error" && err.message) message = err.message
-    
+
     this.notifications.addNotification("error", message)
   }
 
   public setHeaders(headers: Record<string, string>) {
     this.api.setHeaders(headers)
+  }
+
+  public setTokenHeader() {
+    this.api.setHeaders({
+      Authorization: `Bearer ${LStorageKeys.JWT}`,
+    })
   }
 
   public async GET(params: IRequestParams): Promise<IResponseData | undefined> {

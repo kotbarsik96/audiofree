@@ -1,14 +1,21 @@
 <template>
   <form class="login-form auth-form" @submit.prevent="onSubmit">
-    <InputWrapper class="auth-form__input" type="email" :icon="MailIcon">
+    <InputWrapper class="auth-form__input" :icon="MailIcon">
       <TextInput v-model="email" placeholder="Email" />
+      <template v-if="errors?.email" #error>
+        {{ errors.email[0] }}
+      </template>
     </InputWrapper>
-    <PasswordInput class="auth-form__input" v-model="password" />
+    <PasswordInput class="auth-form__input" v-model="password">
+      <template v-if="errors?.password" #error>
+        {{ errors.password[0] }}
+      </template>
+    </PasswordInput>
     <div class="auth-form__buttons">
-      <button class="_link" @click="tab = 'reset'" type="button">
+      <button class="_link" @click="tab = 'reset'" type="button" :disabled="isLoading">
         Забыли пароль?
       </button>
-      <AFButton type="submit" label="Войти" />
+      <AFButton type="submit" label="Войти" :disabled="isLoading" />
     </div>
   </form>
 </template>
@@ -21,13 +28,31 @@ import MailIcon from "@/assets/images/icons/mail.svg"
 import PasswordInput from "@/components/Blocks/FormElements/PasswordInput.vue"
 import { ref } from "vue"
 import { storeToRefs } from "pinia"
+import UserService from "@/services/User/UserService"
 import { useAuthStore } from "@/stores/authStore"
+import type { IErrors } from "@/api/interfaces/IError"
+import { useUserStore } from "@/stores/userStore"
 
+const userService = new UserService()
+const { token } = storeToRefs(useUserStore())
 const { tab, email } = storeToRefs(useAuthStore())
 
 const password = ref("")
+const errors = ref<IErrors>()
+const isLoading = ref(false)
 
-function onSubmit() {}
+async function onSubmit() {
+  isLoading.value = true
+
+  const response = await userService.login({
+    email: email.value,
+    password: password.value,
+  })
+  if (response?.errors) errors.value = response.errors
+  else if (response?.data) token.value = response.data.token
+
+  isLoading.value = false
+}
 </script>
 
 <style lang="scss" scoped>

@@ -37,4 +37,7 @@ export default class UserService {
       return null
     }
   }
+  public setTokenHeader() {
+    this.api.setTokenHeader()
+  }
 }

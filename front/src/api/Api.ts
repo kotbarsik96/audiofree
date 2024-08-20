@@ -4,7 +4,7 @@ class Api {
 
   constructor() {
     this.headers = new Headers({
-      Accept: "application/json, text/plain, */*",
+      Accept: "application/json",
       "Content-Type": "application/json",
     })
   }

@@ -38,6 +38,9 @@ class UserApi {
       path: "profile/user",
     })
   }
+  public setTokenHeader() {
+    this.api.setTokenHeader()
+  }
 }
 
 export const userApiInstance = new UserApi()

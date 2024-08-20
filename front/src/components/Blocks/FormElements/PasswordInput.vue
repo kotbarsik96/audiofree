@@ -14,6 +14,7 @@
         v-if="password.length > 0"
         class="password-input__btn"
         type="button"
+        tabindex="-1"
         @click="toggleInputType"
       >
         <EyeIcon />

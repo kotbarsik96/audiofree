@@ -4,18 +4,18 @@
       <InputWrapper class="auth-form__input" type="email" :icon="UserIcon">
         <TextInput v-model="name" placeholder="Ваше имя" />
         <template v-if="errors?.name" #error>
-          {{ errors.name }}
+          {{ errors.name[0] }}
         </template>
       </InputWrapper>
       <InputWrapper class="auth-form__input" :icon="MailIcon">
         <TextInput v-model="email" placeholder="Email" />
         <template v-if="errors?.email" #error>
-          {{ errors.email }}
+          {{ errors.email[0] }}
         </template>
       </InputWrapper>
       <PasswordInput class="auth-form__input" v-model="password">
         <template v-if="errors?.password" #error>
-          {{ errors.password }}
+          {{ errors.password[0] }}
         </template>
       </PasswordInput>
       <PasswordInput
@@ -40,15 +40,18 @@ import PasswordInput from "@/components/Blocks/FormElements/PasswordInput.vue"
 import { ref } from "vue"
 import { storeToRefs } from "pinia"
 import { useAuthStore } from "@/stores/authStore"
+import { useUserStore } from "@/stores/userStore"
 import UserService from "@/services/User/UserService"
+import type { IErrors } from "@/api/interfaces/IError"
 
 const userService = new UserService()
+const { token } = storeToRefs(useUserStore())
 const { email } = storeToRefs(useAuthStore())
 
 const name = ref("")
 const password = ref("")
 const passwordRepeat = ref("")
-const errors = ref<Record<string, string[]>>()
+const errors = ref<IErrors>()
 const isLoading = ref(false)
 
 async function onSubmit() {
@@ -61,6 +64,7 @@ async function onSubmit() {
     password_confirmation: passwordRepeat.value,
   })
   if (response?.errors) errors.value = response.errors
+  else if (response) token.value = response.data.token
 
   isLoading.value = false
 }
