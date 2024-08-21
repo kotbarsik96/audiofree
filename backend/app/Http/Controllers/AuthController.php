@@ -15,9 +15,7 @@ class AuthController extends Controller
 {
   public function signup(SignupRequest $request)
   {
-    $validated = array_merge($request->validated(), [
-      'role' => 'USER'
-    ]);
+    $validated = $request->validated();
 
     User::create($validated);
     return $this->login($validated);
@@ -30,7 +28,11 @@ class AuthController extends Controller
 
     if (Hash::check($credentials['password'], $user->password)) {
       return [
-        'token' => $user->createToken(time())->plainTextToken
+        'ok' => true,
+        'message' => __('general.helloUser', ['username' => $user->name]),
+        'data' => [
+          'token' => $user->createToken(time())->plainTextToken,
+        ],
       ];
     }
 
@@ -39,7 +41,11 @@ class AuthController extends Controller
 
   public function user()
   {
-    return response()->json(auth()->user());
+    return response()->json([
+      'data' => [
+        'user' => auth()->user()
+      ]
+    ]);
   }
 
   public function logout()

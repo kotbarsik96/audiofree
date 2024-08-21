@@ -27,9 +27,9 @@ class UsersController extends Controller
 
 
     if (!$user = auth()->user()) {
-      return response()->json([
+      return response([
         'message' => __('general.authFailed')
-      ]);
+      ], 401);
     }
 
     $user = User::find($user->id);

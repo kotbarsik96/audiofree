@@ -5,6 +5,7 @@
       :type="inputType"
       v-model="password"
       :placeholder="placeholder"
+      :autocomplete="autocomplete"
     />
     <template v-if="slots.error" #error>
       <slot name="error" />
@@ -34,9 +35,11 @@ const props = withDefaults(
   defineProps<{
     modelValue: string
     placeholder?: string
+    autocomplete?: string
   }>(),
   {
     placeholder: "Пароль",
+    autocomplete: "password",
   }
 )
 const slots = useSlots()

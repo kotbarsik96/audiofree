@@ -38,13 +38,14 @@ class AuthValidation
   public static function messages()
   {
     return [
+      'password.required' => __('validation.password.required'),
       'password.min' => __('validation.password.min'),
       'password.mixed' => __('validation.password.mixed'),
       'password.numbers' => __('validation.password.numbers'),
       'email.required' => __('validation.email.required'),
       'email.email' => __('validation.email.email'),
       'email.unique' => __('validation.email.unique'),
-      'name.required' => __('validation.name.required'),
+      'name.required' => __('validation.username.required'),
       'name.min' => __('validation.name.min'),
       'phone_number.regex' => __('validation.phone_number.regex')
     ];

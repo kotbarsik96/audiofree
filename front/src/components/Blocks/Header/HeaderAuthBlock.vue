@@ -9,6 +9,10 @@
       >
         Профиль
       </RouterLink>
+      <div class="h-auth-block__delimeter">/</div>
+      <button class="h-auth-block__btn _link" type="button" @click="userStore.logout">
+        Выйти
+      </button>
     </div>
     <div v-else class="h-auth-block__links">
       <button
@@ -39,12 +43,11 @@ import AuthDialog from "@/components/Blocks/Dialog/AuthDialog.vue"
 import type { authTabs } from "@/enums/auth/authTabs"
 import { useAuthStore } from "@/stores/authStore"
 import { storeToRefs } from "pinia"
-import { computed, ref } from "vue"
+import { useUserStore } from "@/stores/userStore"
 
-const isAuth = computed(() => false)
-const dialogShown = ref(false)
-
-const { tab } = storeToRefs(useAuthStore())
+const { tab, dialogShown } = storeToRefs(useAuthStore())
+const userStore = useUserStore()
+const { isAuth } = storeToRefs(userStore)
 
 function showDialog(_tab: authTabs) {
   tab.value = _tab

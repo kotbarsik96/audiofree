@@ -28,6 +28,8 @@
         </Transition>
       </div>
     </div>
+    
+    <GlobalPreloader v-if="isLoading" />
   </AFDialog>
 </template>
 
@@ -36,10 +38,12 @@ import AFDialog from "@/components/Blocks/Dialog/AFDialog.vue"
 import LoginForm from "@/components/Blocks/AuthForms/LoginForm.vue"
 import SignupForm from "@/components/Blocks/AuthForms/SignupForm.vue"
 import ResetPasswordForm from "@/components/Blocks/AuthForms/ResetPasswordForm.vue"
+import GlobalPreloader from "@/components/Blocks/GlobalPreloader.vue"
 import type { authTabs } from "@/enums/auth/authTabs"
 import { computed } from "vue"
 import { useAuthStore } from "@/stores/authStore"
 import { storeToRefs } from "pinia"
+import { useUserStore } from "@/stores/userStore"
 
 const props = defineProps<{
   shown?: boolean
@@ -50,6 +54,7 @@ const emit = defineEmits<{
   (e: "update:tab", newTab: authTabs): void
 }>()
 
+const { isLoading } = storeToRefs(useUserStore())
 const { tab } = storeToRefs(useAuthStore())
 
 const _shown = computed({

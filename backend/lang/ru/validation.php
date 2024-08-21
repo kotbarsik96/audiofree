@@ -151,10 +151,11 @@ return [
   'password.min' => 'Пароль должен содержать не менее :min символов',
   'password.mixed' => 'Необходимы заглавные и строчные буквы в пароле',
   'password.numbers' => 'Необходимы цифры в пароле',
-  'email.required' => 'Необходим email',
+  'password.required' => 'Не указан пароль',
+  'email.required' => 'Не указан email',
   'email.email' => 'Неверный формат email',
   'email.unique' => 'Пользователь уже существует',
-  'name.required' => 'Необходимо имя',
+  'username.required' => 'Не указано имя',
   'name.min' => 'Имя от 2 символов',
   'phone_number.regex' => 'Неверный формат телефона',
 
@@ -172,6 +173,8 @@ return [
   'productName.unique' => 'Название товара занято',
   'address.min' => 'Недействительный адрес',
   'address.required' => 'Необходимо указать адрес',
+  'emailAlreadyVerified' => 'Почта уже подтверждена',
+  'incorrectCode' => 'Недействительный код',
 
   /*
     |--------------------------------------------------------------------------

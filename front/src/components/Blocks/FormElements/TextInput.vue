@@ -1,5 +1,5 @@
 <template>
-  <input class="input text-input" :type="type" v-model="value" />
+  <input class="input text-input" :type="type" v-model="value" :autocomplete="autocomplete" />
 </template>
 
 <script setup lang="ts">
@@ -8,7 +8,8 @@ import { computed } from "vue"
 const props = withDefaults(
   defineProps<{
     type?: "text" | "email"
-    modelValue: string
+    modelValue: string,
+    autocomplete?: string
   }>(),
   {
     type: "text",

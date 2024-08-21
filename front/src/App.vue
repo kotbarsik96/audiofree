@@ -6,7 +6,9 @@
 
 <script setup lang="ts">
 import LayoutWrapper from "@/components/Layout/LayoutWrapper.vue"
+import { useGlobalStore } from "@/stores/globalStore"
 
+useGlobalStore().initApp()
 defineIfFirefox()
 
 function defineIfFirefox() {

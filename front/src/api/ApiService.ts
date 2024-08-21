@@ -3,6 +3,7 @@ import type IRequestParams from "@/api/interfaces/IRequestParams"
 import type IResponseData from "@/api/interfaces/IResponseData"
 import { useNotifications } from "@/composables/useNotifications"
 import { LStorageKeys } from "@/enums/LStorageKeys"
+import { lStorageGetItem } from "@/utils/lStorage"
 
 class ApiService {
   api: typeof apiInstance
@@ -11,6 +12,7 @@ class ApiService {
   constructor() {
     this.api = apiInstance
     this.notifications = useNotifications()
+    this.setTokenHeader()
   }
 
   getDefaultParams(params: IRequestParams): IRequestParams {
@@ -38,8 +40,11 @@ class ApiService {
     let errors
 
     if (!response.ok) {
+      // если вообще нет информации об ошибке - вывести в нотификацию стандартную
       if (!data?.error && !data?.errors && !data?.message) throw new Error()
-      if (data?.message) throw new Error(data.message)
+      // если есть message, но нет ошибки или списка ошибок - вывести message в нотификацию
+      if (data?.message && !data?.error && !data?.errors)
+        throw new Error(data.message)
 
       // выведет текст в нотификацию, выбросит ошибку: данные не будут переданы по цепочке
       if (params.errorHandling === "notification") {
@@ -69,7 +74,7 @@ class ApiService {
 
   public setTokenHeader() {
     this.api.setHeaders({
-      Authorization: `Bearer ${LStorageKeys.JWT}`,
+      Authorization: `Bearer ${lStorageGetItem(LStorageKeys.JWT)}`,
     })
   }
 

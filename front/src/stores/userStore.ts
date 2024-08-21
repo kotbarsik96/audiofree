@@ -1,14 +1,16 @@
+import { useNotifications } from "@/composables/useNotifications"
 import { LStorageKeys } from "@/enums/LStorageKeys"
 import type IUser from "@/services/User/interfaces/response/IUser"
 import UserService from "@/services/User/UserService"
-import { lStorageSetItem } from "@/utils/lStorage"
+import { lStorageGetItem, lStorageSetItem } from "@/utils/lStorage"
 import { defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 
 export const useUserStore = defineStore("user", () => {
   const userService = new UserService()
+  const { addNotification } = useNotifications()
 
-  const token = ref<string>()
+  const token = ref<string>(lStorageGetItem(LStorageKeys.JWT))
   const user = ref<IUser>()
   const isLoading = ref(false)
   const isAuth = computed(() => !!user.value)
@@ -20,10 +22,26 @@ export const useUserStore = defineStore("user", () => {
   })
 
   async function getUser() {
+    if (!!token.value) {
+      isLoading.value = true
+
+      const response = await userService.getUser()
+      if (response?.data) {
+        user.value = response.data as IUser
+      } else if (!response) {
+        token.value = ""
+      }
+
+      isLoading.value = false
+    }
+  }
+  async function logout() {
     isLoading.value = true
 
-    const response = await userService.getUser()
-    if (response?.data) user.value = response.data as IUser
+    const response = await userService.logout()
+    token.value = ""
+    user.value = undefined
+    if (response?.data?.message) addNotification("info", response.data.message)
 
     isLoading.value = false
   }
@@ -34,5 +52,6 @@ export const useUserStore = defineStore("user", () => {
     isAuth,
     isLoading,
     getUser,
+    logout,
   }
 })

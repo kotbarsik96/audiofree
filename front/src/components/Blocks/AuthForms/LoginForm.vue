@@ -1,18 +1,27 @@
 <template>
   <form class="login-form auth-form" @submit.prevent="onSubmit">
     <InputWrapper class="auth-form__input" :icon="MailIcon">
-      <TextInput v-model="email" placeholder="Email" />
+      <TextInput v-model="email" placeholder="Email" autocomplete="username" />
       <template v-if="errors?.email" #error>
         {{ errors.email[0] }}
       </template>
     </InputWrapper>
-    <PasswordInput class="auth-form__input" v-model="password">
+    <PasswordInput
+      class="auth-form__input"
+      autocomplete="current-password"
+      v-model="password"
+    >
       <template v-if="errors?.password" #error>
         {{ errors.password[0] }}
       </template>
     </PasswordInput>
     <div class="auth-form__buttons">
-      <button class="_link" @click="tab = 'reset'" type="button" :disabled="isLoading">
+      <button
+        class="_link"
+        @click="tab = 'reset'"
+        type="button"
+        :disabled="isLoading"
+      >
         Забыли пароль?
       </button>
       <AFButton type="submit" label="Войти" :disabled="isLoading" />
@@ -32,10 +41,12 @@ import UserService from "@/services/User/UserService"
 import { useAuthStore } from "@/stores/authStore"
 import type { IErrors } from "@/api/interfaces/IError"
 import { useUserStore } from "@/stores/userStore"
+import { useNotifications } from "@/composables/useNotifications"
 
 const userService = new UserService()
 const { token } = storeToRefs(useUserStore())
-const { tab, email } = storeToRefs(useAuthStore())
+const { tab, email, dialogShown } = storeToRefs(useAuthStore())
+const { addNotification } = useNotifications()
 
 const password = ref("")
 const errors = ref<IErrors>()
@@ -49,7 +60,11 @@ async function onSubmit() {
     password: password.value,
   })
   if (response?.errors) errors.value = response.errors
-  else if (response?.data) token.value = response.data.token
+  else if (response?.data) {
+    token.value = response.data.data.token
+    dialogShown.value = false
+    if (response.data.message) addNotification("info", response.data.message)
+  }
 
   isLoading.value = false
 }

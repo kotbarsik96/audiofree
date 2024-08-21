@@ -8,12 +8,12 @@
         </template>
       </InputWrapper>
       <InputWrapper class="auth-form__input" :icon="MailIcon">
-        <TextInput v-model="email" placeholder="Email" />
+        <TextInput v-model="email" placeholder="Email" autocomplete="email" />
         <template v-if="errors?.email" #error>
           {{ errors.email[0] }}
         </template>
       </InputWrapper>
-      <PasswordInput class="auth-form__input" v-model="password">
+      <PasswordInput class="auth-form__input" v-model="password" autocomplete="new-password">
         <template v-if="errors?.password" #error>
           {{ errors.password[0] }}
         </template>
@@ -22,6 +22,7 @@
         class="auth-form__input"
         v-model="passwordRepeat"
         placeholder="Пароль еще раз"
+        autocomplete="new-password"
       />
       <div class="auth-form__buttons">
         <AFButton type="submit" label="Войти" :disabled="isLoading" />
@@ -43,10 +44,12 @@ import { useAuthStore } from "@/stores/authStore"
 import { useUserStore } from "@/stores/userStore"
 import UserService from "@/services/User/UserService"
 import type { IErrors } from "@/api/interfaces/IError"
+import { useNotifications } from "@/composables/useNotifications"
 
 const userService = new UserService()
 const { token } = storeToRefs(useUserStore())
-const { email } = storeToRefs(useAuthStore())
+const { email, dialogShown } = storeToRefs(useAuthStore())
+const { addNotification } = useNotifications()
 
 const name = ref("")
 const password = ref("")
@@ -64,7 +67,11 @@ async function onSubmit() {
     password_confirmation: passwordRepeat.value,
   })
   if (response?.errors) errors.value = response.errors
-  else if (response) token.value = response.data.token
+  else if (response) {
+    token.value = response.data.data.token
+    dialogShown.value = false
+    if (response.data.message) addNotification("info", response.data.message)
+  }
 
   isLoading.value = false
 }

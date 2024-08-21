@@ -7,6 +7,7 @@ return [
   'codeSentToEmail' => 'Код отправлен на почту',
   'emailVerified' => 'Почта :email подтверждена',
   'linkSentToEmail' => 'Ссылка отправлена на почту',
+  'wrongPassword' => 'Неверный пароль',
   'passwordChanged' => 'Пароль успешно изменён',
   'emailAddressChanged' => 'Email адрес изменен. Код для подтверждения нового адреса выслан на указанную почту',
   'authFailed' => 'Ошибка авторизации',
@@ -19,5 +20,7 @@ return [
   'productRemovedFromCart' => 'Товар удален из корзины',
   'orderAccepted' => 'Заказ оформлен',
   'orderCanceled' => 'Заказ отменен',
-  'notInFavorites' => 'Товар не в избранном'
+  'notInFavorites' => 'Товар не в избранном',
+  'helloUser' => 'Здравствуйте, :username',
+  'byeUser' => 'До свидания, :username'
 ];

@@ -9,7 +9,7 @@ class EmailConfirmationException extends Exception
   public function incorrectCode()
   {
     return response([
-      'message' => 'Недействительный код',
+      'message' => __('validation.incorrectCode'),
       400
     ]);
   }

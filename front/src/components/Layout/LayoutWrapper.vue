@@ -8,6 +8,8 @@
       </main>
       <PageFooter />
     </div>
+
+    <GlobalPreloader v-if="globalPreloaderShown" teleportTo="body" />
   </div>
 </template>
 
@@ -15,6 +17,22 @@
 import PageHeader from "@/components/Layout/LayoutSections/PageHeader.vue"
 import PageFooter from "@/components/Layout/LayoutSections/PageFooter.vue"
 import NotificationsContainer from "@/components/Blocks/Notifications/NotificationsContainer.vue"
+import { useAuthStore } from "@/stores/authStore"
+import GlobalPreloader from "@/components/Blocks/GlobalPreloader.vue"
+import { useUserStore } from "@/stores/userStore"
+import { computed } from "vue"
+
+const authStore = useAuthStore()
+const userStore = useUserStore()
+
+/**  прелоадер показывается, если есть хоть одно true-значение в первом массиве,
+ * при этом все значения из второго массива == false
+*/
+const globalPreloaderShown = computed(
+  () =>
+    [userStore.isLoading].some((value) => !!value) &&
+    ![authStore.dialogShown].some((value) => !!value)
+)
 </script>
 
 <style lang="scss" scoped>
