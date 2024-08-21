@@ -1,49 +1,55 @@
 const routes = [
   {
+    path: "/reset-password",
+    name: "ResetPassword",
+    component: () => import("@/views/confirmations/ResetPasswordPage.vue"),
+  },
+
+  {
     path: "/",
     name: "Home",
-    component: () => import("@/views/public/HomePage.vue")
+    component: () => import("@/views/public/HomePage.vue"),
   },
   {
     path: "/cart",
     name: "Cart",
-    component: () => import("@/views/public/CartPage.vue")
+    component: () => import("@/views/public/CartPage.vue"),
   },
   {
     path: "/favorites",
     name: "Favorites",
-    component: () => import("@/views/public/FavoritesPage.vue")
+    component: () => import("@/views/public/FavoritesPage.vue"),
   },
 
   {
     path: "/contacts",
     name: "Contacts",
-    component: () => import("@/views/public/static/ContactsPage.vue")
+    component: () => import("@/views/public/static/ContactsPage.vue"),
   },
   {
     path: "/delivery-and-payment",
     name: "DeliveryPayment",
-    component: () => import("@/views/public/static/DeliveryPaymentPage.vue")
+    component: () => import("@/views/public/static/DeliveryPaymentPage.vue"),
   },
   {
     path: "/guarantees-and-refund",
     name: "GuaranteesRefund",
-    component: () => import("@/views/public/static/GuaranteesRefundPage.vue")
+    component: () => import("@/views/public/static/GuaranteesRefundPage.vue"),
   },
   {
     path: "/pickups",
     name: "PickupPlaces",
-    component: () => import("@/views/public/static/PickupPlacesPage.vue")
+    component: () => import("@/views/public/static/PickupPlacesPage.vue"),
   },
   {
     path: "/catalog",
     name: "Catalog",
-    component: () => import("@/views/public/CatalogPage.vue")
+    component: () => import("@/views/public/CatalogPage.vue"),
   },
   {
     path: "/profile",
     name: "Profile",
-    component: () => import("@/views/public/profile/ProfilePage.vue")
+    component: () => import("@/views/public/profile/ProfilePage.vue"),
   },
 ]
 

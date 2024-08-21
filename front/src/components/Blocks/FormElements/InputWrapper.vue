@@ -59,9 +59,9 @@ const className = computed(() => {
   @include fRegular(14);
 
   &__label {
+    cursor: pointer;
     display: inline-block;
-    margin-bottom: 5px;
-    @include fRegular(12);
+    @include fMedium(12);
   }
 
   &__wrap {

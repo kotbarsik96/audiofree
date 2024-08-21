@@ -28,7 +28,7 @@
         </Transition>
       </div>
     </div>
-    
+
     <GlobalPreloader v-if="isLoading" />
   </AFDialog>
 </template>
@@ -40,7 +40,7 @@ import SignupForm from "@/components/Blocks/AuthForms/SignupForm.vue"
 import ResetPasswordForm from "@/components/Blocks/AuthForms/ResetPasswordForm.vue"
 import GlobalPreloader from "@/components/Blocks/GlobalPreloader.vue"
 import type { authTabs } from "@/enums/auth/authTabs"
-import { computed } from "vue"
+import { computed, watch } from "vue"
 import { useAuthStore } from "@/stores/authStore"
 import { storeToRefs } from "pinia"
 import { useUserStore } from "@/stores/userStore"
@@ -54,7 +54,7 @@ const emit = defineEmits<{
   (e: "update:tab", newTab: authTabs): void
 }>()
 
-const { isLoading } = storeToRefs(useUserStore())
+const { isLoading, isAuth } = storeToRefs(useUserStore())
 const { tab } = storeToRefs(useAuthStore())
 
 const _shown = computed({
@@ -85,6 +85,12 @@ const component = computed(() => {
   }
 
   return _component
+})
+
+watch(isAuth, () => {
+  if (isAuth.value) {
+    _shown.value = false
+  }
 })
 </script>
 

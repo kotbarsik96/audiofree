@@ -60,10 +60,10 @@ async function onSubmit() {
     password: password.value,
   })
   if (response?.errors) errors.value = response.errors
-  else if (response?.data) {
-    token.value = response.data.data.token
+  else if (response?.payload) {
+    token.value = response.payload.data.token
     dialogShown.value = false
-    if (response.data.message) addNotification("info", response.data.message)
+    if (response.payload.message) addNotification("info", response.payload.message)
   }
 
   isLoading.value = false

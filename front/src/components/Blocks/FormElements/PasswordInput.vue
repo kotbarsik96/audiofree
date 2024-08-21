@@ -1,11 +1,12 @@
 <template>
-  <InputWrapper class="password-input" :icon="KeyIcon">
+  <InputWrapper class="password-input" :icon="KeyIcon" :label="label" :id="id">
     <input
       class="input"
       :type="inputType"
       v-model="password"
       :placeholder="placeholder"
       :autocomplete="autocomplete"
+      :id="id"
     />
     <template v-if="slots.error" #error>
       <slot name="error" />
@@ -33,6 +34,8 @@ import { useSlots } from "vue"
 
 const props = withDefaults(
   defineProps<{
+    label?: string
+    id?: string
     modelValue: string
     placeholder?: string
     autocomplete?: string

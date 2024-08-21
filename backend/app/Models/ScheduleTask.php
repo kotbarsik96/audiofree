@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EmailConfirmation;
-use App\Models\Product\ProductVariation;
+// use App\Models\Product\ProductVariation;
 use Carbon\Carbon;
 
 class ScheduleTask extends Model

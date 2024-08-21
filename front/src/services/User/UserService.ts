@@ -1,4 +1,6 @@
 import type ILoginRequest from "@/services/User/interfaces/request/ILoginRequest"
+import type IResetPasswordCheckRequest from "@/services/User/interfaces/request/IResetPasswordCheckRequest"
+import type IResetPasswordRequest from "@/services/User/interfaces/request/IResetPasswordRequest"
 import type ISignupRequest from "@/services/User/interfaces/request/ISignupRequest"
 import { userApiInstance } from "@/services/User/UserApi"
 
@@ -16,6 +18,7 @@ export default class UserService {
       return null
     }
   }
+
   public async login(config: ILoginRequest) {
     try {
       return await this.api.login(config)
@@ -23,6 +26,7 @@ export default class UserService {
       return null
     }
   }
+
   public async logout() {
     try {
       return await this.api.logout()
@@ -30,6 +34,7 @@ export default class UserService {
       return null
     }
   }
+
   public async getUser() {
     try {
       return await this.api.getUser()
@@ -37,6 +42,31 @@ export default class UserService {
       return null
     }
   }
+
+  public async editProfile() {}
+
+  public async getEmailVerificationCode() {}
+
+  public async getPasswordResetLink(config: IResetPasswordRequest) {
+    try {
+      return await this.api.getPasswordResetLink(config)
+    } catch (err) {
+      return null
+    }
+  }
+
+  public async checkPasswordResetLink(config: IResetPasswordCheckRequest) {
+    try {
+      return await this.api.checkPasswordResetLink(config)
+    } catch (err) {
+      return null
+    }
+  }
+
+  public async changeEmail() {}
+
+  public async changePassword() {}
+
   public setTokenHeader() {
     this.api.setTokenHeader()
   }

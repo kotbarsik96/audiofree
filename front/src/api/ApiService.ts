@@ -58,7 +58,7 @@ class ApiService {
       }
     }
 
-    return { data, error, errors }
+    return { payload: data, error, errors }
   }
 
   handleError(err: any) {

@@ -26,8 +26,8 @@ export const useUserStore = defineStore("user", () => {
       isLoading.value = true
 
       const response = await userService.getUser()
-      if (response?.data) {
-        user.value = response.data as IUser
+      if (response?.payload) {
+        user.value = response.payload as IUser
       } else if (!response) {
         token.value = ""
       }
@@ -41,7 +41,8 @@ export const useUserStore = defineStore("user", () => {
     const response = await userService.logout()
     token.value = ""
     user.value = undefined
-    if (response?.data?.message) addNotification("info", response.data.message)
+    if (response?.payload?.message)
+      addNotification("info", response.payload.message)
 
     isLoading.value = false
   }

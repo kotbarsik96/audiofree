@@ -22,8 +22,8 @@ class ResetPassword extends Mailable
    */
   public function __construct(string $code, User $user)
   {
-    $frontUrl = env("APP_FRONTEND_LINK", "") . "/reset-password?code=" . $code;
-    $this->link = '<a href="' . $frontUrl . '">Подтвердить Email</a>';
+    $frontUrl = env("APP_FRONTEND_LINK", "") . "/reset-password?code=" . $code . "&email=" . $user->email;
+    $this->link = '<a href="' . $frontUrl . '">Сбросить пароль</a>';
     $this->user = $user;
   }
 
@@ -46,7 +46,7 @@ class ResetPassword extends Mailable
       view: 'email.GeneralTemplate',
       with: [
         'user' => $this->user,
-        'gt_title' => 'AUDIOFREE — подтверждение почтового адреса',
+        'gt_title' => 'AudioFree — Сброс пароля',
         'gt_contents' => [
           ['content' => 'Вы получили это письмо, так как был запрошен сброс пароля для вашего профиля'],
           ['content' => 'Чтобы сбросить текущий пароль, перейдите по ссылке ниже:'],

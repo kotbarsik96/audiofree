@@ -68,9 +68,9 @@ async function onSubmit() {
   })
   if (response?.errors) errors.value = response.errors
   else if (response) {
-    token.value = response.data.data.token
+    token.value = response.payload.data.token
     dialogShown.value = false
-    if (response.data.message) addNotification("info", response.data.message)
+    if (response.payload.message) addNotification("info", response.payload.message)
   }
 
   isLoading.value = false

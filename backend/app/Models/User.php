@@ -201,6 +201,7 @@ class User extends Authenticatable
     $purpose = 'reset_password';
 
     $user = self::getByEmail(request('email'));
+    // try catch ? 
     $codeData = EmailConfirmation::validateCode($purpose, $user->id, $code);
 
     $user = self::find($codeData->user_id);

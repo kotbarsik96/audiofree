@@ -13,4 +13,11 @@ class EmailConfirmationException extends Exception
       400
     ]);
   }
+  public function incorrectLink()
+  {
+    return response([
+      'message' => __('validation.incorrectLink'),
+      400
+    ]);
+  }
 }

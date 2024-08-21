@@ -44,6 +44,10 @@ const globalPreloaderShown = computed(
     justify-content: space-between;
   }
 
+  &__main {
+    flex: 1 1 auto;
+  }
+
   &:has(dialog[open]) &__notifications {
     display: none;
   }
