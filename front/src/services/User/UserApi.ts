@@ -1,9 +1,12 @@
 import { apiServiceInstance } from "@/api/ApiService"
 import type IResponseData from "@/api/interfaces/IResponseData"
 import type ILoginRequest from "@/services/User/interfaces/request/ILoginRequest"
-import type IResetPasswordCheckRequest from "@/services/User/interfaces/request/IResetPasswordCheckRequest"
-import type IResetPasswordRequest from "@/services/User/interfaces/request/IResetPasswordRequest"
+import type IResetPasswordCheckRequest from "@/services/User/interfaces/request/IResetPasswordRequest"
+import type IResetPasswordRequest from "@/services/User/interfaces/request/IResetPasswordLinkRequest"
+import type IResetPasswordVerifyRequest from "@/services/User/interfaces/request/IResetPasswordVerifyRequest"
 import type ISignupRequest from "@/services/User/interfaces/request/ISignupRequest"
+import type IResetPasswordLinkRequest from "@/services/User/interfaces/request/IResetPasswordLinkRequest"
+import type IVerifyEmailRequest from "@/services/User/interfaces/request/IVerifyEmailRequest"
 
 class UserApi {
   api: typeof apiServiceInstance
@@ -50,18 +53,33 @@ class UserApi {
 
   public async editProfile() {}
 
-  public async getEmailVerificationCode() {}
-
-  public async getPasswordResetLink(config: IResetPasswordRequest) {
-    return await this.api.GET({
-      path: "profile/reset-password",
+  public async sendPasswordResetLink(config: IResetPasswordLinkRequest) {
+    return await this.api.POST({
+      path: "profile/reset-password/request",
       config,
     })
   }
-
-  public async checkPasswordResetLink(config: IResetPasswordCheckRequest) {
+  public async verifyPasswordResetLink(config: IResetPasswordVerifyRequest) {
     return await this.api.POST({
-      path: "profile/reset-password",
+      path: "profile/reset-password/verify-link",
+      config,
+    })
+  }
+  public async resetPassword(config: IResetPasswordRequest) {
+    return await this.api.POST({
+      path: "profile/reset-password/new-password",
+      config,
+    })
+  }
+  
+  public async sendEmailVerificationCode() {
+    return await this.api.POST({
+      path: "profile/verify-email/request",
+    })
+  }
+  public async verifyEmailVerificationLink(config: IVerifyEmailRequest) {
+    return await this.api.POST({
+      path: "profile/verify-email",
       config,
     })
   }

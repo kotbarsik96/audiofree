@@ -1,7 +1,9 @@
 import type ILoginRequest from "@/services/User/interfaces/request/ILoginRequest"
-import type IResetPasswordCheckRequest from "@/services/User/interfaces/request/IResetPasswordCheckRequest"
+import type IResetPasswordLinkRequest from "@/services/User/interfaces/request/IResetPasswordLinkRequest"
 import type IResetPasswordRequest from "@/services/User/interfaces/request/IResetPasswordRequest"
+import type IResetPasswordVerifyRequest from "@/services/User/interfaces/request/IResetPasswordVerifyRequest"
 import type ISignupRequest from "@/services/User/interfaces/request/ISignupRequest"
+import type IVerifyEmailRequest from "@/services/User/interfaces/request/IVerifyEmailRequest"
 import { userApiInstance } from "@/services/User/UserApi"
 
 export default class UserService {
@@ -45,19 +47,38 @@ export default class UserService {
 
   public async editProfile() {}
 
-  public async getEmailVerificationCode() {}
-
-  public async getPasswordResetLink(config: IResetPasswordRequest) {
+  public async sendPasswordResetLink(config: IResetPasswordLinkRequest) {
     try {
-      return await this.api.getPasswordResetLink(config)
+      return await this.api.sendPasswordResetLink(config)
+    } catch (err) {
+      return null
+    }
+  }
+  public async verifyPasswordResetLink(config: IResetPasswordVerifyRequest) {
+    try {
+      return await this.api.verifyPasswordResetLink(config)
+    } catch (err) {
+      return null
+    }
+  }
+  public async resetPassword(config: IResetPasswordRequest) {
+    try {
+      return await this.api.resetPassword(config)
     } catch (err) {
       return null
     }
   }
 
-  public async checkPasswordResetLink(config: IResetPasswordCheckRequest) {
+  public async sendEmailVerificationCode() {
     try {
-      return await this.api.checkPasswordResetLink(config)
+      return await this.api.sendEmailVerificationCode()
+    } catch (err) {
+      return null
+    }
+  }
+  public async verifyEmailVerificationLink(config: IVerifyEmailRequest) {
+    try {
+      return await this.api.verifyEmailVerificationLink(config)
     } catch (err) {
       return null
     }

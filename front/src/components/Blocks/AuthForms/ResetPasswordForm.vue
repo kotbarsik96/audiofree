@@ -46,7 +46,7 @@ const isLoading = ref(false)
 async function send() {
   isLoading.value = true
 
-  const response = await userService.getPasswordResetLink({
+  const response = await userService.sendPasswordResetLink({
     email: email.value,
   })
   if (response?.payload.message)

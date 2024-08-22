@@ -36,11 +36,14 @@ import GlobalPreloader from "@/components/Blocks/GlobalPreloader.vue"
 import AFButton from "@/components/Blocks/AFButton.vue"
 import type { IErrors } from "@/api/interfaces/IError"
 import { ref } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import UserService from "@/services/User/UserService"
+import { useNotifications } from "@/composables/useNotifications"
 
 const route = useRoute()
+const router = useRouter()
 const userService = new UserService()
+const { addNotification } = useNotifications()
 
 const { code, email } = route.query
 const errors = ref<IErrors>()
@@ -48,15 +51,33 @@ const password = ref("")
 const passwordRepeat = ref("")
 const isLoading = ref(false)
 
+checkLink()
+
+async function checkLink() {
+  isLoading.value = true
+
+  const response = await userService.verifyPasswordResetLink({
+    email: email as string,
+    code: code as string,
+  })
+  if (!response) router.push({ name: "Home" })
+
+  isLoading.value = false
+}
 async function onSubmit() {
   isLoading.value = true
 
-  const response = await userService.checkPasswordResetLink({
+  const response = await userService.resetPassword({
     code: code as string,
     email: email as string,
     password: password.value,
     password_confirmation: passwordRepeat.value,
   })
+  if (response?.payload) {
+    router.push({ name: "Home" })
+    if (response.payload.message)
+      addNotification("success", response.payload.message)
+  }
 
   isLoading.value = false
 }
