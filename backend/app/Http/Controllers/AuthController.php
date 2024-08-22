@@ -7,8 +7,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Validations\AuthValidation;
 use App\Http\Requests\SignupRequest;
+use App\Mail\ResetPassword;
 use App\Models\EmailConfirmation;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\VerifyEmail;
 use Exception;
 
 class AuthController extends Controller
@@ -58,47 +61,94 @@ class AuthController extends Controller
     ], 200);
   }
 
-  public function getEmailVerifyCode()
+  public function requestResetPassword()
   {
-    User::sendEmailVerifyCode();
+    $purpose = 'reset_password';
+    $email = request('email');
+
+    $user = User::getByEmail($email);
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    EmailConfirmation::sendEmail($purpose, $email, ResetPassword::class);
 
     return response([
       'ok' => true,
-      'message' => __('general.codeSentToEmail')
+      'message' => __('general.emailSent')
     ]);
   }
 
-  public function emailVerifyCode()
+  public function verifyResetPasswordLink()
   {
-    $user = User::verifyEmail();
+    $purpose = 'reset_password';
+    $email = request('email');
+    $code = request('code');
+
+    EmailConfirmation::verifyLink($purpose, $email, $code);
 
     return response([
       'ok' => true,
-      'message' => __('general.emailVerified', ['email' => $user->email])
-    ], 200);
-  }
-
-  public function getResetPassword()
-  {
-    User::sendResetPasswordLink();
-
-    return response([
-      'ok' => true,
-      'message' => __('general.linkSentToEmail')
     ]);
   }
 
-  public function resetPasswordVerify(Request $request)
+  public function resetPassword(Request $request)
   {
+    $email = request('email');
+    $code = request('code');
     $validated = $request->validate([
       'password' => AuthValidation::password()
     ]);
 
-    User::verifyResetPasswordCode($validated['password'], request('code'));
+    User::resetPassword($email, $code, $validated['password']);
+
+    return [
+      'ok' => true,
+      'message' => __('general.passwordChanged')
+    ];
+  }
+
+  public function requestVerifyEmail()
+  {
+    $purpose = 'verify_email';
+    $user = auth()->user();
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    if ($user->email_verified_at)
+      abort(401, __('abortions.emailAlreadyVerified'));
+
+    $email = $user->email;
+
+    EmailConfirmation::sendEmail($purpose, $email, VerifyEmail::class);
 
     return response([
       'ok' => true,
-      'message' => __('general.passwordChanged')
+      'message' => __('general.emailSent')
+    ]);
+  }
+
+  public function verifyEmail()
+  {
+    $purpose = 'verify_email';
+    $code = request('code');
+
+    $user = auth()->user();
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    $email = $user->email;
+
+    EmailConfirmation::verifyLink($purpose, $email, $code);
+
+    $user = User::getByEmail($email);
+    $user->update([
+      'email_verified_at' => Carbon::now()
+    ]);
+    EmailConfirmation::deleteForPurpose($user, $purpose);
+
+    return response([
+      'ok' => true,
+      'message' => __('general.emailVerified')
     ]);
   }
 

@@ -5,7 +5,7 @@ return [
   'notFoundProduct' => 'Товар не найден',
   'loggedOut' => 'Выполнен выход из профиля',
   'codeSentToEmail' => 'Код отправлен на почту',
-  'emailVerified' => 'Почта :email подтверждена',
+  'emailVerified' => 'Почта подтверждена',
   'linkSentToEmail' => 'Ссылка отправлена на почту',
   'wrongPassword' => 'Неверный пароль',
   'passwordChanged' => 'Пароль успешно изменён',
@@ -22,5 +22,6 @@ return [
   'orderCanceled' => 'Заказ отменен',
   'notInFavorites' => 'Товар не в избранном',
   'helloUser' => 'Здравствуйте, :username',
-  'byeUser' => 'До свидания, :username'
+  'byeUser' => 'До свидания, :username',
+  'emailSent' => 'Письмо отправлено на указанный адрес email'
 ];

@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Exceptions\EmailConfirmationException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use \Carbon\Carbon;
 use App\Services\CodePhrase;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class EmailConfirmation extends Model
 {
@@ -78,6 +78,46 @@ class EmailConfirmation extends Model
     return $hashedCode;
   }
 
+  public static function sendEmail($purpose, $email, $mailable)
+  {
+    $user = User::getByEmail($email);
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    try {
+      self::checkIfValidCodeExists($purpose, $user->id);
+    } catch (Exception $err) {
+      abort(403, $err->getMessage());
+    }
+
+    $code = self::generateHashedCode($purpose);
+    $ttl = self::getTtl($purpose);
+
+    self::create([
+      'user_id' => $user->id,
+      'code' => $code,
+      'purpose' => $purpose,
+      'expires' => self::getExpirationTime($ttl)
+    ]);
+
+    Mail::to($user)->send(new $mailable($code, $user));
+
+    return true;
+  }
+
+  public static function verifyLink($purpose, $email, $hashedCode)
+  {
+    $user = User::getByEmail($email);
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    $codeData = self::validateCode($purpose, $user->id, $hashedCode);
+    if (!$codeData)
+      abort(401, __('validation.incorrectLink'));
+
+    return true;
+  }
+
   public static function checkIfValidCodeExists(
     $purpose,
     $userId
@@ -95,10 +135,6 @@ class EmailConfirmation extends Model
     $codeData = self::purposeUser($purpose, $userId)
       ->where('code', $hashedCode)
       ->first();
-
-    if (!$codeData) {
-      throw new EmailConfirmationException(__('general.invalidCode'));
-    }
 
     return $codeData;
   }

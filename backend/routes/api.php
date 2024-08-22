@@ -16,8 +16,12 @@ App::setLocale(request()->header('Locale'));
 // 1. User
 Route::post('signup', [AuthController::class, 'signup']); // 1.1
 Route::post('login', [AuthController::class, 'login']); // 1.2
-Route::get('profile/reset-password', [AuthController::class, 'getResetPassword']); // 1.7.1
-Route::post('profile/reset-password', [AuthController::class, 'resetPasswordVerify']); // 1.7.2
+Route::post('profile/reset-password/request', [AuthController::class, 'requestResetPassword']); // 1.6.1
+Route::post(
+  'profile/reset-password/verify-link',
+  [AuthController::class, 'verifyResetPasswordLink']
+); // 1.6.2
+Route::post('profile/reset-password/new-password', [AuthController::class, 'resetPassword']); // 1.6.3
 
 // 4. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 4.1
@@ -29,8 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('logout', [AuthController::class, 'logout']); // 1.3
   Route::get('profile/user', [AuthController::class, 'user']); // 1.4
   Route::post('profile/edit', [UsersController::class, 'edit']); // 1.5
-  Route::get('profile/verify-email', [AuthController::class, 'getEmailVerifyCode']); // 1.6.1
-  Route::post('profile/verify-email', [AuthController::class, 'emailVerifyCode']); // 1.6.2
+  Route::post('profile/verify-email/request', [AuthController::class, 'requestVerifyEmail']); // 1.7.1
+  Route::post('profile/verify-email', [AuthController::class, 'verifyEmail']); // 1.7.2
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
 

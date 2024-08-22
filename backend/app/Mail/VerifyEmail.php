@@ -19,12 +19,11 @@ class VerifyEmail extends Mailable
   /**
    * Create a new message instance.
    */
-  public function __construct(string $code, string $reason = null)
+  public function __construct(string $code)
   {
     $frontUrl = env("APP_FRONTEND_LINK", "") . "/verify-email?code=" . $code;
 
     $this->link = '<a href="' . $frontUrl . '">Подтвердить Email</a>';
-    if ($reason) $this->reason = $reason;
   }
 
   /**
@@ -48,7 +47,7 @@ class VerifyEmail extends Mailable
         'user' => auth()->user(),
         'gt_title' => 'AUDIOFREE — сброс пароля',
         'gt_contents' => [
-          ['content' => 'Вы получили это письмо, так как ' . $this->reason],
+          ['content' => 'Вы получили это письмо, так как был запрошен код подтверждения адреса эл. почты'],
           ['content' => 'Чтобы подтвердить адрес, перейдите по ссылке ниже:'],
           ['content' => $this->link]
         ]

@@ -6,13 +6,8 @@ use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
-use App\Exceptions\EmailConfirmationException;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Carbon\Carbon;
-use App\Mail\VerifyEmail;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ResetPassword;
 use App\Models\EmailConfirmation;
 use Illuminate\Support\Facades\Hash;
 
@@ -108,109 +103,26 @@ class User extends Authenticatable
     return User::find(self::authUser()->id);
   }
 
-  /** 
-   * Отправить код подтверждения эл.почты
-   * 
-   * @param $reason = заголовок подтверждения
-   */
-  public static function sendEmailVerifyCode(string | null $reason = null)
-  {
-    $purpose = 'verify_email';
-
-    $user = self::authUser();
-
-    if ($user->email_verified_at) {
-      abort(400, __('validation.emailAlreadyVerified'));
-    }
-
-    $validCodeErr = EmailConfirmation::checkIfValidCodeExists($purpose, $user->id);
-    if ($validCodeErr) return $validCodeErr;
-
-    $code = EmailConfirmation::generateHashedCode($purpose);
-
-    Mail::to($user)->send(new VerifyEmail($code, $reason));
-
-    EmailConfirmation::create([
-      'user_id' => $user->id,
-      'code' => $code,
-      'purpose' => $purpose,
-      'expires' => EmailConfirmation::getExpirationTime(
-        EmailConfirmation::getTtl($purpose)
-      )
-    ]);
-  }
-
-  /** 
-   * Подтверждение эл. почты по коду
-   */
-  public static function verifyEmail()
-  {
-    $purpose = 'verify_email';
-    $user = self::authUser();
-
-    try {
-      EmailConfirmation::validateCode($purpose, $user->id, request('code'));
-    } catch (EmailConfirmationException $e) {
-      return $e->incorrectCode();
-    }
-
-    EmailConfirmation::deleteForPurpose($user, $purpose);
-
-    $user = self::find($user->id);
-    $user->update([
-      'email_verified_at' => Carbon::now()
-    ]);
-    return $user;
-  }
-
   /**
-   * Выслать ссылку сброса пароля на эл. почту
+   * Смена пароля при сбросе
    */
-  public static function sendResetPasswordLink()
+  public static function resetPassword($email, $hashedCode, $password)
   {
     $purpose = 'reset_password';
 
-    $user = self::getByEmail(request('email'));
+    EmailConfirmation::verifyLink($purpose, $email, $hashedCode);
 
-    $validCodeErr = EmailConfirmation::checkIfValidCodeExists(
-      $purpose,
-      $user->id,
-      'Ссылка уже была отправлена на почту'
-    );
-    if ($validCodeErr) return $validCodeErr;
-
-    $code = EmailConfirmation::generateHashedCode($purpose);
-
-    Mail::to($user)->send(new ResetPassword($code, $user));
-
-    EmailConfirmation::create([
-      'user_id' => $user->id,
-      'code' => $code,
-      'purpose' => $purpose,
-      'expires' =>  EmailConfirmation::getExpirationTime(
-        EmaiLConfirmation::getTtl($purpose)
-      )
-    ]);
-  }
-
-  /** 
-   * Подтвердить сброс пароля пользователем, если он перешел по ссылке с хэшем корректного кода
-   */
-  public static function verifyResetPasswordCode($password, $code)
-  {
-    $purpose = 'reset_password';
-
-    $user = self::getByEmail(request('email'));
-    // try catch ? 
-    $codeData = EmailConfirmation::validateCode($purpose, $user->id, $code);
-
-    $user = self::find($codeData->user_id);
+    $user = self::getByEmail($email);
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
 
     $user->update([
-      'password' => Hash::make($password)
+      'password' => $password
     ]);
 
     EmailConfirmation::deleteForPurpose($user, $purpose);
+
+    return true;
   }
 
   /** 
