@@ -35,9 +35,9 @@ import AFButton from "@/components/Blocks/AFButton.vue"
 import { useAuthStore } from "@/stores/authStore"
 import { storeToRefs } from "pinia"
 import { ref } from "vue"
-import UserService from "@/services/User/UserService"
+import UserApiService from "@/services/User/UserApiService"
 
-const userService = new UserService()
+const userService = new UserApiService()
 const { previousTab, tab, email } = storeToRefs(useAuthStore())
 
 const emailSentMessage = ref()

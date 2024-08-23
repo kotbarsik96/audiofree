@@ -1,14 +1,13 @@
 import { apiServiceInstance } from "@/api/ApiService"
 import type IResponseData from "@/api/interfaces/IResponseData"
 import type ILoginRequest from "@/services/User/interfaces/request/ILoginRequest"
-import type IResetPasswordCheckRequest from "@/services/User/interfaces/request/IResetPasswordRequest"
 import type IResetPasswordRequest from "@/services/User/interfaces/request/IResetPasswordLinkRequest"
 import type IResetPasswordVerifyRequest from "@/services/User/interfaces/request/IResetPasswordVerifyRequest"
 import type ISignupRequest from "@/services/User/interfaces/request/ISignupRequest"
 import type IResetPasswordLinkRequest from "@/services/User/interfaces/request/IResetPasswordLinkRequest"
 import type IVerifyEmailRequest from "@/services/User/interfaces/request/IVerifyEmailRequest"
 
-class UserApi {
+export default class UserApiService {
   api: typeof apiServiceInstance
 
   constructor() {
@@ -22,71 +21,105 @@ class UserApi {
   public async signup(
     config: ISignupRequest
   ): Promise<IResponseData | undefined> {
-    return await this.api.POST({
-      path: "signup",
-      errorHandling: "toObject",
-      config,
-    })
+    try {
+      return await this.api.POST({
+        path: "signup",
+        errorHandling: "toObject",
+        config,
+      })
+    } catch (err) {
+      return
+    }
   }
 
   public async login(
     config: ILoginRequest
   ): Promise<IResponseData | undefined> {
-    return await this.api.POST({
-      path: "login",
-      errorHandling: "toObject",
-      config,
-    })
+    try {
+      return await this.api.POST({
+        path: "login",
+        errorHandling: "toObject",
+        config,
+      })
+    } catch (err) {
+      return
+    }
   }
 
   public async logout(): Promise<IResponseData | undefined> {
-    return await this.api.POST({
-      path: "logout",
-    })
+    try {
+      return await this.api.POST({
+        path: "logout",
+      })
+    } catch (err) {
+      return
+    }
   }
 
   public async getUser(): Promise<IResponseData | undefined> {
-    return await this.api.GET({
-      path: "profile/user",
-    })
+    try {
+      return await this.api.GET({
+        path: "profile/user",
+      })
+    } catch (err) {
+      return
+    }
   }
 
   public async editProfile() {}
 
   public async sendPasswordResetLink(config: IResetPasswordLinkRequest) {
-    return await this.api.POST({
-      path: "profile/reset-password/request",
-      config,
-    })
+    try {
+      return await this.api.POST({
+        path: "profile/reset-password/request",
+        config,
+      })
+    } catch (err) {
+      return
+    }
   }
   public async verifyPasswordResetLink(config: IResetPasswordVerifyRequest) {
-    return await this.api.POST({
-      path: "profile/reset-password/verify-link",
-      config,
-    })
+    try {
+      return await this.api.POST({
+        path: "profile/reset-password/verify-link",
+        config,
+      })
+    } catch (err) {
+      return
+    }
   }
   public async resetPassword(config: IResetPasswordRequest) {
-    return await this.api.POST({
-      path: "profile/reset-password/new-password",
-      config,
-    })
+    try {
+      return await this.api.POST({
+        path: "profile/reset-password/new-password",
+        config,
+      })
+    } catch (err) {
+      return
+    }
   }
-  
+
   public async sendEmailVerificationCode() {
-    return await this.api.POST({
-      path: "profile/verify-email/request",
-    })
+    try {
+      return await this.api.POST({
+        path: "profile/verify-email/request",
+      })
+    } catch (err) {
+      return
+    }
   }
   public async verifyEmailVerificationLink(config: IVerifyEmailRequest) {
-    return await this.api.POST({
-      path: "profile/verify-email",
-      config,
-    })
+    try {
+      return await this.api.POST({
+        path: "profile/verify-email",
+        config,
+      })
+    } catch (err) {
+      return
+    }
   }
 
   public async changeEmail() {}
 
   public async changePassword() {}
 }
-
-export const userApiInstance = new UserApi()

@@ -42,11 +42,11 @@ import { ref } from "vue"
 import { storeToRefs } from "pinia"
 import { useAuthStore } from "@/stores/authStore"
 import { useUserStore } from "@/stores/userStore"
-import UserService from "@/services/User/UserService"
+import UserApiService from "@/services/User/UserApiService"
 import type { IErrors } from "@/api/interfaces/IError"
 import { useNotifications } from "@/composables/useNotifications"
 
-const userService = new UserService()
+const userService = new UserApiService()
 const { token } = storeToRefs(useUserStore())
 const { email, dialogShown } = storeToRefs(useAuthStore())
 const { addNotification } = useNotifications()

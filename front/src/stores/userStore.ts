@@ -1,13 +1,13 @@
 import { useNotifications } from "@/composables/useNotifications"
 import { LStorageKeys } from "@/enums/LStorageKeys"
 import type IUser from "@/services/User/interfaces/response/IUser"
-import UserService from "@/services/User/UserService"
+import UserApiService from "@/services/User/UserApiService"
 import { lStorageGetItem, lStorageSetItem } from "@/utils/lStorage"
 import { defineStore } from "pinia"
 import { computed, ref, watch } from "vue"
 
 export const useUserStore = defineStore("user", () => {
-  const userService = new UserService()
+  const userService = new UserApiService()
   const { addNotification } = useNotifications()
 
   const token = ref<string>(lStorageGetItem(LStorageKeys.JWT))

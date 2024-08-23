@@ -37,13 +37,13 @@ import MailIcon from "@/assets/images/icons/mail.svg"
 import PasswordInput from "@/components/Blocks/FormElements/PasswordInput.vue"
 import { ref } from "vue"
 import { storeToRefs } from "pinia"
-import UserService from "@/services/User/UserService"
+import UserApiService from "@/services/User/UserApiService"
 import { useAuthStore } from "@/stores/authStore"
 import type { IErrors } from "@/api/interfaces/IError"
 import { useUserStore } from "@/stores/userStore"
 import { useNotifications } from "@/composables/useNotifications"
 
-const userService = new UserService()
+const userService = new UserApiService()
 const { token } = storeToRefs(useUserStore())
 const { tab, email, dialogShown } = storeToRefs(useAuthStore())
 const { addNotification } = useNotifications()

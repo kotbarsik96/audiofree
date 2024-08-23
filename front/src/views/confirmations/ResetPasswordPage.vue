@@ -37,12 +37,12 @@ import AFButton from "@/components/Blocks/AFButton.vue"
 import type { IErrors } from "@/api/interfaces/IError"
 import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import UserService from "@/services/User/UserService"
+import UserApiService from "@/services/User/UserApiService"
 import { useNotifications } from "@/composables/useNotifications"
 
 const route = useRoute()
 const router = useRouter()
-const userService = new UserService()
+const userService = new UserApiService()
 const { addNotification } = useNotifications()
 
 const { code, email } = route.query
