@@ -13,9 +13,7 @@ class ProductRequest extends FormRequest
 
   public function authorize(): bool
   {
-    $productId = request()->product_id;
-    if ($productId) $this->product = Product::getOrAbort($productId);
-    return Product::allowsStore($this->product);
+    return true;
   }
 
   /**

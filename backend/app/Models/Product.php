@@ -7,10 +7,11 @@ use App\Models\FilterableModel;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Orchid\Screen\AsSource;
 
 class Product extends FilterableModel
 {
-  use HasFactory;
+  use HasFactory, AsSource;
 
   protected $fillable = [
     'name',

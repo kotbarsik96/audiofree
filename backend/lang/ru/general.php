@@ -23,5 +23,8 @@ return [
   'notInFavorites' => 'Товар не в избранном',
   'helloUser' => 'Здравствуйте, :username',
   'byeUser' => 'До свидания, :username',
-  'emailSent' => 'Письмо отправлено на указанный адрес email'
+  'emailSent' => 'Письмо отправлено на указанный адрес email',
+  'products' => 'Товары',
+  'users' => 'Пользователи',
+  'roles' => 'Роли'
 ];
