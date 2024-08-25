@@ -2,9 +2,12 @@
 
 namespace App\Orchid\Screens\Products;
 
+use App\Models\Product;
+use App\Orchid\Layouts\Products\ProductsListLayout;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 
-class ProductsEditScreen extends Screen
+class ProductsListScreen extends Screen
 {
   /**
    * Fetch data to be displayed on the screen.
@@ -13,7 +16,9 @@ class ProductsEditScreen extends Screen
    */
   public function query(): iterable
   {
-    return [];
+    return [
+      'products' => Product::all()
+    ];
   }
 
   /**
@@ -23,7 +28,7 @@ class ProductsEditScreen extends Screen
    */
   public function name(): ?string
   {
-    return 'ProductsEdit';
+    return __('general.products');
   }
 
   /**
@@ -33,7 +38,11 @@ class ProductsEditScreen extends Screen
    */
   public function commandBar(): iterable
   {
-    return [];
+    return [
+      Link::make(__('orchid.product.create'))
+        ->icon('bs.plus-circle')
+        ->route('platform.product.edit'),
+    ];
   }
 
   /**
@@ -43,6 +52,13 @@ class ProductsEditScreen extends Screen
    */
   public function layout(): iterable
   {
-    return [];
+    return [
+      ProductsListLayout::class
+    ];
+  }
+
+  public function delete(Product $product)
+  {
+    $product->deleteAndAlert();
   }
 }

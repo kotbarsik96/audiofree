@@ -1,0 +1,182 @@
+<?php
+
+namespace App\Orchid\Screens\Products;
+
+use App\Http\Requests\Product\ProductRequest;
+use App\Models\Product;
+use App\Models\Product\ProductVariation;
+use App\Models\Taxonomy\Taxonomy;
+use App\Validations\ProductValidation;
+use Illuminate\Http\Request;
+use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Cropper;
+use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Screen;
+use Orchid\Screen\TD;
+use Orchid\Support\Facades\Alert;
+use Orchid\Support\Facades\Layout;
+
+class ProductEditScreen extends Screen
+{
+  public $product;
+
+  protected $productTaxonomies = [
+    'product_status',
+    'brand',
+    'type',
+    'category'
+  ];
+
+  /**
+   * Fetch data to be displayed on the screen.
+   *
+   * @return array
+   */
+  public function query(Product $product): iterable
+  {
+    return [
+      'product' => $product
+    ];
+  }
+
+  /**
+   * The name of the screen displayed in the header.
+   *
+   * @return string|null
+   */
+  public function name(): ?string
+  {
+    return $this->product->exists ? __('orchid.product.editing') : __('orchid.product.creation');
+  }
+
+  /**
+   * The screen's action buttons.
+   *
+   * @return \Orchid\Screen\Action[]
+   */
+  public function commandBar(): iterable
+  {
+    return [
+      Button::make(__('orchid.delete'))
+        ->icon('trash')
+        ->method('delete')
+        ->canSee($this->product->exists),
+      Link::make(__('orchid.product.variation'))
+        ->route('platform.product.variation.edit')
+        ->icon('plus')
+    ];
+  }
+
+  /**
+   * The screen's layout elements.
+   *
+   * @return \Orchid\Screen\Layout[]|string[]
+   */
+  public function layout(): iterable
+  {
+    $taxonomies = Taxonomy::whereIn('taxonomies.type', $this->productTaxonomies)->get();
+
+    return [
+      Layout::rows([
+        Input::make('name')
+          ->set('value', $this->product->exists ? $this->product->name : '')
+          ->title(__('orchid.product.name')),
+        Select::make('status')
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'product_status', 'status')),
+        Select::make('type')
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'type', 'type')),
+        Select::make('brand')
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'brand')),
+        Select::make('category')
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'category', 'category')),
+        Cropper::make('image_path')
+          ->title(__('orchid.product.image'))
+          ->width(300)
+          ->height(300),
+        Button::make(__('orchid.create'))
+          ->icon('pencil')
+          ->method('create')
+          ->canSee(!$this->product->exists),
+        Button::make(__('orchid.save'))
+          ->icon('pencil')
+          ->method('update')
+          ->canSee($this->product->exists)
+      ])->title(__('orchid.product.generalInfo')),
+      Layout::table('product_variation_values', [
+        TD::make(__('orchid.product.variation'))
+          ->render(function (ProductVariation $variation) {
+            return Link::make($variation->value)
+              ->route('platform.product.variation.edit');
+          }),
+        TD::make(__('orchid.actions'))
+          ->render(function (ProductVariation $variation) {
+            Button::make(__('orchid.delete'))
+              ->method('deleteVariation', [$variation]);
+          })
+      ])->title(__('orchid.product.variations'))
+    ];
+  }
+
+  /** 
+   * Опции списков для таксономий при создании/обновлении товара
+   */
+  public function getTaxonomySelectOptions($taxonomies, $taxonomyTypeName, $translationKeyPrefix = null)
+  {
+    return $taxonomies->filter(fn($item) => $item['type'] === $taxonomyTypeName)
+      ->mapWithKeys(fn($item) => [
+        $item['name'] => $this->getOptionTranslation($item['name'], $translationKeyPrefix)
+      ])->toArray();
+  }
+
+  /**
+   * Перевод для опции таксономии (если не нужен - не передавать $transitionKeyPrefix)
+   */
+  public function getOptionTranslation($taxonomyType, $translationKeyPrefix = null)
+  {
+    if ($translationKeyPrefix) {
+      return __('db.product.' . $translationKeyPrefix . '.' . $taxonomyType);
+    }
+    return $taxonomyType;
+  }
+
+  public function create(ProductRequest $request)
+  {
+    $validated = array_merge($request->validated(), [
+      'created_by' => auth()->user()->id
+    ]);
+    $product = Product::create($validated);
+
+    Alert::info(__('orchid.success'));
+
+    return redirect()->route('platform.product.edit', ['product' => $product]);
+  }
+
+  public function update(ProductRequest $request)
+  {
+    dd($request->all());
+
+    $validated = $request->validated();
+
+    $this->product->update(array_merge($validated, [
+      'updated_by' => auth()->user()->id,
+    ]));
+
+    Alert::info(__('orchid.success'));
+  }
+
+  public function delete(Product $product)
+  {
+    $product->deleteAndAlert();
+
+    return redirect()->route('platform.products');
+  }
+
+  public function deleteVariation(ProductVariation $variation)
+  {
+    $variation->delete();
+
+    Alert::info(__('orchid.success'));
+  }
+}

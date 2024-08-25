@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Orchid\Screen\AsSource;
+use Orchid\Support\Facades\Alert;
 
 class Product extends FilterableModel
 {
@@ -35,13 +36,6 @@ class Product extends FilterableModel
     'quantity' => 'integer',
     'rating' => 'integer'
   ];
-
-  public static function getOrAbort($productId)
-  {
-    $product = self::find($productId);
-    if (!$product) abort(404, __('abortions.productNotFound'));
-    return $product;
-  }
 
   public function getImagePath()
   {
@@ -83,5 +77,12 @@ class Product extends FilterableModel
     $query->catalog()
       ->addSelect(['products.status', 'products.description'])
       ->where('products.id', $productId);
+  }
+
+  public function deleteAndAlert()
+  {
+    $this->delete();
+
+    Alert::info(__('orchid.success'));
   }
 }

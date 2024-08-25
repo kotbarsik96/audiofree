@@ -9,8 +9,6 @@ use App\Validations\ImageValidation;
 
 class ProductRequest extends FormRequest
 {
-  public Product | null $product = null;
-
   public function authorize(): bool
   {
     return true;
@@ -23,12 +21,12 @@ class ProductRequest extends FormRequest
    */
   public function rules(): array
   {
-    $isUpdate = !request()->product_id;
+    $id = !request()->id;
+    $isUpdate = !!$id;
     $taxonomyValidation = ProductValidation::taxonomy($isUpdate);
-    $ignoreId = $this->product ? $this->product->id : null;
 
     return [
-      'name' => ProductValidation::name($isUpdate, $ignoreId),
+      'name' => ProductValidation::name($isUpdate, $id),
       'status' => $taxonomyValidation,
       'type' => $taxonomyValidation,
       'brand' => $taxonomyValidation,

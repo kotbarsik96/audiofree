@@ -2,21 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Orchid\Screens\Examples\ExampleActionsScreen;
-use App\Orchid\Screens\Examples\ExampleCardsScreen;
-use App\Orchid\Screens\Examples\ExampleChartsScreen;
-use App\Orchid\Screens\Examples\ExampleFieldsAdvancedScreen;
-use App\Orchid\Screens\Examples\ExampleFieldsScreen;
-use App\Orchid\Screens\Examples\ExampleGridScreen;
-use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
-use App\Orchid\Screens\Examples\ExampleScreen;
-use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 use App\Orchid\Screens\PlatformScreen;
-use App\Orchid\Screens\Products\ProductsEditScreen;
-use App\Orchid\Screens\Products\ProductsScreen;
+use App\Orchid\Screens\Products\ProductEditScreen;
+use App\Orchid\Screens\Products\ProductsListScreen;
+use App\Orchid\Screens\Products\ProductVariationScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
-use App\Orchid\Screens\StateScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
@@ -87,16 +78,17 @@ Route::screen('roles', RoleListScreen::class)
     ->parent('platform.index')
     ->push(__('general.roles'), route('platform.systems.roles')));
 
-Route::screen('/products', ProductsScreen::class)
+// Platform > Products
+Route::screen('/products', ProductsListScreen::class)
   ->name('platform.products')
   ->breadcrumbs(
     fn(Trail $taril) => $taril
       ->parent('platform.index')
       ->push(__('general.products'))
   );
-
-Route::screen('/product/{product?}', ProductsEditScreen::class)
+// Platform > Product Variation
+Route::screen('/product/variation/{variation?}', ProductVariationScreen::class)
+  ->name('platform.product.variation.edit');
+// Platform > Product
+Route::screen('/product/{product?}', ProductEditScreen::class)
   ->name('platform.product.edit');
-
-
-//Route::screen('idea', Idea::class, 'platform.screens.idea');
