@@ -50,7 +50,7 @@ class ProductValidation
   {
     $max = config('constants.product.description.maxlength');
 
-    return ['string', 'max:' . $max];
+    return ['max:' . $max];
   }
 
   public static function messages()
