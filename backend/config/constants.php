@@ -22,6 +22,9 @@ return [
       'category',
       'type',
       'product_status'
+    ],
+    'description' => [
+      'maxlength' => 300
     ]
   ],
   'order' => [

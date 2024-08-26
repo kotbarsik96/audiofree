@@ -4,8 +4,6 @@ namespace App\Http\Requests\Product;
 
 use App\Validations\ProductValidation;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Product;
-use App\Validations\ImageValidation;
 
 class ProductRequest extends FormRequest
 {
@@ -30,7 +28,8 @@ class ProductRequest extends FormRequest
       'status' => $taxonomyValidation,
       'type' => $taxonomyValidation,
       'brand' => $taxonomyValidation,
-      'category' => $taxonomyValidation
+      'category' => $taxonomyValidation,
+      'description' => ProductValidation::description()
     ];
   }
 

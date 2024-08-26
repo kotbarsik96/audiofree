@@ -8,6 +8,7 @@ return [
   'delete' => 'Удалить',
   'save' => 'Сохранить',
   'success' => 'Успех',
+  'description' => 'Описание',
   'product' => [
     'products' => 'Товары',
     'create' => 'Создать товар',

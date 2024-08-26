@@ -46,6 +46,13 @@ class ProductValidation
     return 'exists:images,path';
   }
 
+  public static function description()
+  {
+    $max = config('constants.product.description.maxlength');
+
+    return ['string', 'max:' . $max];
+  }
+
   public static function messages()
   {
     return [
@@ -63,6 +70,7 @@ class ProductValidation
       'required' => __('validation.required'),
       'image_path' => __('validation.image_path'),
       'rating_value' => __('validation.rating_value'),
+      'description.max' => __('validation.product.description.max')
     ];
   }
 }

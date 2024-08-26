@@ -13,6 +13,7 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Alert;
@@ -91,6 +92,10 @@ class ProductEditScreen extends Screen
           ->options($this->getTaxonomySelectOptions($taxonomies, 'brand')),
         Select::make('category')
           ->options($this->getTaxonomySelectOptions($taxonomies, 'category', 'category')),
+        TextArea::make('description')
+          ->title(__('orchid.description'))
+          ->rows(4)
+          ->maxlength(config('constants.product.description.maxlength')),
         Cropper::make('image_path')
           ->title(__('orchid.product.image'))
           ->width(300)
@@ -155,8 +160,6 @@ class ProductEditScreen extends Screen
 
   public function update(ProductRequest $request)
   {
-    dd($request->all());
-
     $validated = $request->validated();
 
     $this->product->update(array_merge($validated, [
