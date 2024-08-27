@@ -84,8 +84,26 @@ class Product extends FilterableModel
 
   public function deleteAndAlert()
   {
+    $this->detachImage();
     $this->delete();
 
     Alert::info(__('orchid.success'));
+  }
+
+  public function detachImage()
+  {
+    $ids = $this->attachment(config('constants.product.image_group'))
+      ->get()
+      ->pluck('id');
+
+    $this->attachment()->detach($ids);
+  }
+
+  public function attachImage($imageId = null)
+  {
+    if ($imageId) {
+      $this->detachImage();
+      $this->attachment()->sync($imageId);
+    }
   }
 }

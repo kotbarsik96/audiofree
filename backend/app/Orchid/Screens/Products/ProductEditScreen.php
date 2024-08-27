@@ -104,6 +104,7 @@ class ProductEditScreen extends Screen
           ->width(300)
           ->height(300)
           ->set('value', $imageUrl)
+          ->groups(config('constants.product.image_group'))
           ->targetId(),
         Button::make(__('orchid.create'))
           ->icon('pencil')
@@ -162,11 +163,7 @@ class ProductEditScreen extends Screen
     ]);
     $product = Product::create($validated);
 
-    if ($request->input('image')) {
-      $product->attachment()->sync(
-        $request->input('image')
-      );
-    }
+    $product->attachImage($request->input('image'));
 
     Alert::info(__('orchid.success'));
 
@@ -180,11 +177,11 @@ class ProductEditScreen extends Screen
     $this->product->update(array_merge($validated, [
       'updated_by' => auth()->user()->id,
     ]));
-    if ($request->input('image')) {
-      $this->product->attachment()->sync(
-        $request->input('image')
-      );
-    }
+
+    if ($request->input('image'))
+      $this->product->attachImage($request->input('image'));
+    else
+      $this->product->detachImage();
 
     Alert::info(__('orchid.success'));
   }
