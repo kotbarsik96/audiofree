@@ -19,7 +19,7 @@ class ProductRequest extends FormRequest
    */
   public function rules(): array
   {
-    $id = !request()->id;
+    $id = request()->id;
     $isUpdate = !!$id;
     $taxonomyValidation = ProductValidation::taxonomy($isUpdate);
 

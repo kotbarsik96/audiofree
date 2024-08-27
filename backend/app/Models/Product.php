@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use App\Http\Requests\Product\ProductRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Orchid\Attachment\Attachable;
+use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
 
 class Product extends FilterableModel
 {
-  use HasFactory, AsSource;
+  use HasFactory, AsSource, Attachable;
 
   protected $fillable = [
     'name',

@@ -6,8 +6,6 @@ use App\Http\Requests\Product\ProductRequest;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
-use App\Validations\ProductValidation;
-use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Cropper;
@@ -37,6 +35,8 @@ class ProductEditScreen extends Screen
    */
   public function query(Product $product): iterable
   {
+    $product->load('attachment');
+
     return [
       'product' => $product
     ];
@@ -67,6 +67,7 @@ class ProductEditScreen extends Screen
       Link::make(__('orchid.product.variation'))
         ->route('platform.product.variation.edit')
         ->icon('plus')
+        ->canSee($this->product->exists)
     ];
   }
 
@@ -78,6 +79,8 @@ class ProductEditScreen extends Screen
   public function layout(): iterable
   {
     $taxonomies = Taxonomy::whereIn('taxonomies.type', $this->productTaxonomies)->get();
+    $image = $this->product->attachment()->first();
+    $imageUrl = $image ? $image->url() : '';
 
     return [
       Layout::rows([
@@ -96,10 +99,12 @@ class ProductEditScreen extends Screen
           ->title(__('orchid.description'))
           ->rows(4)
           ->maxlength(config('constants.product.description.maxlength')),
-        Cropper::make('image_path')
+        Cropper::make('image')
           ->title(__('orchid.product.image'))
           ->width(300)
-          ->height(300),
+          ->height(300)
+          ->set('value', $imageUrl)
+          ->targetId(),
         Button::make(__('orchid.create'))
           ->icon('pencil')
           ->method('create')
@@ -107,7 +112,11 @@ class ProductEditScreen extends Screen
         Button::make(__('orchid.save'))
           ->icon('pencil')
           ->method('update')
-          ->canSee($this->product->exists)
+          ->canSee($this->product->exists),
+        Input::make('id')
+          ->type('hidden')
+          ->set('value', $this->product->exists ? $this->product->id : '')
+          ->canSee($this->product->exists),
       ])->title(__('orchid.product.generalInfo')),
       Layout::table('product_variation_values', [
         TD::make(__('orchid.product.variation'))
@@ -120,7 +129,7 @@ class ProductEditScreen extends Screen
             Button::make(__('orchid.delete'))
               ->method('deleteVariation', [$variation]);
           })
-      ])->title(__('orchid.product.variations'))
+      ])->title(__('orchid.product.variations')),
     ];
   }
 
@@ -153,6 +162,12 @@ class ProductEditScreen extends Screen
     ]);
     $product = Product::create($validated);
 
+    if ($request->input('image')) {
+      $product->attachment()->sync(
+        $request->input('image')
+      );
+    }
+
     Alert::info(__('orchid.success'));
 
     return redirect()->route('platform.product.edit', ['product' => $product]);
@@ -165,6 +180,11 @@ class ProductEditScreen extends Screen
     $this->product->update(array_merge($validated, [
       'updated_by' => auth()->user()->id,
     ]));
+    if ($request->input('image')) {
+      $this->product->attachment()->sync(
+        $request->input('image')
+      );
+    }
 
     Alert::info(__('orchid.success'));
   }
