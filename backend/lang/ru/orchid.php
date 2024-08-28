@@ -9,6 +9,9 @@ return [
   'save' => 'Сохранить',
   'success' => 'Успех',
   'description' => 'Описание',
+  'name' => 'Название',
+  'quantity' => 'Количество',
+  'gallery' => 'Галерея',
   'product' => [
     'products' => 'Товары',
     'create' => 'Создать товар',
@@ -27,6 +30,9 @@ return [
     'variation' => 'Вариация',
     'variations' => 'Вариации',
     'generalInfo' => 'Общая информация',
-    'image' => 'Изображение товара'
+    'image' => 'Изображение товара',
+    'variationImage' => 'Изображение вариации',
+    'areYouSureToDelete' => 'Уверены, что хотите удалить товар?',
+    'areYouSureToDeleteVariation' => 'Уверены, что хотите удалить вариацию?',
   ],
 ];

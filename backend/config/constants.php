@@ -26,6 +26,10 @@ return [
     ],
     'description' => [
       'maxlength' => 300
+    ],
+    'variation' => [
+      'image_group' => 'product_variation_image',
+      'gallery_group' => 'product_variation_gallery'
     ]
   ],
   'order' => [

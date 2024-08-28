@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
-use App\Http\Requests\Product\ProductRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
+use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
-use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
 
 class Product extends FilterableModel
 {
-  use HasFactory, AsSource, Attachable;
+  use HasFactory, AsSource, Attachable, HandleOrchidAttachments;
 
   protected $fillable = [
     'name',
@@ -84,26 +83,9 @@ class Product extends FilterableModel
 
   public function deleteAndAlert()
   {
-    $this->detachImage();
+    $this->detachAll();
     $this->delete();
 
     Alert::info(__('orchid.success'));
-  }
-
-  public function detachImage()
-  {
-    $ids = $this->attachment(config('constants.product.image_group'))
-      ->get()
-      ->pluck('id');
-
-    $this->attachment()->detach($ids);
-  }
-
-  public function attachImage($imageId = null)
-  {
-    if ($imageId) {
-      $this->detachImage();
-      $this->attachment()->sync($imageId);
-    }
   }
 }

@@ -87,7 +87,7 @@ Route::screen('/products', ProductsListScreen::class)
       ->push(__('general.products'))
   );
 // Platform > Product Variation
-Route::screen('/product/variation/{variation?}', ProductVariationScreen::class)
+Route::screen('/product/{product}/variation/{variation?}', ProductVariationScreen::class)
   ->name('platform.product.variation.edit');
 // Platform > Product
 Route::screen('/product/{product?}', ProductEditScreen::class)

@@ -59,13 +59,16 @@ class ProductEditScreen extends Screen
    */
   public function commandBar(): iterable
   {
+    $productId = $this->product->exists ? $this->product->id : 0;
+
     return [
       Button::make(__('orchid.delete'))
         ->icon('trash')
         ->method('delete')
+        ->confirm(__('orchid.product.areYouSureToDelete'))
         ->canSee($this->product->exists),
       Link::make(__('orchid.product.variation'))
-        ->route('platform.product.variation.edit')
+        ->route('platform.product.variation.edit', [$productId])
         ->icon('plus')
         ->canSee($this->product->exists)
     ];
@@ -128,6 +131,7 @@ class ProductEditScreen extends Screen
         TD::make(__('orchid.actions'))
           ->render(function (ProductVariation $variation) {
             Button::make(__('orchid.delete'))
+              ->confirm(__('orchid.product.areYouSureToDelete'))
               ->method('deleteVariation', [$variation]);
           })
       ])->title(__('orchid.product.variations')),
@@ -159,11 +163,12 @@ class ProductEditScreen extends Screen
   public function create(ProductRequest $request)
   {
     $validated = array_merge($request->validated(), [
-      'created_by' => auth()->user()->id
+      'created_by' => auth()->user()->id,
+      'updated_by' => auth()->user()->id,
     ]);
     $product = Product::create($validated);
 
-    $product->attachImage($request->input('image'));
+    $product->attachSingle(config('constants.product.image_group'), $request->input('image'));
 
     Alert::info(__('orchid.success'));
 
@@ -178,10 +183,13 @@ class ProductEditScreen extends Screen
       'updated_by' => auth()->user()->id,
     ]));
 
-    if ($request->input('image'))
-      $this->product->attachImage($request->input('image'));
-    else
-      $this->product->detachImage();
+    if ($request->input('image')) {
+      $this->product->attachSingle(
+        config('constants.product.image_group'),
+        $request->input('image')
+      );
+    } else
+      $this->product->detachByGroup(config('constants.product.image_group'));
 
     Alert::info(__('orchid.success'));
   }
@@ -195,6 +203,7 @@ class ProductEditScreen extends Screen
 
   public function deleteVariation(ProductVariation $variation)
   {
+    $variation->detachAll();
     $variation->delete();
 
     Alert::info(__('orchid.success'));

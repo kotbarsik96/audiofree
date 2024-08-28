@@ -18,12 +18,10 @@ return new class extends Migration
       $table->string('value'); // название вариации
       $table->unsignedInteger('price');
       $table->unsignedSmallInteger('discount')->nullable();
-      $table->string('image_path')->nullable();
       $table->unsignedInteger('quantity');
+      $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+      $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
       $table->timestamps();
-
-      $table->foreign('image_path')
-        ->references('path')->on('images')->cascadeOnUpdate()->nullOnDelete();
     });
   }
 

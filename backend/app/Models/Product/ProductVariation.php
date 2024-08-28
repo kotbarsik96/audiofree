@@ -6,15 +6,17 @@ use App\Models\Gallery\Gallery;
 use App\Models\Gallery\GalleryImage;
 use App\Models\Image;
 use App\Models\Product;
+use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
+use Orchid\Attachment\Attachable;
 
 class ProductVariation extends Model
 {
-  use HasFactory;
+  use HasFactory, Attachable, HandleOrchidAttachments;
 
   protected $fillable = [
     'product_id',
@@ -23,6 +25,8 @@ class ProductVariation extends Model
     'image_path',
     'quantity',
     'value',
+    'created_by',
+    'updated_by',
   ];
 
   protected $casts = [
@@ -172,5 +176,10 @@ class ProductVariation extends Model
       DB::raw($this->getCurrentPriceQuery())
     ])->where('product_variation_values.product_id', $productId)
       ->orderBy('current_price');
+  }
+
+  public function product()
+  {
+    return $this->belongsTo(Product::class, 'product_id');
   }
 }
