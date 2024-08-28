@@ -67,7 +67,9 @@ class ProductVariationScreen extends Screen
   public function layout(): iterable
   {
     $id = $this->variation->exists ? $this->variation->id : null;
-    $name = $this->variation->exists ? $this->variation->name : '';
+    $name = $this->variation->exists ? $this->variation->value : '';
+    $price = $this->variation->exists ? $this->variation->price : 0;
+    $discount = $this->variation->exists ? $this->variation->discount : 0;
     $quantity = $this->variation->exists ? $this->variation->quantity : 0;
 
     return [
@@ -83,7 +85,8 @@ class ProductVariationScreen extends Screen
             'groupSeparator' => ' ',
             'min' => 0,
             'max' => 999999
-          ]),
+          ])
+          ->set('value', $price),
         Input::make('discount')
           ->title(__('orchid.product.discount'))
           ->mask([
@@ -91,7 +94,8 @@ class ProductVariationScreen extends Screen
             'suffix' => ' %',
             'min' => 0,
             'max' => 100
-          ]),
+          ])
+          ->set('value', $discount),
         Input::make('quantity')
           ->title(__('orchid.quantity'))
           ->mask([
@@ -121,9 +125,11 @@ class ProductVariationScreen extends Screen
 
         Button::make(__('orchid.create'))
           ->method('create')
+          ->icon('pencil')
           ->canSee(!$this->variation->exists),
-        Button::make(__('orchid.update'))
+        Button::make(__('orchid.save'))
           ->method('update')
+          ->icon('pencil')
           ->canSee($this->variation->exists),
       ]),
     ];
@@ -131,10 +137,11 @@ class ProductVariationScreen extends Screen
 
   public function create(ProductVariationRequest $request)
   {
-    $validated = array_merge($request->validated(), [
+    $request->merge([
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,
     ]);
+    $validated = $request->validated();
 
     $variation = ProductVariation::create($validated);
     $variation->attachSingle(
@@ -145,13 +152,16 @@ class ProductVariationScreen extends Screen
     // $variation->attachManyWithDetaching($request->input('images'));
 
     Alert::info(__('orchid.success'));
+
+    return redirect()->route('platform.product.variation.edit', [$this->product->id, $variation->id]);
   }
 
   public function update(ProductVariationRequest $request)
   {
-    $validated = array_merge($request->validated(), [
+    $request->merge([
       'updated_by' => auth()->user()->id,
     ]);
+    $validated = $request->validated();
 
     $this->variation->update($validated);
     if ($request->input('image')) {

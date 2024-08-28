@@ -38,7 +38,8 @@ class ProductEditScreen extends Screen
     $product->load('attachment');
 
     return [
-      'product' => $product
+      'product' => $product,
+      'variations' => $product->variations()
     ];
   }
 
@@ -122,11 +123,12 @@ class ProductEditScreen extends Screen
           ->set('value', $this->product->exists ? $this->product->id : '')
           ->canSee($this->product->exists),
       ])->title(__('orchid.product.generalInfo')),
-      Layout::table('product_variation_values', [
+
+      Layout::table('variations', [
         TD::make(__('orchid.product.variation'))
           ->render(function (ProductVariation $variation) {
             return Link::make($variation->value)
-              ->route('platform.product.variation.edit');
+              ->route('platform.product.variation.edit', [$this->product->id, $variation->id]);
           }),
         TD::make(__('orchid.actions'))
           ->render(function (ProductVariation $variation) {
@@ -162,10 +164,11 @@ class ProductEditScreen extends Screen
 
   public function create(ProductRequest $request)
   {
-    $validated = array_merge($request->validated(), [
+    $request->merge([
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,
     ]);
+    $validated = $request->validated();
     $product = Product::create($validated);
 
     $product->attachSingle(config('constants.product.image_group'), $request->input('image'));
@@ -177,11 +180,12 @@ class ProductEditScreen extends Screen
 
   public function update(ProductRequest $request)
   {
+    $request->merge([
+      'updated_by' => auth()->user()->id,
+    ]);
     $validated = $request->validated();
 
-    $this->product->update(array_merge($validated, [
-      'updated_by' => auth()->user()->id,
-    ]));
+    $this->product->update($validated);
 
     if ($request->input('image')) {
       $this->product->attachSingle(

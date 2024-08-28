@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
+use App\Models\Product\ProductVariation;
 use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
@@ -87,5 +88,10 @@ class Product extends FilterableModel
     $this->delete();
 
     Alert::info(__('orchid.success'));
+  }
+
+  public function variations()
+  {
+    return $this->hasMany(ProductVariation::class, 'product_id')->get();
   }
 }

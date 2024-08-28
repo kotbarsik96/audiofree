@@ -4,6 +4,11 @@ namespace App\Validations;
 
 class ProductValidation
 {
+  public static function productId()
+  {
+    return ['exists:products,id'];
+  }
+
   public static function name($required = false, $ignoreId = null)
   {
     $array = ['string', 'min:3', 'unique:products,name,' . $ignoreId];
