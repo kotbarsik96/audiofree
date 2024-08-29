@@ -15,7 +15,7 @@ return new class extends Migration
       $table->id();
       $table->foreignId('product_id')->constrained(table: 'products')
         ->cascadeOnDelete();
-      $table->string('value'); // название вариации
+      $table->string('name'); 
       $table->unsignedInteger('price');
       $table->unsignedSmallInteger('discount')->nullable();
       $table->unsignedInteger('quantity');

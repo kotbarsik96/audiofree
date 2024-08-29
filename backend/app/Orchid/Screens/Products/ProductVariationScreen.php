@@ -69,10 +69,11 @@ class ProductVariationScreen extends Screen
   {
     return [
       VariationFormLayout::class,
-      Layout::block(VariationGalleryLayout::class)
-        ->vertical(true)
-        ->title(__('orchid.gallery'))
-        ->canSee($this->variation->exists),
+      // Layout::block(VariationGalleryLayout::class)
+      //   ->vertical(true)
+      //   ->title(__('orchid.gallery'))
+      //   ->canSee($this->variation->exists),
+      Layout::view('platform.product.VariationGallery')
     ];
   }
 

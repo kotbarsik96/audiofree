@@ -33,14 +33,14 @@ class VariationFormLayout extends Rows
     $product = $this->query->get('product');
 
     $id = $variation ? $variation->id : null;
-    $name = $variation ? $variation->value : '';
+    $name = $variation ? $variation->name : '';
     $price = $variation ? $variation->price : 0;
     $discount = $variation ? $variation->discount : 0;
     $quantity = $variation ? $variation->quantity : 0;
     $image = $variation->exists ? $variation->attachment()->first() : null;
 
     return [
-      Input::make('value')
+      Input::make('name')
         ->title(__('orchid.name'))
         ->set('value', $name),
       Input::make('price')

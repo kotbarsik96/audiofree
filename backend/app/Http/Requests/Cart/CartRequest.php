@@ -20,7 +20,7 @@ class CartRequest extends FormRequest
     if ($this->product->status !== 'active')
       abort(403, __('abortions.productIsInactive'));
 
-    $this->variation = ProductVariation::getByValueOrAbort(
+    $this->variation = ProductVariation::getByNameOrAbort(
       $this->product->id,
       request()->variation
     );

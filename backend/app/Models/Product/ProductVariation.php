@@ -2,16 +2,12 @@
 
 namespace App\Models\Product;
 
-use App\Models\Gallery\Gallery;
-use App\Models\Gallery\GalleryImage;
-use App\Models\Image;
 use App\Models\Product;
 use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\UploadedFile;
 use Orchid\Attachment\Attachable;
 
 class ProductVariation extends Model
@@ -24,7 +20,7 @@ class ProductVariation extends Model
     'discount',
     'image_path',
     'quantity',
-    'value',
+    'name',
     'created_by',
     'updated_by',
   ];
@@ -43,18 +39,18 @@ class ProductVariation extends Model
     return "{$this->table}.price - ({$this->table}.price / 100 * {$this->table}.discount) as current_price";
   }
 
-  public static function getByValue($productId, $variationValue)
+  public static function getByName($productId, $varName)
   {
     return self::where('product_id', $productId)
-      ->where('value', $variationValue)
+      ->where('name', $varName)
       ->first();
   }
 
-  public static function getByValueOrAbort($productId, $variationValue)
+  public static function getByNameOrAbort($productId, $varName)
   {
-    $variation = self::getByValue($productId, $variationValue);
+    $variation = self::getByName($productId, $varName);
     if (!$variation)
-      abort(404, __('abortions.variationNotFound', ['value' => $variationValue]));
+      abort(404, __('abortions.variationNotFound', ['name' => $varName]));
     return $variation;
   }
 
@@ -64,95 +60,12 @@ class ProductVariation extends Model
     $this->delete();
   }
 
-  public static function createOrUpdate(Product $product, $data)
-  {
-    if (!array_key_exists('value', $data))
-      abort(400, __('abortions.variationValueNotSpecified'));
-
-    $variation = self::where('product_id', $product->id)
-      ->where('value', $data['value'])
-      ->first();
-    if ($variation && $data)
-      $variation->update($data);
-    else {
-      $variation = ProductVariation::create(
-        array_merge($data, ['product_id' => $product->id])
-      );
-    }
-
-    return $variation;
-  }
-
-  public function getGallery()
-  {
-    $gallery = Gallery::where('variation_id', $this->id)->first();
-
-    if (!$gallery)
-      return [];
-
-    return GalleryImage::select(['image_path', 'order'])
-      ->where('gallery_id', $gallery->id)
-      ->get();
-  }
-
-  public function createOrUpdateGallery()
-  {
-    $gallery = Gallery::where('variation_id', $this->id)->first();
-
-    if ($gallery && $gallery->name !== $this->value)
-      $gallery->update(['name' => $this->value]);
-    elseif (!$gallery) {
-      $gallery = Gallery::create([
-        'name' => $this->value,
-        'variation_id' => $this->id
-      ]);
-    }
-
-    return $gallery;
-  }
-
-  public static function uploadImage(Product $product, UploadedFile $image)
-  {
-    $path = $product->getImagePath();
-    return Image::upload($image, $path);
-  }
-
-  public function uploadGallery(array $images, Product $product)
-  {
-    $path = $product->getImagePath();
-    $gallery = $this->createOrUpdateGallery();
-
-    foreach ($images as $img) {
-      $storedImg = Image::upload($img, $path);
-      GalleryImage::create([
-        'gallery_id' => $gallery->id,
-        'image_path' => $storedImg->path
-      ]);
-    }
-  }
-
-  public function deleteGallery()
-  {
-    $gallery = Gallery::where('variation_id', $this->id)->first();
-    if (!$gallery)
-      return;
-
-    $imagesToDelete = self::whereIn('path', function (Builder $query) use ($gallery) {
-      $query->select('image_path')->from('galleries_images')
-        ->where('gallery_id', $gallery->id);
-    })->get();
-
-    foreach ($imagesToDelete as $image) {
-      self::deleteImage($image);
-    }
-  }
-
   public function scopeForProduct(Builder $query, $productId)
   {
     $variations = $query
       ->select([
         'id',
-        'value',
+        'name',
         'price',
         'discount',
         'quantity',
