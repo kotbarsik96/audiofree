@@ -88,11 +88,11 @@ class VariationFormLayout extends Rows
       Button::make(__('orchid.create'))
         ->method('create')
         ->icon('pencil')
-        ->canSee(!$variation),
+        ->canSee(!$variation->exists),
       Button::make(__('orchid.save'))
         ->method('update')
         ->icon('pencil')
-        ->canSee(!!$variation),
+        ->canSee($variation->exists),
     ];
   }
 }

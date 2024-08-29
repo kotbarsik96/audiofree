@@ -36,7 +36,7 @@ class ProductVariation extends Model
     'quantity' => 'integer',
   ];
 
-  protected $table = 'product_variation_values';
+  protected $table = 'product_variations';
 
   public function scopeGetCurrentPriceQuery()
   {
@@ -157,7 +157,7 @@ class ProductVariation extends Model
         'discount',
         'quantity',
         DB::raw($this->getCurrentPriceQuery()),
-        'product_variation_values.image_path',
+        'product_variations.image_path',
       ])
       ->where('product_id', $productId)->get();
 
@@ -174,7 +174,7 @@ class ProductVariation extends Model
       'price',
       'discount',
       DB::raw($this->getCurrentPriceQuery())
-    ])->where('product_variation_values.product_id', $productId)
+    ])->where('product_variations.product_id', $productId)
       ->orderBy('current_price');
   }
 

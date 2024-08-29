@@ -70,8 +70,8 @@ class Product extends FilterableModel
   public function scopeOnlyInStock(Builder $query)
   {
     $query->addSelect([
-      DB::raw('MAX(product_variation_values.quantity) as max_quantity'),
-    ])->leftJoin('product_variation_values', 'product_variation_values.product_id', '=', 'products.id')
+      DB::raw('MAX(product_variations.quantity) as max_quantity'),
+    ])->leftJoin('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->having('max_quantity', '>', 0);
   }
 

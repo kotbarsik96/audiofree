@@ -60,15 +60,15 @@ class Cart extends Model
       'cart.updated_at',
       'products.name',
       'products.status',
-      'product_variation_values.value',
-      'product_variation_values.price',
+      'product_variations.value',
+      'product_variations.price',
       DB::raw(ProductVariation::getCurrentPriceQuery()),
-      'product_variation_values.discount',
-      'product_variation_values.price',
-      'product_variation_values.image_path'
+      'product_variations.discount',
+      'product_variations.price',
+      'product_variations.image_path'
     ])->leftJoin(
-      'product_variation_values',
-      'product_variation_values.id',
+      'product_variations',
+      'product_variations.id',
       '=',
       'cart.variation_id'
     )->leftJoin(

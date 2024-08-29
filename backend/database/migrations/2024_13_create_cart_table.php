@@ -17,7 +17,7 @@ return new class extends Migration
         ->cascadeOnDelete();
       $table->foreignId('product_id')->constrained(table: 'products')
         ->cascadeOnDelete();
-      $table->foreignId('variation_id')->constrained(table: 'product_variation_values')
+      $table->foreignId('variation_id')->constrained(table: 'product_variations')
         ->cascadeOnDelete();
       $table->unsignedInteger('quantity');
       $table->boolean('is_oneclick');

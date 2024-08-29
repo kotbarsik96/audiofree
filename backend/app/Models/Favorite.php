@@ -32,15 +32,15 @@ class Favorite extends Model
       'products.brand',
       'products.category',
       'products.type',
-      'product_variation_values.product_id',
-      'product_variation_values.value',
-      'product_variation_values.price',
-      'product_variation_values.discount',
+      'product_variations.product_id',
+      'product_variations.value',
+      'product_variations.price',
+      'product_variations.discount',
       DB::raw(ProductVariation::getCurrentPriceQuery()),
-      'product_variation_values.image_path',
-      'product_variation_values.quantity',
+      'product_variations.image_path',
+      'product_variations.quantity',
     ])->where('user_id', $userId)
-      ->leftJoin('product_variation_values', 'product_variation_values.id', '=', 'favorites.variation_id')
-      ->leftJoin('products', 'products.id', '=', 'product_variation_values.product_id');
+      ->leftJoin('product_variations', 'product_variations.id', '=', 'favorites.variation_id')
+      ->leftJoin('products', 'products.id', '=', 'product_variations.product_id');
   }
 }

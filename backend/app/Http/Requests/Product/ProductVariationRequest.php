@@ -34,7 +34,7 @@ class ProductVariationRequest extends FormRequest
       'discount' => ProductValidation::discount(),
       'quantity' => ProductValidation::quantity(),
       'value' => [
-        Rule::unique('product_variation_values', 'value')
+        Rule::unique('product_variations', 'value')
           ->where(fn($query) => $query->where('product_id', $ignoreId))
           ->ignore($ignoreId),
         'min:2'

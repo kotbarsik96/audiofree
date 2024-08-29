@@ -52,12 +52,12 @@ class OrderProduct extends Model
       'products.name as product_name',
       'products.brand as product_brand',
       'products.type as product_type',
-      'product_variation_values.value as variation',
-      'product_variation_values.image_path as image_path',
+      'product_variations.value as variation',
+      'product_variations.image_path as image_path',
     ])
       ->where('orders.user_id', $userId)
       ->leftJoin('orders', 'orders.id', '=', 'order_products.order_id')
-      ->leftJoin('product_variation_values', 'product_variation_values.id', '=', 'order_products.variation_id')
-      ->leftJoin('products', 'products.id', '=', 'product_variation_values.product_id');
+      ->leftJoin('product_variations', 'product_variations.id', '=', 'order_products.variation_id')
+      ->leftJoin('products', 'products.id', '=', 'product_variations.product_id');
   }
 }
