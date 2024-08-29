@@ -12,6 +12,8 @@ return [
   'name' => 'Название',
   'quantity' => 'Количество',
   'gallery' => 'Галерея',
+  'generalInfo' => 'Общая информация',
+  'image' => 'Изображение',
   'product' => [
     'products' => 'Товары',
     'create' => 'Создать товар',

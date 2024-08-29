@@ -102,7 +102,8 @@ class ProductEditScreen extends Screen
         TextArea::make('description')
           ->title(__('orchid.description'))
           ->rows(4)
-          ->maxlength(config('constants.product.description.maxlength')),
+          ->maxlength(config('constants.product.description.maxlength'))
+          ->set('value', $this->product->exists ? $this->product->description : ''),
         Cropper::make('image')
           ->title(__('orchid.product.image'))
           ->width(300)

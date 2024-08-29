@@ -29,7 +29,8 @@ return [
     ],
     'variation' => [
       'image_group' => 'product_variation_image',
-      'gallery_group' => 'product_variation_gallery'
+      'gallery_group' => 'product_variation_gallery',
+      'max_gallery_images' => 5
     ]
   ],
   'order' => [
