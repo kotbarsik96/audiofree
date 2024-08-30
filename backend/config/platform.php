@@ -126,8 +126,12 @@ return [
      */
 
   'resource' => [
-    'stylesheets' => [],
-    'scripts'     => [],
+    'stylesheets' => [
+      env('APP_URL') . '/resources/css/app.css'
+    ],
+    'scripts'     => [
+      env('APP_URL') . '/resources/js/app.js'
+    ],
   ],
 
   /*
@@ -142,10 +146,7 @@ return [
      |
      */
 
-  'vite' => [
-    // 'resources/css/app.css',
-    // 'resources/js/app.js',
-  ],
+  'vite' => [],
 
   /*
      |--------------------------------------------------------------------------
