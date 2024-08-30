@@ -14,6 +14,7 @@ return [
   'gallery' => 'Галерея',
   'generalInfo' => 'Общая информация',
   'image' => 'Изображение',
+  'upload' => 'Загрузить',
   'product' => [
     'products' => 'Товары',
     'create' => 'Создать товар',

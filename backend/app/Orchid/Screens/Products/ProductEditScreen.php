@@ -128,7 +128,7 @@ class ProductEditScreen extends Screen
       Layout::table('variations', [
         TD::make(__('orchid.product.variation'))
           ->render(function (ProductVariation $variation) {
-            return Link::make($variation->value)
+            return Link::make($variation->name)
               ->route('platform.product.variation.edit', [$this->product->id, $variation->id]);
           }),
         TD::make(__('orchid.actions'))

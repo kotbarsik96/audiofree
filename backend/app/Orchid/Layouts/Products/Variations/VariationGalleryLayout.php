@@ -29,7 +29,8 @@ class VariationGalleryLayout extends Rows
       Upload::make('gallery')
         ->title(__('orchid.gallery'))
         ->maxFiles($maxGalleryImages)
-        ->acceptedFiles('image/*'),
+        ->acceptedFiles('image/*')
+        ->groups(config('constants.product.variation.gallery_group')),
 
       Button::make(__('orchid.save'))
         ->method('saveGallery')

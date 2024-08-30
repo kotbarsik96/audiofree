@@ -26,6 +26,7 @@ class ProductVariationScreen extends Screen
   public function query(Product $product, ProductVariation $variation): iterable
   {
     $variation->load('attachment');
+
     $this->variation = $variation;
     $this->product = $product;
 
@@ -73,7 +74,12 @@ class ProductVariationScreen extends Screen
       //   ->vertical(true)
       //   ->title(__('orchid.gallery'))
       //   ->canSee($this->variation->exists),
-      Layout::view('platform.product.VariationGallery')
+      Layout::wrapper('platform.product.VariationGallery', [
+        'saveButton' => Layout::rows([
+          Button::make(__('orchid.save'))
+            ->method('saveGallery')
+        ])
+      ])
     ];
   }
 
