@@ -9,8 +9,8 @@
     </legend>
   </div>
   <div class="bg-white rounded shadow-sm p-4 py-4 d-flex flex-column gap-3">
-    <div class="form-group">
-      <div class="border-dashed p-3 text-end cropper-actions" data-elname="gallery" data-params="{}">
+    <div class="form-group" data-elname="gallery" data-params='{ "hello": true, "world": false }'>
+      <div class="border-dashed p-3 text-end cropper-actions">
         <div class="fields-cropper-container d-flex gap-3">
           @foreach ($variation->gallery()->get() as $image)
           <div class="fields-cropper-img" data-gallery-id="{{ $image->id }}">
@@ -34,12 +34,12 @@
               </path>
             </svg>
             Browse
-            <input type="file" accept="image/*" class="d-none">
+            <input type="file" accept="image/*" class="d-none" data-elchild="fileInput">
           </label>
         </div>
       </div>
 
-      <div class="d-none gallery-hiddens">
+      <div class="d-none" data-elchild="galleryHidden">
         @foreach ($variation->gallery()->get() as $image)
         <input type="hidden" value="{{ $image->id }}" name="gallery[]">
         @endforeach
