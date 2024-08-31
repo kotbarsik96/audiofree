@@ -8,11 +8,14 @@ RUN apt-get update && apt-get install -y \
   libpng-dev \
   libzip-dev \
   zip unzip \
+  libmagickwand-dev \
   git && \
   docker-php-ext-install pdo_mysql && \
   docker-php-ext-install bcmath && \
   docker-php-ext-install gd && \
   docker-php-ext-install zip && \
+  pecl install imagick && \
+  docker-php-ext-enable imagick && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -24,4 +27,4 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin \
     composer require
 
-WORKDIR /var/www/audiofree
+WORKDIR /var/www/

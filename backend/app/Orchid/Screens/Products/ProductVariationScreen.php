@@ -8,6 +8,7 @@ use App\Models\Product\ProductVariation;
 use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
 use App\Orchid\Layouts\Products\Variations\VariationGalleryLayout;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Orchid\Attachment\File;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Upload;
@@ -79,7 +80,7 @@ class ProductVariationScreen extends Screen
       VariationFormLayout::class,
       Layout::rows([
         Upload::make('gallery')
-          ->path('public/images/products/' . $this->variation->product_id)
+          ->path('images/products/' . $this->variation->product_id)
           ->title(__('orchid.gallery'))
           ->maxFiles($this->maxGalleryImages)
           ->acceptedFiles('image/*')
