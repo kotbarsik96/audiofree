@@ -79,6 +79,7 @@ class ProductVariationScreen extends Screen
       VariationFormLayout::class,
       Layout::rows([
         Upload::make('gallery')
+          ->path('public/images/products/' . $this->variation->product_id)
           ->title(__('orchid.gallery'))
           ->maxFiles($this->maxGalleryImages)
           ->acceptedFiles('image/*')
