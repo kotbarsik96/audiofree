@@ -25,7 +25,7 @@ trait HandleOrchidAttachments
       $this->attachment()->sync($attId);
     }
   }
-  
+
   /** 
    * Открепит все attachment'ы по указанной группе
    */
@@ -50,7 +50,9 @@ trait HandleOrchidAttachments
    */
   public function attachManyWithDetaching($attGroup, array $ids = [])
   {
+    $ids = array_map(fn($id) => (int) $id, $ids);
     $attachedIds = $this->getAttachmentsIds($attGroup);
+
     $attachedIds
       ->filter(fn($id) => !in_array($id, $ids))
       ->each(fn($id) => $this->attachment()->detach($id));

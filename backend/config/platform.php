@@ -126,12 +126,12 @@ return [
      */
 
   'resource' => [
-    'stylesheets' => [
-      env('APP_URL') . '/resources/css/app.css'
-    ],
-    'scripts'     => [
-      env('APP_URL') . '/resources/js/app.js'
-    ],
+    // 'stylesheets' => [
+    //   env('APP_URL') . '/resources/css/app.css'
+    // ],
+    // 'scripts'     => [
+    //   env('APP_URL') . '/resources/js/app.js'
+    // ],
   ],
 
   /*

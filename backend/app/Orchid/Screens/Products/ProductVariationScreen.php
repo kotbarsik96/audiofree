@@ -8,7 +8,9 @@ use App\Models\Product\ProductVariation;
 use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
 use App\Orchid\Layouts\Products\Variations\VariationGalleryLayout;
 use Illuminate\Http\Request;
+use Orchid\Attachment\File;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\Upload;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
@@ -17,6 +19,7 @@ class ProductVariationScreen extends Screen
 {
   public $variation;
   public $product;
+  public $maxGalleryImages;
 
   /**
    * Fetch data to be displayed on the screen.
@@ -29,10 +32,14 @@ class ProductVariationScreen extends Screen
 
     $this->variation = $variation;
     $this->product = $product;
+    $this->maxGalleryImages = config('constants.product.variation.max_gallery_images');
 
     return [
       'variation' => $variation,
-      'product' => $product
+      'product' => $product,
+      'gallery' => $this->variation->getAttachmentsIds(
+        config('constants.product.variation.gallery_group')
+      )->toArray()
     ];
   }
 
@@ -70,16 +77,17 @@ class ProductVariationScreen extends Screen
   {
     return [
       VariationFormLayout::class,
-      // Layout::block(VariationGalleryLayout::class)
-      //   ->vertical(true)
-      //   ->title(__('orchid.gallery'))
-      //   ->canSee($this->variation->exists),
-      Layout::wrapper('platform.product.VariationGallery', [
-        'saveButton' => Layout::rows([
-          Button::make(__('orchid.save'))
-            ->method('saveGallery')
-        ])
-      ])
+      Layout::rows([
+        Upload::make('gallery')
+          ->title(__('orchid.gallery'))
+          ->maxFiles($this->maxGalleryImages)
+          ->acceptedFiles('image/*')
+          ->groups(config('constants.product.variation.gallery_group')),
+
+        Button::make(__('orchid.save'))
+          ->method('saveGallery')
+      ])->title(__('orchid.gallery'))
+        ->canSee($this->variation->exists)
     ];
   }
 
