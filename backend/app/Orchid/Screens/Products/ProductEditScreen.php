@@ -6,6 +6,7 @@ use App\Http\Requests\Product\ProductRequest;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
+use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Cropper;
@@ -60,18 +61,12 @@ class ProductEditScreen extends Screen
    */
   public function commandBar(): iterable
   {
-    $productId = $this->product->exists ? $this->product->id : 0;
-
     return [
       Button::make(__('orchid.delete'))
         ->icon('trash')
         ->method('delete')
         ->confirm(__('orchid.product.areYouSureToDelete'))
         ->canSee($this->product->exists),
-      Link::make(__('orchid.product.variation'))
-        ->route('platform.product.variation.edit', [$productId])
-        ->icon('plus')
-        ->canSee($this->product->exists)
     ];
   }
 
@@ -85,6 +80,7 @@ class ProductEditScreen extends Screen
     $taxonomies = Taxonomy::whereIn('taxonomies.type', $this->productTaxonomies)->get();
     $image = $this->product->attachment()->first();
     $imageUrl = $image ? $image->url() : '';
+    $productId = $this->product->exists ? $this->product->id : 0;
 
     return [
       Layout::rows([
@@ -126,19 +122,17 @@ class ProductEditScreen extends Screen
           ->canSee($this->product->exists),
       ])->title(__('orchid.product.generalInfo')),
 
-      Layout::table('variations', [
-        TD::make(__('orchid.product.variation'))
-          ->render(function (ProductVariation $variation) {
-            return Link::make($variation->name)
-              ->route('platform.product.variation.edit', [$this->product->id, $variation->id]);
-          }),
-        TD::make(__('orchid.actions'))
-          ->render(function (ProductVariation $variation) {
-            return Button::make(__('orchid.delete'))
-              ->confirm(__('orchid.product.areYouSureToDeleteVariation'))
-              ->method('deleteVariation', ['variation' => $variation->id]);
-          })
-      ])->title(__('orchid.product.variations')),
+      Layout::block([
+        Layout::rows([
+          Link::make(__('orchid.product.variation'))
+            ->route('platform.product.variation.edit', [$productId])
+            ->icon('plus')
+            ->canSee($this->product->exists)
+        ]),
+
+        VariationsListLayout::class
+      ])->vertical()
+        ->title(__('orchid.product.variations')),
     ];
   }
 

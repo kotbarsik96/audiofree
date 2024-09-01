@@ -37,5 +37,6 @@ return [
     'variationImage' => 'Изображение вариации',
     'areYouSureToDelete' => 'Уверены, что хотите удалить товар?',
     'areYouSureToDeleteVariation' => 'Уверены, что хотите удалить вариацию?',
+    'otherVariations' => 'Другие вариации этого товара',
   ],
 ];

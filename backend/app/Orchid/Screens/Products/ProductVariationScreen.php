@@ -6,6 +6,7 @@ use App\Http\Requests\Product\ProductVariationRequest;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
+use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Upload;
@@ -35,6 +36,7 @@ class ProductVariationScreen extends Screen
     return [
       'variation' => $variation,
       'product' => $product,
+      'variations' => $product->variations(),
       'gallery' => $this->variation->getAttachmentsIds(
         config('constants.product.variation.gallery_group')
       )->toArray()
@@ -75,6 +77,7 @@ class ProductVariationScreen extends Screen
   {
     return [
       VariationFormLayout::class,
+
       Layout::rows([
         Upload::make('gallery')
           ->path('images/products')
@@ -86,7 +89,9 @@ class ProductVariationScreen extends Screen
         Button::make(__('orchid.save'))
           ->method('saveGallery')
       ])->title(__('orchid.gallery'))
-        ->canSee($this->variation->exists)
+        ->canSee($this->variation->exists),
+
+      VariationsListLayout::class,
     ];
   }
 
@@ -123,7 +128,7 @@ class ProductVariationScreen extends Screen
         $request->input('image')
       );
     } else
-      $this->detachByGroup(config('constants.product.variation.image_group'));
+      $this->variation->detachByGroup(config('constants.product.variation.image_group'));
 
     Alert::info(__('orchid.success'));
   }
