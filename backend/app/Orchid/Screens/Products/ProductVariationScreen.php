@@ -139,11 +139,16 @@ class ProductVariationScreen extends Screen
 
   public function saveGallery(Request $request)
   {
-    $gallery = $request->input('gallery');
+    $galleryGroup = config('constants.product.variation.gallery_group');
+    $galleryMaxImages = config('constants.product.variation.max_gallery_images');
 
-    $this->variation->attachManyWithDetaching(
-      config('constants.product.variation.gallery_group'),
-      $gallery ?? []
-    );
+    $gallery = collect($request->input('gallery') ?? [])
+      ->slice(0, $galleryMaxImages)
+      ->toArray();
+
+    if ($gallery)
+      $this->variation->attachMany($gallery);
+    else
+      $this->variation->detachByGroup($galleryGroup);
   }
 }

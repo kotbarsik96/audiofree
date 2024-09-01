@@ -16,7 +16,7 @@ trait HandleOrchidAttachments
 
   /**
    * Прикрепить только один attachment к указанной группе
-   * Уберет ранее прикрепленный attachment
+   * Уберет ранее прикрепленный attachment'ы
    */
   public function attachSingle($attGroup, $attId = null)
   {
@@ -26,16 +26,8 @@ trait HandleOrchidAttachments
     }
   }
 
-  /** 
-   * Открепит все attachment'ы по указанной группе
-   */
-  public function detachByGroup($attGroup)
-  {
-    $this->attachment($attGroup)->detach();
-  }
-
   /**
-   * Прикрепить к уже существующим attachment'ам еще несколько
+   * Прикрепить переданные аттачменты, открепив все ранее прикрепленные
    */
   public function attachMany(array | null $ids = null)
   {
@@ -43,25 +35,13 @@ trait HandleOrchidAttachments
       $this->attachment()->sync($ids);
     }
   }
-
+  
   /** 
-   * Прикрепит по данной группе только id из массива $ids 
-   * Остальные будут откреплены
+   * Открепит все attachment'ы по указанной группе
    */
-  public function attachManyWithDetaching($attGroup, array $ids = [])
+  public function detachByGroup($attGroup)
   {
-    $ids = array_map(fn($id) => (int) $id, $ids);
-    $attachedIds = $this->getAttachmentsIds($attGroup);
-
-    $attachedIds
-      ->filter(fn($id) => !in_array($id, $ids))
-      ->each(fn($id) => $this->attachment()->detach($id));
-
-    $toAttach = collect($ids)
-      ->filter(fn($id) => !in_array($id, $attachedIds->toArray()))
-      ->toArray();
-
-    $this->attachment()->sync($toAttach);
+    $this->attachment($attGroup)->detach();
   }
 
   /**
