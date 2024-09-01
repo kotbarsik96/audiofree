@@ -102,4 +102,10 @@ class ProductVariation extends Model
       config('constants.product.variation.gallery_group')
     );
   }
+
+  public function detachAndDelete()
+  {
+    $this->detachAll();
+    $this->delete();
+  }
 }

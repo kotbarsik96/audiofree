@@ -134,9 +134,9 @@ class ProductEditScreen extends Screen
           }),
         TD::make(__('orchid.actions'))
           ->render(function (ProductVariation $variation) {
-            Button::make(__('orchid.delete'))
-              ->confirm(__('orchid.product.areYouSureToDelete'))
-              ->method('deleteVariation', [$variation]);
+            return Button::make(__('orchid.delete'))
+              ->confirm(__('orchid.product.areYouSureToDeleteVariation'))
+              ->method('deleteVariation', ['variation' => $variation->id]);
           })
       ])->title(__('orchid.product.variations')),
     ];
@@ -209,8 +209,7 @@ class ProductEditScreen extends Screen
 
   public function deleteVariation(ProductVariation $variation)
   {
-    $variation->detachAll();
-    $variation->delete();
+    $variation->detachAndDelete();
 
     Alert::info(__('orchid.success'));
   }

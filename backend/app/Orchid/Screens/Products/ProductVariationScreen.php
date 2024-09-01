@@ -131,10 +131,16 @@ class ProductVariationScreen extends Screen
     Alert::info(__('orchid.success'));
   }
 
-  public function delete(ProductVariation $variation)
+  public function delete()
   {
-    $variation->detachAll();
-    $variation->delete();
+    $this->variation->detachAndDelete();
+
+    Alert::info(__('orchid.success'));
+
+    return redirect()->route(
+      'platform.product.edit',
+      ['product' => $this->product->id]
+    );
   }
 
   public function saveGallery(Request $request)
@@ -150,5 +156,7 @@ class ProductVariationScreen extends Screen
       $this->variation->attachMany($gallery);
     else
       $this->variation->detachByGroup($galleryGroup);
+
+    Alert::info(__('orchid.success'));
   }
 }
