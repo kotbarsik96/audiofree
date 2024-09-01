@@ -9,9 +9,6 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TaxonomiesController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\App;
-
-App::setLocale(request()->header('Locale'));
 
 // 1. User
 Route::post('signup', [AuthController::class, 'signup']); // 1.1
