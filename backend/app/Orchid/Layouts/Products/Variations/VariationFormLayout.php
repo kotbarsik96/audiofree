@@ -72,6 +72,7 @@ class VariationFormLayout extends Rows
         ->set('value', $quantity),
       Cropper::make('image')
         ->title(__('orchid.product.variationImage'))
+        ->path('images/products')
         ->width(300)
         ->height(300)
         ->groups(config('constants.product.variation.image_group'))

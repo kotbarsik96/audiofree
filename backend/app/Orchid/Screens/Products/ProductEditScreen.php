@@ -106,6 +106,7 @@ class ProductEditScreen extends Screen
           ->set('value', $this->product->exists ? $this->product->description : ''),
         Cropper::make('image')
           ->title(__('orchid.product.image'))
+          ->path('images/products')
           ->width(300)
           ->height(300)
           ->set('value', $imageUrl)
