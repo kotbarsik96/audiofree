@@ -1,4 +1,19 @@
 {
   "Access Controls": "Контроль доступа",
-  "Navigation": "Навигация"
+  "Navigation": "Навигация",
+  "Welcome": "Добро пожаловать!",
+  "Go to any tab to start working": "Переходите на любую вкладку, чтобы начать работу",
+  "Edit Role": "Редактировать Роль",
+  "Modify the privileges and permissions associated with a specific role.": "Изменить привилегии и разрешения, связанные с конкретной ролью.",
+  "Users": "Пользователи",
+  "Roles": "Роли",
+  "Products": "Товары",
+  "To create": "Создать",
+  "To update": "Редактировать",
+  "To delete": "Удалить",
+  "Status": "Статус",
+  "Type": "Тип",
+  "Brand": "Бренд",
+  "Category": "Категория",
+  "Description": "Описание"
 }

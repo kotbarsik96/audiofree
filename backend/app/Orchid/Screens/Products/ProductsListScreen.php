@@ -9,6 +9,13 @@ use Orchid\Screen\Screen;
 
 class ProductsListScreen extends Screen
 {
+  public function permission(): ?iterable
+  {
+    return [
+      'platform.products.*'
+    ];
+  }
+
   /**
    * Fetch data to be displayed on the screen.
    *

@@ -17,129 +17,129 @@ use Orchid\Support\Facades\Toast;
 
 class RoleEditScreen extends Screen
 {
-    /**
-     * @var Role
-     */
-    public $role;
+  /**
+   * @var Role
+   */
+  public $role;
 
-    /**
-     * Fetch data to be displayed on the screen.
-     *
-     * @return array
-     */
-    public function query(Role $role): iterable
-    {
-        return [
-            'role'       => $role,
-            'permission' => $role->getStatusPermission(),
-        ];
-    }
+  /**
+   * Fetch data to be displayed on the screen.
+   *
+   * @return array
+   */
+  public function query(Role $role): iterable
+  {
+    return [
+      'role'       => $role,
+      'permission' => $role->getStatusPermission(),
+    ];
+  }
 
-    /**
-     * The name of the screen displayed in the header.
-     */
-    public function name(): ?string
-    {
-        return 'Edit Role';
-    }
+  /**
+   * The name of the screen displayed in the header.
+   */
+  public function name(): ?string
+  {
+    return 'Edit Role';
+  }
 
-    /**
-     * Display header description.
-     */
-    public function description(): ?string
-    {
-        return 'Modify the privileges and permissions associated with a specific role.';
-    }
+  /**
+   * Display header description.
+   */
+  public function description(): ?string
+  {
+    return 'Modify the privileges and permissions associated with a specific role.';
+  }
 
-    /**
-     * The permissions required to access this screen.
-     */
-    public function permission(): ?iterable
-    {
-        return [
-            'platform.systems.roles',
-        ];
-    }
+  /**
+   * The permissions required to access this screen.
+   */
+  public function permission(): ?iterable
+  {
+    return [
+      'platform.roles.*',
+    ];
+  }
 
-    /**
-     * The screen's action buttons.
-     *
-     * @return Action[]
-     */
-    public function commandBar(): iterable
-    {
-        return [
-            Button::make(__('Save'))
-                ->icon('bs.check-circle')
-                ->method('save'),
+  /**
+   * The screen's action buttons.
+   *
+   * @return Action[]
+   */
+  public function commandBar(): iterable
+  {
+    return [
+      Button::make(__('Save'))
+        ->icon('bs.check-circle')
+        ->method('save'),
 
-            Button::make(__('Remove'))
-                ->icon('bs.trash3')
-                ->method('remove')
-                ->canSee($this->role->exists),
-        ];
-    }
+      Button::make(__('Remove'))
+        ->icon('bs.trash3')
+        ->method('remove')
+        ->canSee($this->role->exists),
+    ];
+  }
 
-    /**
-     * The screen's layout elements.
-     *
-     * @return string[]|\Orchid\Screen\Layout[]
-     */
-    public function layout(): iterable
-    {
-        return [
-            Layout::block([
-                RoleEditLayout::class,
-            ])
-                ->title('Role')
-                ->description('A role is a collection of privileges (of possibly different services like the Users service, Moderator, and so on) that grants users with that role the ability to perform certain tasks or operations.'),
+  /**
+   * The screen's layout elements.
+   *
+   * @return string[]|\Orchid\Screen\Layout[]
+   */
+  public function layout(): iterable
+  {
+    return [
+      Layout::block([
+        RoleEditLayout::class,
+      ])
+        ->title('Role')
+        ->description('A role is a collection of privileges (of possibly different services like the Users service, Moderator, and so on) that grants users with that role the ability to perform certain tasks or operations.'),
 
-            Layout::block([
-                RolePermissionLayout::class,
-            ])
-                ->title('Permission/Privilege')
-                ->description('A privilege is necessary to perform certain tasks and operations in an area.'),
-        ];
-    }
+      Layout::block([
+        RolePermissionLayout::class,
+      ])
+        ->title('Permission/Privilege')
+        ->description('A privilege is necessary to perform certain tasks and operations in an area.'),
+    ];
+  }
 
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function save(Request $request, Role $role)
-    {
-        $request->validate([
-            'role.name' => 'required',
-            'role.slug' => [
-                'required',
-                Rule::unique(Role::class, 'slug')->ignore($role),
-            ],
-        ]);
+  /**
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function save(Request $request, Role $role)
+  {
+    $request->validate([
+      'role.name' => 'required',
+      'role.slug' => [
+        'required',
+        Rule::unique(Role::class, 'slug')->ignore($role),
+      ],
+    ]);
 
-        $role->fill($request->get('role'));
+    $role->fill($request->get('role'));
 
-        $role->permissions = collect($request->get('permissions'))
-            ->map(fn ($value, $key) => [base64_decode($key) => $value])
-            ->collapse()
-            ->toArray();
+    $role->permissions = collect($request->get('permissions'))
+      ->map(fn($value, $key) => [base64_decode($key) => $value])
+      ->collapse()
+      ->toArray();
 
-        $role->save();
+    $role->save();
 
-        Toast::info(__('Role was saved'));
+    Toast::info(__('Role was saved'));
 
-        return redirect()->route('platform.systems.roles');
-    }
+    return redirect()->route('platform.systems.roles');
+  }
 
-    /**
-     * @throws \Exception
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function remove(Role $role)
-    {
-        $role->delete();
+  /**
+   * @throws \Exception
+   *
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function remove(Role $role)
+  {
+    $role->delete();
 
-        Toast::info(__('Role was removed'));
+    Toast::info(__('Role was removed'));
 
-        return redirect()->route('platform.systems.roles');
-    }
+    return redirect()->route('platform.systems.roles');
+  }
 }

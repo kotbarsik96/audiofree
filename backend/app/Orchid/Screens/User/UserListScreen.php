@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
+use App\Models\User;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserFiltersLayout;
 use App\Orchid\Layouts\User\UserListLayout;
+use App\Orchid\Traits\OrchidScreenAuth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Orchid\Platform\Models\User;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -17,6 +18,8 @@ use Orchid\Support\Facades\Toast;
 
 class UserListScreen extends Screen
 {
+  use OrchidScreenAuth;
+
   /**
    * Fetch data to be displayed on the screen.
    *
@@ -51,7 +54,7 @@ class UserListScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.systems.users',
+      'platform.users.*',
     ];
   }
 
@@ -65,7 +68,8 @@ class UserListScreen extends Screen
     return [
       Link::make(__('Add'))
         ->icon('bs.plus-circle')
-        ->route('platform.systems.users.create'),
+        ->route('platform.systems.users.create')
+        ->canSee($this->currentUserCan(['platform.users.create', 'platform.users.update'])),
     ];
   }
 

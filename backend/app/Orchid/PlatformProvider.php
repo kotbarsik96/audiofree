@@ -42,19 +42,19 @@ class PlatformProvider extends OrchidServiceProvider
       Menu::make(__('general.users'))
         ->icon('bs.people')
         ->route('platform.systems.users')
-        ->permission('platform.systems.users')
+        ->permission('platform.users.*')
         ->title(__('Access Controls')),
 
       Menu::make(__('general.roles'))
         ->icon('bs.shield')
         ->route('platform.systems.roles')
-        ->permission('platform.systems.roles'),
+        ->permission('platform.roles.*'),
 
       Menu::make(__('orchid.product.products'))
         ->icon('bs.shield')
         ->route('platform.products')
-        ->divider(),
-      // ->permission('platform.systems.products')
+        ->divider()
+        ->permission('platform.products.*'),
     ];
   }
 
@@ -66,9 +66,25 @@ class PlatformProvider extends OrchidServiceProvider
   public function permissions(): array
   {
     return [
-      ItemPermission::group(__('System'))
-        ->addPermission('platform.systems.roles', __('general.roles'))
-        ->addPermission('platform.systems.users', __('general.users'))
+      // ItemPermission::group(__('System'))
+      //   ->addPermission('platform.systems.roles', __('general.roles'))
+      //   ->addPermission('platform.systems.users', __('general.users'))
+      //   ->addPermission('platform.systems.products', __('general.products')),
+
+      ItemPermission::group(__('Users'))
+        ->addPermission('platform.users.create', __('To create'))
+        ->addPermission('platform.users.update', __('To update'))
+        ->addPermission('platform.users.delete', __('To delete')),
+
+      ItemPermission::group(__('Roles'))
+        ->addPermission('platform.roles.create', __('To create'))
+        ->addPermission('platform.roles.update', __('To update'))
+        ->addPermission('platform.roles.delete', __('To delete')),
+
+      ItemPermission::group(__('Products'))
+        ->addPermission('platform.products.create', __('To create'))
+        ->addPermission('platform.products.update', __('To update'))
+        ->addPermission('platform.products.delete', __('To delete')),
     ];
   }
 }

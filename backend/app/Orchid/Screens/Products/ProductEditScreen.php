@@ -14,7 +14,6 @@ use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
-use Orchid\Screen\TD;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
 
@@ -28,6 +27,13 @@ class ProductEditScreen extends Screen
     'type',
     'category'
   ];
+
+  public function permission(): ?iterable
+  {
+    return [
+      'platform.products.*'
+    ];
+  }
 
   /**
    * Fetch data to be displayed on the screen.
@@ -88,15 +94,20 @@ class ProductEditScreen extends Screen
           ->set('value', $this->product->exists ? $this->product->name : '')
           ->title(__('orchid.product.name')),
         Select::make('status')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'product_status', 'status')),
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'product_status', 'status'))
+          ->title(__('Status')),
         Select::make('type')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'type', 'type')),
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'type', 'type'))
+          ->title(__('Type')),
         Select::make('brand')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'brand')),
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'brand'))
+          ->title(__('Brand')),
         Select::make('category')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'category', 'category')),
+          ->options($this->getTaxonomySelectOptions($taxonomies, 'category', 'category'))
+          ->title(__('Category')),
         TextArea::make('description')
           ->title(__('orchid.description'))
+          ->title(__('Description'))
           ->rows(4)
           ->maxlength(config('constants.product.description.maxlength'))
           ->set('value', $this->product->exists ? $this->product->description : ''),

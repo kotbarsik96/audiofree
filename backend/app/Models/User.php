@@ -98,9 +98,10 @@ class User extends Authenticatable
   /** 
    * Проверяет, авторизован ли пользователь и возвращает его объект
    */
-  public static function authUserEloquent()
+  public static function current(): self
   {
-    return User::find(self::authUser()->id);
+    /** @var App\Models\User */
+    return auth()->user();
   }
 
   /**
