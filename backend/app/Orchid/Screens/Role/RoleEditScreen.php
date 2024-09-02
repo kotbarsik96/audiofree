@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Role;
 
 use App\Orchid\Layouts\Role\RoleEditLayout;
 use App\Orchid\Layouts\Role\RolePermissionLayout;
+use App\Orchid\Traits\OrchidScreenAuth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Orchid\Platform\Models\Role;
@@ -17,6 +18,8 @@ use Orchid\Support\Facades\Toast;
 
 class RoleEditScreen extends Screen
 {
+  use OrchidScreenAuth;
+
   /**
    * @var Role
    */
@@ -57,7 +60,7 @@ class RoleEditScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.roles.*',
+      'platform.role.*',
     ];
   }
 
@@ -71,12 +74,13 @@ class RoleEditScreen extends Screen
     return [
       Button::make(__('Save'))
         ->icon('bs.check-circle')
-        ->method('save'),
+        ->method('save')
+        ->canSee($this->canSave('role')),
 
       Button::make(__('Remove'))
         ->icon('bs.trash3')
         ->method('remove')
-        ->canSee($this->role->exists),
+        ->canSee($this->canDelete('role')),
     ];
   }
 

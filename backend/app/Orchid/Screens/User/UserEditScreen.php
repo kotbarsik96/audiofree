@@ -46,20 +46,6 @@ class UserEditScreen extends Screen
     ];
   }
 
-  public function canDelete()
-  {
-    return $this->currentUserCan('platform.users.delete');
-  }
-
-  public function canSave()
-  {
-    if ($this->user->exists) {
-      return $this->currentUserCan('platform.users.update');
-    } else {
-      return $this->currentUserCan('platform.users.create');
-    }
-  }
-
   /**
    * The name of the screen displayed in the header.
    */
@@ -79,8 +65,7 @@ class UserEditScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.users.create',
-      'platform.users.update',
+      'platform.user.*',
     ];
   }
 
@@ -102,12 +87,12 @@ class UserEditScreen extends Screen
         ->icon('bs.trash3')
         ->confirm(__('Once the account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.'))
         ->method('remove')
-        ->canSee($this->user->exists && $this->canDelete()),
+        ->canSee($this->canDelete('user')),
 
       Button::make(__('Save'))
         ->icon('bs.check-circle')
         ->method('save')
-        ->canSee($this->canSave()),
+        ->canSee($this->canSave('user')),
     ];
   }
 

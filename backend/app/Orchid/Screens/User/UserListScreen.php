@@ -54,7 +54,7 @@ class UserListScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.users.*',
+      'platform.user.*',
     ];
   }
 
@@ -69,7 +69,7 @@ class UserListScreen extends Screen
       Link::make(__('Add'))
         ->icon('bs.plus-circle')
         ->route('platform.systems.users.create')
-        ->canSee($this->currentUserCan(['platform.users.create', 'platform.users.update'])),
+        ->canSee($this->canCreate('user')),
     ];
   }
 
