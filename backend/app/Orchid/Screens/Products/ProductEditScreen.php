@@ -7,7 +7,6 @@ use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
-use App\Orchid\Traits\OrchidScreenAuth;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Cropper;
@@ -20,8 +19,6 @@ use Orchid\Support\Facades\Layout;
 
 class ProductEditScreen extends Screen
 { 
-  use OrchidScreenAuth;
-
   public $product;
 
   protected $productTaxonomies = [
@@ -34,7 +31,7 @@ class ProductEditScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.product.*'
+      'platform.systems.products'
     ];
   }
 
@@ -75,7 +72,7 @@ class ProductEditScreen extends Screen
         ->icon('trash')
         ->method('delete')
         ->confirm(__('orchid.product.areYouSureToDelete'))
-        ->canSee($this->canDelete('product')),
+        ->canSee($this->product->exists),
     ];
   }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Role;
 
 use App\Orchid\Layouts\Role\RoleListLayout;
-use App\Orchid\Traits\OrchidScreenAuth;
 use Orchid\Platform\Models\Role;
 use Orchid\Screen\Action;
 use Orchid\Screen\Actions\Link;
@@ -13,8 +12,6 @@ use Orchid\Screen\Screen;
 
 class RoleListScreen extends Screen
 {
-  use OrchidScreenAuth;
-
   /**
    * Fetch data to be displayed on the screen.
    *
@@ -46,7 +43,7 @@ class RoleListScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.role.*',
+      'platform.systems.roles',
     ];
   }
 
@@ -60,8 +57,7 @@ class RoleListScreen extends Screen
     return [
       Link::make(__('Add'))
         ->icon('bs.plus-circle')
-        ->href(route('platform.systems.roles.create'))
-        ->canSee($this->canCreate('role')),
+        ->href(route('platform.systems.roles.create')),
     ];
   }
 

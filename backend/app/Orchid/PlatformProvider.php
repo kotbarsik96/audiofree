@@ -42,19 +42,19 @@ class PlatformProvider extends OrchidServiceProvider
       Menu::make(__('general.users'))
         ->icon('bs.people')
         ->route('platform.systems.users')
-        ->permission('platform.user.*')
+        ->permission('platform.systems.users')
         ->title(__('Access Controls')),
 
       Menu::make(__('general.roles'))
         ->icon('bs.shield')
         ->route('platform.systems.roles')
-        ->permission('platform.role.*'),
+        ->permission('platform.systems.roles'),
 
       Menu::make(__('orchid.product.products'))
         ->icon('bs.shield')
         ->route('platform.products')
         ->divider()
-        ->permission('platform.product.*'),
+        ->permission('platform.systems.products'),
     ];
   }
 
@@ -66,25 +66,10 @@ class PlatformProvider extends OrchidServiceProvider
   public function permissions(): array
   {
     return [
-      // ItemPermission::group(__('System'))
-      //   ->addPermission('platform.systems.roles', __('general.roles'))
-      //   ->addPermission('platform.systems.users', __('general.users'))
-      //   ->addPermission('platform.systems.products', __('general.products')),
-
-      ItemPermission::group(__('Users'))
-        ->addPermission('platform.user.create', __('To create'))
-        ->addPermission('platform.user.update', __('To update'))
-        ->addPermission('platform.user.delete', __('To delete')),
-
-      ItemPermission::group(__('Roles'))
-        ->addPermission('platform.role.create', __('To create'))
-        ->addPermission('platform.role.update', __('To update'))
-        ->addPermission('platform.role.delete', __('To delete')),
-
-      ItemPermission::group(__('Products'))
-        ->addPermission('platform.product.create', __('To create'))
-        ->addPermission('platform.product.update', __('To update'))
-        ->addPermission('platform.product.delete', __('To delete')),
+      ItemPermission::group(__('System'))
+        ->addPermission('platform.systems.roles', __('orchid.roles'))
+        ->addPermission('platform.systems.users', __('orchid.users'))
+        ->addPermission('platform.systems.products', __('orchid.product.products')),
     ];
   }
 }

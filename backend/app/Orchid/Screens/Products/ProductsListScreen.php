@@ -4,18 +4,15 @@ namespace App\Orchid\Screens\Products;
 
 use App\Models\Product;
 use App\Orchid\Layouts\Products\ProductsListLayout;
-use App\Orchid\Traits\OrchidScreenAuth;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 
 class ProductsListScreen extends Screen
 {
-  use OrchidScreenAuth;
-
   public function permission(): ?iterable
   {
     return [
-      'platform.product.*'
+      'platform.systems.products'
     ];
   }
 
@@ -51,8 +48,7 @@ class ProductsListScreen extends Screen
     return [
       Link::make(__('orchid.product.create'))
         ->icon('bs.plus-circle')
-        ->route('platform.product.edit')
-        ->canSee($this->canCreate('product')),
+        ->route('platform.product.edit'),
     ];
   }
 

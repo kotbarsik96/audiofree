@@ -9,7 +9,6 @@ use App\Orchid\Layouts\Role\RolePermissionLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use App\Orchid\Layouts\User\UserPasswordLayout;
 use App\Orchid\Layouts\User\UserRoleLayout;
-use App\Orchid\Traits\OrchidScreenAuth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,8 +23,6 @@ use Orchid\Support\Facades\Toast;
 
 class UserEditScreen extends Screen
 {
-  use OrchidScreenAuth;
-
   /**
    * @var User
    */
@@ -65,7 +62,7 @@ class UserEditScreen extends Screen
   public function permission(): ?iterable
   {
     return [
-      'platform.user.*',
+      'platform.systems.users',
     ];
   }
 
@@ -87,12 +84,11 @@ class UserEditScreen extends Screen
         ->icon('bs.trash3')
         ->confirm(__('Once the account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.'))
         ->method('remove')
-        ->canSee($this->canDelete('user')),
+        ->canSee($this->user->exists),
 
       Button::make(__('Save'))
         ->icon('bs.check-circle')
-        ->method('save')
-        ->canSee($this->canSave('user')),
+        ->method('save'),
     ];
   }
 
