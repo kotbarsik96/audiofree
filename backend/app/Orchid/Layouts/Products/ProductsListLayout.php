@@ -7,7 +7,6 @@ use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Support\Facades\Layout;
 
 class ProductsListLayout extends Table
 {

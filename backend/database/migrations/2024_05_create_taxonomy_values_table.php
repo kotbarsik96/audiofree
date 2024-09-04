@@ -15,6 +15,7 @@ return new class extends Migration
       $table->id();
       $table->string('slug');
       $table->string('value')->index();
+      $table->string('value_slug');
       $table->timestamps();
 
       $table->foreign('slug')->references('slug')->on('taxonomies')

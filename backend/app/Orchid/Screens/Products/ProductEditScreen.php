@@ -5,12 +5,14 @@ namespace App\Orchid\Screens\Products;
 use App\Http\Requests\Product\ProductRequest;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
+use App\Models\Taxonomy\Taxonomy;
 use App\Models\Taxonomy\TaxonomyValue;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
@@ -18,15 +20,8 @@ use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
 
 class ProductEditScreen extends Screen
-{ 
+{
   public $product;
-
-  protected $productTaxonomies = [
-    'product_status',
-    'brand',
-    'type',
-    'category'
-  ];
 
   public function permission(): ?iterable
   {
@@ -93,35 +88,36 @@ class ProductEditScreen extends Screen
    */
   public function layout(): iterable
   {
-    $taxonomies = TaxonomyValue::whereIn('taxonomies.type', $this->productTaxonomies)->get();
-
     return [
       Layout::rows([
         Input::make('name')
           ->set('value', $this->getAttr('name'))
           ->title(__('orchid.product.name')),
+
         Select::make('status')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'product_status', 'status'))
+          ->options($this->getTaxonomyOptions('product_status'))
           ->set('value', $this->getAttr('status'))
           ->title(__('Status')),
+
         Select::make('type')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'type', 'type'))
+          ->options($this->getTaxonomyOptions('type'))
           ->set('value', $this->getAttr('type'))
           ->title(__('Type')),
+
         Select::make('brand')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'brand'))
+          ->options($this->getTaxonomyOptions('brand'))
           ->set('value', $this->getAttr('brand'))
           ->title(__('Brand')),
+
         Select::make('category')
-          ->options($this->getTaxonomySelectOptions($taxonomies, 'category', 'category'))
+          ->options($this->getTaxonomyOptions('category'))
           ->set('value', $this->getAttr('category'))
           ->title(__('Category')),
-        TextArea::make('description')
-          ->title(__('orchid.description'))
+
+        Quill::make('description')
           ->title(__('Description'))
-          ->rows(4)
-          ->maxlength(config('constants.product.description.maxlength'))
           ->set('value', $this->getAttr('description')),
+
         Cropper::make('image')
           ->title(__('orchid.product.image'))
           ->path('images/products')
@@ -129,18 +125,22 @@ class ProductEditScreen extends Screen
           ->height(300)
           ->groups(config('constants.product.image_group'))
           ->targetId(),
+
         Button::make(__('orchid.create'))
           ->icon('pencil')
           ->method('create')
           ->canSee(!$this->product->exists),
+
         Button::make(__('orchid.save'))
           ->icon('pencil')
           ->method('update')
           ->canSee($this->product->exists),
+
         Input::make('id')
           ->type('hidden')
           ->set('value', $this->getAttr('id'))
           ->canSee($this->product->exists),
+
       ])->title(__('orchid.product.generalInfo')),
 
       Layout::block([
@@ -157,26 +157,13 @@ class ProductEditScreen extends Screen
     ];
   }
 
-  /** 
-   * Опции списков для таксономий при создании/обновлении товара
-   */
-  public function getTaxonomySelectOptions($taxonomies, $taxonomyTypeName, $translationKeyPrefix = null)
+  public function getTaxonomyOptions(string $slug)
   {
-    return $taxonomies->filter(fn($item) => $item['type'] === $taxonomyTypeName)
-      ->mapWithKeys(fn($item) => [
-        $item['name'] => $this->getOptionTranslation($item['name'], $translationKeyPrefix)
-      ])->toArray();
-  }
-
-  /**
-   * Перевод для опции таксономии (если не нужен - не передавать $transitionKeyPrefix)
-   */
-  public function getOptionTranslation($taxonomyType, $translationKeyPrefix = null)
-  {
-    if ($translationKeyPrefix) {
-      return __('db.product.' . $translationKeyPrefix . '.' . $taxonomyType);
-    }
-    return $taxonomyType;
+    $taxonomy = Taxonomy::where('slug', $slug)
+      ->first();
+    return $taxonomy
+      ? $taxonomy->values()->get()->pluck('value')
+      : [];
   }
 
   public function create(ProductRequest $request)

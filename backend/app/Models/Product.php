@@ -54,7 +54,7 @@ class Product extends FilterableModel
     return $allows;
   }
 
-  public function scopeCatalog(Builder $query, $statuses = ['active'])
+  public function scopeCatalog(Builder $query)
   {
     $query->select([
       'products.id',
@@ -62,7 +62,7 @@ class Product extends FilterableModel
       'products.category',
       'products.type',
       DB::raw('AVG(products_rating.value) as rating'),
-    ])->whereIn('status', $statuses)
+    ])
       ->leftJoin('products_rating', 'products_rating.product_id', '=', 'products.id')
       ->groupBy('products.id');
   }

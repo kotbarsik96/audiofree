@@ -11,11 +11,6 @@ return [
     'rating' => [
       'max' => 5
     ],
-    'statuses' => [
-      'active',
-      'inactive',
-      'moderation',
-    ],
     'image_group' => 'product_image',
     // типы таксономий, доступные для фильтров в каталоге
     'catalog_taxonomies' => [
@@ -35,15 +30,14 @@ return [
   ],
   'order' => [
     'statuses' => [
-      'waiting_payment',
-      'in_delivery_paid',
-      'in_delivery_not_paid',
-      'received',
-      'paid',
-      'rejected',
-      'waiting_return',
-      'returned',
-      'canceled'
+      'Ожидает оплаты' => 'waiting_payment',
+      'В доставке, оплачен' => 'in_delivery_paid',
+      'В доставке, не оплачен' => 'in_delivery_not_paid',
+      'Получен' => 'received',
+      'Оплачен' => 'paid',
+      'Отменён' => 'canceled',
+      'Ожидается возврат' => 'waiting_return',
+      'Возвращен' => 'returned'
     ]
   ]
 ];

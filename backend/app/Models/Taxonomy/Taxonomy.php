@@ -16,4 +16,9 @@ class Taxonomy extends Model
   ];
 
   protected $table = 'taxonomies';
+
+  public function values()
+  {
+    return $this->hasMany(TaxonomyValue::class, 'slug', 'slug');
+  }
 }

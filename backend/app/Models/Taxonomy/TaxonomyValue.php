@@ -12,7 +12,8 @@ class TaxonomyValue extends Model
 
   protected $fillable = [
     'slug',
-    'value'
+    'value',
+    'value_slug'
   ];
 
   protected $table = 'taxonomy_values';

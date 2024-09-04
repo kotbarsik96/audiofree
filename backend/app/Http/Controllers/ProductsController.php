@@ -187,7 +187,7 @@ class ProductsController extends Controller
       abort(401, __('abortions.unauthorized'));
 
     $products = Product::filter($request)
-      ->catalog(config('constants.product.statuses'))
+      ->catalog()
       ->get();
 
     return response([
