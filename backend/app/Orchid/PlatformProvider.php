@@ -50,6 +50,11 @@ class PlatformProvider extends OrchidServiceProvider
         ->route('platform.systems.roles')
         ->permission('platform.systems.roles'),
 
+      Menu::make(__('orchid.taxonomy.taxonomies'))
+        ->icon('bs.shield')
+        ->route('platform.taxonomies')
+        ->permission('platform.systems.products'),
+
       Menu::make(__('orchid.product.products'))
         ->icon('bs.shield')
         ->route('platform.products')

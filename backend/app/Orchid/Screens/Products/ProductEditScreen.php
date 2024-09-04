@@ -43,11 +43,21 @@ class ProductEditScreen extends Screen
   public function query(Product $product): iterable
   {
     $product->load('attachment');
+    $image = $product->attachment(config('constants.product.image_group'))->first();
 
     return [
       'product' => $product,
-      'variations' => $product->variations()
+      'variations' => $product->variations(),
+      'image' => $image ? $image->url() : null
     ];
+  }
+
+  /**
+   * @var $attrName - название атрибута товара
+   */
+  public function getAttr($attrName)
+  {
+    return $this->product->exists ? $this->product->$attrName : null;
   }
 
   /**
@@ -84,39 +94,39 @@ class ProductEditScreen extends Screen
   public function layout(): iterable
   {
     $taxonomies = Taxonomy::whereIn('taxonomies.type', $this->productTaxonomies)->get();
-    $image = $this->product->attachment()->first();
-    $imageUrl = $image ? $image->url() : '';
-    $productId = $this->product->exists ? $this->product->id : 0;
 
     return [
       Layout::rows([
         Input::make('name')
-          ->set('value', $this->product->exists ? $this->product->name : '')
+          ->set('value', $this->getAttr('name'))
           ->title(__('orchid.product.name')),
         Select::make('status')
           ->options($this->getTaxonomySelectOptions($taxonomies, 'product_status', 'status'))
+          ->set('value', $this->getAttr('status'))
           ->title(__('Status')),
         Select::make('type')
           ->options($this->getTaxonomySelectOptions($taxonomies, 'type', 'type'))
+          ->set('value', $this->getAttr('type'))
           ->title(__('Type')),
         Select::make('brand')
           ->options($this->getTaxonomySelectOptions($taxonomies, 'brand'))
+          ->set('value', $this->getAttr('brand'))
           ->title(__('Brand')),
         Select::make('category')
           ->options($this->getTaxonomySelectOptions($taxonomies, 'category', 'category'))
+          ->set('value', $this->getAttr('category'))
           ->title(__('Category')),
         TextArea::make('description')
           ->title(__('orchid.description'))
           ->title(__('Description'))
           ->rows(4)
           ->maxlength(config('constants.product.description.maxlength'))
-          ->set('value', $this->product->exists ? $this->product->description : ''),
+          ->set('value', $this->getAttr('description')),
         Cropper::make('image')
           ->title(__('orchid.product.image'))
           ->path('images/products')
           ->width(300)
           ->height(300)
-          ->set('value', $imageUrl)
           ->groups(config('constants.product.image_group'))
           ->targetId(),
         Button::make(__('orchid.create'))
@@ -129,14 +139,14 @@ class ProductEditScreen extends Screen
           ->canSee($this->product->exists),
         Input::make('id')
           ->type('hidden')
-          ->set('value', $this->product->exists ? $this->product->id : '')
+          ->set('value', $this->getAttr('id'))
           ->canSee($this->product->exists),
       ])->title(__('orchid.product.generalInfo')),
 
       Layout::block([
         Layout::rows([
           Link::make(__('orchid.product.variation'))
-            ->route('platform.product.variation.edit', [$productId])
+            ->route('platform.product.variation.edit', [$this->getAttr('id') ?? 0])
             ->icon('plus')
             ->canSee($this->product->exists)
         ]),

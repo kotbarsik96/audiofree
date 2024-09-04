@@ -17,7 +17,9 @@ use Orchid\Support\Facades\Layout;
 class ProductVariationScreen extends Screen
 {
   public $variation;
+  
   public $product;
+
   public $maxGalleryImages;
 
   public function permission(): ?iterable

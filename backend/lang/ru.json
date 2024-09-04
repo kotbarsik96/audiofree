@@ -8,12 +8,16 @@
   "Users": "Пользователи",
   "Roles": "Роли",
   "Products": "Товары",
-  "To create": "Создать",
-  "To update": "Редактировать",
-  "To delete": "Удалить",
+  "Create": "Создать",
+  "Update": "Редактировать",
+  "Delete": "Удалить",
   "Status": "Статус",
   "Type": "Тип",
   "Brand": "Бренд",
   "Category": "Категория",
-  "Description": "Описание"
+  "Description": "Описание",
+  "Are you sure to delete taxonomy?": "Вы уверены, что хотите удалить таксономию?",
+  "Taxonomies list": "Список таксономий",
+  "Edit taxonomy": "Редактировать таксономию",
+  "Group": "Группа"
 }

@@ -2,17 +2,22 @@
 
 declare(strict_types=1);
 
+use App\Models\Taxonomy\TaxonomyType;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Products\ProductEditScreen;
 use App\Orchid\Screens\Products\ProductsListScreen;
 use App\Orchid\Screens\Products\ProductVariationScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Taxonomy\TaxonomyEditScreen;
+use App\Orchid\Screens\Taxonomy\TaxonomyListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
+
+Route::model('taxonomy', TaxonomyType::class);
 
 /*
 |--------------------------------------------------------------------------
@@ -87,8 +92,16 @@ Route::screen('/products', ProductsListScreen::class)
       ->push(__('general.products'))
   );
 // Platform > Product Variation
-Route::screen('/product/{product}/variation/{variation?}', ProductVariationScreen::class)
+Route::screen('/product/{productd}/variation/{variation?}', ProductVariationScreen::class)
   ->name('platform.product.variation.edit');
 // Platform > Product
-Route::screen('/product/{product?}', ProductEditScreen::class)
+Route::screen('/product/{productd?}', ProductEditScreen::class)
   ->name('platform.product.edit');
+
+// Platform > Taxonomies
+Route::screen('/taxonomies', TaxonomyListScreen::class)
+  ->name('platform.taxonomies');
+
+// Platform > Taxonomy
+Route::screen('/taxonomy/{taxonomy?}', TaxonomyEditScreen::class)
+  ->name('platform.taxonomy.edit');

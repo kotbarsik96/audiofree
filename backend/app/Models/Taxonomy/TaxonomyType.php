@@ -10,7 +10,8 @@ class TaxonomyType extends Model
   use HasFactory;
 
   protected $fillable = [
-    'type'
+    'type',
+    'group'
   ];
 
   protected $table = 'taxonomies_types';

@@ -41,4 +41,12 @@ return [
     'areYouSureToDeleteVariation' => 'Уверены, что хотите удалить вариацию?',
     'otherVariations' => 'Другие вариации этого товара',
   ],
+  'taxonomy' => [
+    'taxonomies' => 'Таксономии',
+    'brand' => 'Бренд',
+    'category' => 'Категория',
+    'type' => 'Тип',
+    'product_status' => 'Статус товара',
+    'order_status' => 'Статус заказа',
+  ],
 ];
