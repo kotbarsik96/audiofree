@@ -45,7 +45,7 @@ class ProductVariationScreen extends Screen
     return [
       'variation' => $variation,
       'product' => $product,
-      'variations' => $product->variations(),
+      'variations' => $product->variations()->get(),
       'gallery' => $this->variation->getAttachmentsIds(
         config('constants.product.variation.gallery_group')
       )->toArray()

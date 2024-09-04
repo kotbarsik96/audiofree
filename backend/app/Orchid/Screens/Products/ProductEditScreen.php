@@ -42,7 +42,7 @@ class ProductEditScreen extends Screen
 
     return [
       'product' => $product,
-      'variations' => $product->variations(),
+      'variations' => $product->variations()->get(),
       'image' => $image ? $image->url() : null
     ];
   }

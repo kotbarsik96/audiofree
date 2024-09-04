@@ -21,5 +21,7 @@
   "Edit taxonomy": "Редактировать таксономию",
   "Create taxonomy": "Создать таксономию",
   "Group": "Группа",
-  "Slug": "Метка (URL)"
+  "Slug": "Метка (URL)",
+  "Taxonomy value create": "Создать значение таксономии",
+  "Taxonomy value edit": "Редактировать значение таксономии"
 }

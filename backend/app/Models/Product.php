@@ -92,6 +92,6 @@ class Product extends FilterableModel
 
   public function variations()
   {
-    return $this->hasMany(ProductVariation::class, 'product_id')->get();
+    return $this->hasMany(ProductVariation::class, 'product_id');
   }
 }

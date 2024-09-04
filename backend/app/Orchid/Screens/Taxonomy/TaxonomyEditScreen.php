@@ -3,8 +3,12 @@
 namespace App\Orchid\Screens\Taxonomy;
 
 use App\Http\Requests\Taxonomy\TaxonomyRequest;
+use App\Http\Requests\Taxonomy\TaxonomyValueRequest;
 use App\Models\Taxonomy\Taxonomy;
+use App\Models\Taxonomy\TaxonomyValue;
+use App\Orchid\Layouts\Taxonomy\TaxonomyValuesListTable;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
@@ -29,8 +33,11 @@ class TaxonomyEditScreen extends Screen
    */
   public function query(Taxonomy $taxonomy): iterable
   {
+    // $taxonomy->load('values');
+
     return [
       'taxonomy' => $taxonomy,
+      'taxonomy_values' => $taxonomy->values()->get()
     ];
   }
 
@@ -55,6 +62,7 @@ class TaxonomyEditScreen extends Screen
       Button::make(__('Save'))
         ->method('save')
         ->icon('pencil'),
+
       Button::make(__('Delete'))
         ->method('delete')
         ->icon('trash')
@@ -86,7 +94,18 @@ class TaxonomyEditScreen extends Screen
         Input::make('id')
           ->type('hidden')
           ->set('value', $this->getAttr('id')),
+      ]),
+
+      Layout::block([
+        Layout::rows([
+          Link::make(__('Create'))
+            ->route('platform.taxonomy.value.edit', [$this->taxonomy->id])
+            ->icon('pencil')
+        ]),
+
+        TaxonomyValuesListTable::class,
       ])
+        ->vertical()
     ];
   }
 
@@ -100,6 +119,11 @@ class TaxonomyEditScreen extends Screen
     Alert::info(__('orchid.success'));
 
     return redirect()->route('platform.taxonomies');
+  }
+
+  public function updateValue(TaxonomyValueRequest $request, TaxonomyValue $tValue)
+  {
+    $tValue->update($request->validated());
   }
 
   public function delete(Taxonomy $taxonomy)

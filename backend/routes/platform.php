@@ -11,6 +11,7 @@ use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\Taxonomy\TaxonomyEditScreen;
 use App\Orchid\Screens\Taxonomy\TaxonomyListScreen;
+use App\Orchid\Screens\TaxonomyValueEditScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
@@ -103,3 +104,7 @@ Route::screen('/taxonomies', TaxonomyListScreen::class)
 // Platform > Taxonomy
 Route::screen('/taxonomy/{taxonomy?}', TaxonomyEditScreen::class)
   ->name('platform.taxonomy.edit');
+
+// Platform > Taxonomy value
+Route::screen('/taxonomy-value/{taxonomy}/{tValue?}', TaxonomyValueEditScreen::class)
+  ->name('platform.taxonomy.value.edit');
