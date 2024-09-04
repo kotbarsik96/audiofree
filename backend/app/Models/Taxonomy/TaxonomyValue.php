@@ -11,7 +11,7 @@ class TaxonomyValue extends Model
   use HasFactory;
 
   protected $fillable = [
-    'taxonomy_name',
+    'slug',
     'value'
   ];
 
@@ -20,7 +20,7 @@ class TaxonomyValue extends Model
   public function scopeForCatalog(Builder $query)
   {
     $catalogTaxonomies = config('constants.product.catalog_taxonomies');
-    $query->select(['taxonomy_name', 'value'])
-      ->whereIn('taxonomy_name', $catalogTaxonomies);
+    $query->select(['slug', 'value'])
+      ->whereIn('slug', $catalogTaxonomies);
   }
 }

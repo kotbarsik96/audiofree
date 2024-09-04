@@ -5,6 +5,7 @@ namespace App\Orchid\Screens\Taxonomy;
 use App\Http\Requests\Taxonomy\TaxonomyRequest;
 use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Layouts\Taxonomy\TaxonomyListTable;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 
 class TaxonomyListScreen extends Screen
@@ -38,7 +39,11 @@ class TaxonomyListScreen extends Screen
    */
   public function commandBar(): iterable
   {
-    return [];
+    return [
+      Link::make(__('Create'))
+        ->icon('bs.plus')
+        ->route('platform.taxonomy.edit')
+    ];
   }
 
   /**
@@ -51,5 +56,12 @@ class TaxonomyListScreen extends Screen
     return [
       TaxonomyListTable::class,
     ];
+  }
+
+  public function delete(Taxonomy $taxonomy)
+  {
+    $taxonomy->delete();
+
+    Alert(__('orchid.success'));
   }
 }

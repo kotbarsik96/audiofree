@@ -31,19 +31,19 @@ class TaxonomyListTable extends Table
     return [
       TD::make(__('Type'))
         ->render(function (Taxonomy $taxonomy) {
-          return Link::make(__('orchid.taxonomy.' . $taxonomy->name))
+          return Link::make($taxonomy->name)
             ->route('platform.taxonomy.edit', ['taxonomy' => $taxonomy->id]);
         }),
       TD::make(__('Group'))
         ->render(function (Taxonomy $taxonomy) {
-          return $taxonomy->group;
+          return $taxonomy->group ?? '—';
         }),
       TD::make(__('Actions'))
         ->render(function (Taxonomy $taxonomy) {
           return Group::make([
             Button::make(__('Delete'))
-              ->confirm(__('Are you sure to delete taxonomy?'))
-              ->method('delete', ['taxonomyType' => $taxonomy])
+              ->confirm(__('Are you sure to delete taxonomy?' . '(' . $taxonomy->name . ')'))
+              ->method('delete', ['taxonomy' => $taxonomy->id])
           ]);
         })->cantHide(),
     ];

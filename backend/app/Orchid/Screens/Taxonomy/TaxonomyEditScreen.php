@@ -7,6 +7,7 @@ use App\Models\Taxonomy\Taxonomy;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
 
 class TaxonomyEditScreen extends Screen
@@ -40,7 +41,7 @@ class TaxonomyEditScreen extends Screen
    */
   public function name(): ?string
   {
-    return 'Edit taxonomy';
+    return $this->taxonomy->exists ? 'Edit taxonomy' : 'Create taxonomy';
   }
 
   /**
@@ -53,6 +54,11 @@ class TaxonomyEditScreen extends Screen
     return [
       Button::make(__('Save'))
         ->method('save')
+        ->icon('pencil'),
+      Button::make(__('Delete'))
+        ->method('delete')
+        ->icon('trash')
+        ->canSee($this->taxonomy->exists),
     ];
   }
 
@@ -68,6 +74,11 @@ class TaxonomyEditScreen extends Screen
         Input::make('name')
           ->title(__('Name'))
           ->set('value', $this->getAttr('name')),
+
+        Input::make('slug')
+          ->title(__('Slug'))
+          ->set('value', $this->getAttr('slug')),
+
         Input::make('group')
           ->title(__('Group'))
           ->set('value', $this->getAttr('group')),
@@ -79,7 +90,22 @@ class TaxonomyEditScreen extends Screen
     ];
   }
 
-  public function save(TaxonomyRequest $request) {}
+  public function save(TaxonomyRequest $request)
+  {
+    $validated = $request->validated();
 
-  public function delete(Taxonomy $taxonomy) {}
+    $this->taxonomy->fill($validated);
+    $this->taxonomy->save();
+
+    Alert::info(__('orchid.success'));
+
+    return redirect()->route('platform.taxonomies');
+  }
+
+  public function delete(Taxonomy $taxonomy)
+  {
+    $taxonomy->delete();
+
+    Alert::info(__('orchid.success'));
+  }
 }

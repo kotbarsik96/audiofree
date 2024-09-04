@@ -17,8 +17,6 @@ use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
-Route::model('taxonomy', Taxonomy::class);
-
 /*
 |--------------------------------------------------------------------------
 | Dashboard Routes

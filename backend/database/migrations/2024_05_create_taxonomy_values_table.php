@@ -13,11 +13,11 @@ return new class extends Migration
   {
     Schema::create('taxonomy_values', function (Blueprint $table) {
       $table->id();
-      $table->string('taxonomy_name');
+      $table->string('slug');
       $table->string('value')->index();
       $table->timestamps();
 
-      $table->foreign('taxonomy_name')->references('name')->on('taxonomies')
+      $table->foreign('slug')->references('slug')->on('taxonomies')
         ->cascadeOnDelete()
         ->cascadeOnUpdate();
     });

@@ -25,16 +25,18 @@ class TaxonomyRequest extends FormRequest
     $uniqueRule = Rule::unique('taxonomies')->ignore(request()->input('id'));
 
     return [
+      'name' => [$uniqueRule, 'required', 'string'],
+      'slug' => [$uniqueRule, 'required', 'string'],
       'group' => ['nullable', 'string'],
-      'name' => [$uniqueRule, 'required', 'string']
     ];
   }
 
   public function messages()
   {
     return [
+      'name' => __('validation.taxonomy.name'),
+      'slug' => __('validation.taxonomy.slug'),
       'group' => __('validation.taxonomy.group'),
-      'name' => __('validation.taxonomy.name')
     ];
   }
 }

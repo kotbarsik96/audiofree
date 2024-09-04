@@ -10,6 +10,7 @@ class Taxonomy extends Model
   use HasFactory;
 
   protected $fillable = [
+    'slug',
     'name',
     'group'
   ];

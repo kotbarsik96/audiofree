@@ -15,31 +15,36 @@ class TaxonomiesSeeder extends Seeder
     $now = DB::raw("NOW()");
 
     DB::table('taxonomies')->insert([
-      'name' => 'brand',
+      'name' => 'Бренд',
+      'slug' => 'brand',
       'group' => 'products',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomies')->insert([
-      'name' => 'category',
+      'name' => 'Категория',
+      'slug' => 'category',
       'group' => 'products',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomies')->insert([
-      'name' => 'type',
+      'name' => 'Тип',
+      'slug' => 'type',
       'group' => 'products',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomies')->insert([
-      'name' => 'product_status',
+      'name' => 'Статус товара',
+      'slug' => 'product_status',
       'group' => 'products',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomies')->insert([
-      'name' => 'order_status',
+      'name' => 'Статус заказа',
+      'slug' => 'order_status',
       'group' => 'products',
       'created_at' => $now,
       'updated_at' => $now

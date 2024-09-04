@@ -19,5 +19,7 @@
   "Are you sure to delete taxonomy?": "Вы уверены, что хотите удалить таксономию?",
   "Taxonomies list": "Список таксономий",
   "Edit taxonomy": "Редактировать таксономию",
-  "Group": "Группа"
+  "Create taxonomy": "Создать таксономию",
+  "Group": "Группа",
+  "Slug": "Метка (URL)"
 }

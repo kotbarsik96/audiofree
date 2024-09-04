@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('taxonomies', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('group');
+            $table->string('slug')->unique();
+            $table->string('group')->nullable();
             $table->timestamps();
         });
     }

@@ -17,31 +17,31 @@ class TaxonomyValuesSeeder extends Seeder
     // brands
     DB::table('taxonomy_values')->insert([
       'value' => 'Apple',
-      'taxonomy_name' => 'brand',
+      'slug' => 'brand',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomy_values')->insert([
       'value' => 'Samsung',
-      'taxonomy_name' => 'brand',
+      'slug' => 'brand',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomy_values')->insert([
       'value' => 'Huawei',
-      'taxonomy_name' => 'brand',
+      'slug' => 'brand',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomy_values')->insert([
       'value' => 'Xiaomi',
-      'taxonomy_name' => 'brand',
+      'slug' => 'brand',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomy_values')->insert([
       'value' => 'JBL',
-      'taxonomy_name' => 'brand',
+      'slug' => 'brand',
       'created_at' => $now,
       'updated_at' => $now
     ]);
@@ -49,13 +49,13 @@ class TaxonomyValuesSeeder extends Seeder
     // types
     DB::table('taxonomy_values')->insert([
       'value' => 'wired',
-      'taxonomy_name' => 'type',
+      'slug' => 'type',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('taxonomy_values')->insert([
       'value' => 'wireless',
-      'taxonomy_name' => 'type',
+      'slug' => 'type',
       'created_at' => $now,
       'updated_at' => $now
     ]);
@@ -63,7 +63,7 @@ class TaxonomyValuesSeeder extends Seeder
     // category
     DB::table('taxonomy_values')->insert([
       'value' => 'headphones',
-      'taxonomy_name' => 'category',
+      'slug' => 'category',
       'created_at' => $now,
       'updated_at' => $now
     ]);
@@ -72,7 +72,7 @@ class TaxonomyValuesSeeder extends Seeder
     foreach (config('constants.product.statuses') as $name) {
       DB::table('taxonomy_values')->insert([
         'value' => $name,
-        'taxonomy_name' => 'product_status',
+        'slug' => 'product_status',
         'created_at' => $now,
         'updated_at' => $now
       ]);
@@ -82,7 +82,7 @@ class TaxonomyValuesSeeder extends Seeder
     foreach (config('constants.order.statuses') as $name) {
       DB::table('taxonomy_values')->insert([
         'value' => $name,
-        'taxonomy_name' => 'order_status',
+        'slug' => 'order_status',
         'created_at' => $now,
         'updated_at' => $now
       ]);
