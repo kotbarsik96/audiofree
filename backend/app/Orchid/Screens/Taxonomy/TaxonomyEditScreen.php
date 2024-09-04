@@ -2,8 +2,8 @@
 
 namespace App\Orchid\Screens\Taxonomy;
 
-use App\Http\Requests\Taxonomy\TaxonomyTypeRequest;
-use App\Models\Taxonomy\TaxonomyType;
+use App\Http\Requests\Taxonomy\TaxonomyRequest;
+use App\Models\Taxonomy\Taxonomy;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
@@ -12,7 +12,7 @@ use Orchid\Support\Facades\Layout;
 class TaxonomyEditScreen extends Screen
 {
   /**
-   * @var TaxonomyType
+   * @var Taxonomy
    */
   public $taxonomy;
 
@@ -26,11 +26,10 @@ class TaxonomyEditScreen extends Screen
    *
    * @return array
    */
-  public function query(TaxonomyType $ttype): iterable
+  public function query(Taxonomy $taxonomy): iterable
   {
-    dd(request()->path());
     return [
-      'taxonomy' => $ttype,
+      'taxonomy' => $taxonomy,
     ];
   }
 
@@ -66,9 +65,9 @@ class TaxonomyEditScreen extends Screen
   {
     return [
       Layout::rows([
-        Input::make('type')
-          ->title(__('Type'))
-          ->set('value', $this->getAttr('type')),
+        Input::make('name')
+          ->title(__('Name'))
+          ->set('value', $this->getAttr('name')),
         Input::make('group')
           ->title(__('Group'))
           ->set('value', $this->getAttr('group')),
@@ -80,7 +79,7 @@ class TaxonomyEditScreen extends Screen
     ];
   }
 
-  public function save(TaxonomyTypeRequest $request) {}
+  public function save(TaxonomyRequest $request) {}
 
-  public function delete(TaxonomyType $ttype) {}
+  public function delete(Taxonomy $taxonomy) {}
 }

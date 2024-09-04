@@ -5,7 +5,7 @@ namespace App\Orchid\Screens\Products;
 use App\Http\Requests\Product\ProductRequest;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
-use App\Models\Taxonomy\Taxonomy;
+use App\Models\Taxonomy\TaxonomyValue;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -93,7 +93,7 @@ class ProductEditScreen extends Screen
    */
   public function layout(): iterable
   {
-    $taxonomies = Taxonomy::whereIn('taxonomies.type', $this->productTaxonomies)->get();
+    $taxonomies = TaxonomyValue::whereIn('taxonomies.type', $this->productTaxonomies)->get();
 
     return [
       Layout::rows([

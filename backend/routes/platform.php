@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Taxonomy\TaxonomyType;
+use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Products\ProductEditScreen;
 use App\Orchid\Screens\Products\ProductsListScreen;
@@ -17,7 +17,7 @@ use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
-Route::model('taxonomy', TaxonomyType::class);
+Route::model('taxonomy', Taxonomy::class);
 
 /*
 |--------------------------------------------------------------------------

@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\AppHelper;
-use App\Models\Taxonomy\Taxonomy;
-use Illuminate\Http\Request;
+use App\Models\Taxonomy\TaxonomyValue;
 
 class TaxonomiesController extends Controller
 {
   public function getTypesForCatalog()
   {
-    $taxonomies = Taxonomy::forCatalog()
+    $taxonomies = TaxonomyValue::forCatalog()
       ->get()
       ->groupBy('type')
       ->map(fn($item, $type) => ['type' => $type, 'values' => $item->pluck('name')])

@@ -2,7 +2,7 @@
 
 namespace App\Orchid\Layouts\Taxonomy;
 
-use App\Models\Taxonomy\TaxonomyType;
+use App\Models\Taxonomy\Taxonomy;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Group;
@@ -19,7 +19,7 @@ class TaxonomyListTable extends Table
    *
    * @var string
    */
-  protected $target = 'taxonomies_types';
+  protected $target = 'taxonomies';
 
   /**
    * Get the table cells to be displayed.
@@ -30,20 +30,20 @@ class TaxonomyListTable extends Table
   {
     return [
       TD::make(__('Type'))
-        ->render(function (TaxonomyType $ttype) {
-          return Link::make(__('orchid.taxonomy.' . $ttype->type))
-            ->route('platform.taxonomy.edit', ['taxonomy' => $ttype->id]);
+        ->render(function (Taxonomy $taxonomy) {
+          return Link::make(__('orchid.taxonomy.' . $taxonomy->name))
+            ->route('platform.taxonomy.edit', ['taxonomy' => $taxonomy->id]);
         }),
       TD::make(__('Group'))
-        ->render(function (TaxonomyType $ttype) {
-          return $ttype->group;
+        ->render(function (Taxonomy $taxonomy) {
+          return $taxonomy->group;
         }),
       TD::make(__('Actions'))
-        ->render(function (TaxonomyType $ttype) {
+        ->render(function (Taxonomy $taxonomy) {
           return Group::make([
             Button::make(__('Delete'))
               ->confirm(__('Are you sure to delete taxonomy?'))
-              ->method('delete', ['taxonomyType' => $ttype])
+              ->method('delete', ['taxonomyType' => $taxonomy])
           ]);
         })->cantHide(),
     ];

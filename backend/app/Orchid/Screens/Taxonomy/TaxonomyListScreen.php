@@ -2,8 +2,8 @@
 
 namespace App\Orchid\Screens\Taxonomy;
 
-use App\Http\Requests\Taxonomy\TaxonomyTypeRequest;
-use App\Models\Taxonomy\TaxonomyType;
+use App\Http\Requests\Taxonomy\TaxonomyRequest;
+use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Layouts\Taxonomy\TaxonomyListTable;
 use Orchid\Screen\Screen;
 
@@ -17,7 +17,7 @@ class TaxonomyListScreen extends Screen
   public function query(): iterable
   {
     return [
-      'taxonomies_types' => TaxonomyType::all()
+      'taxonomies' => Taxonomy::all()
     ];
   }
 

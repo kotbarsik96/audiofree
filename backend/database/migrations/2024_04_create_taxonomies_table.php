@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('taxonomies_types', function (Blueprint $table) {
+        Schema::create('taxonomies', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->unique();
+            $table->string('name')->unique();
             $table->string('group');
             $table->timestamps();
         });
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('taxonomies_types');
+        Schema::dropIfExists('taxonomies');
     }
 };

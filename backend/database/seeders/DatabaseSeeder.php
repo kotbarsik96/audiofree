@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 // use Database\Seeders\RolesSeeder;
-use Database\Seeders\TaxonomiesTypesSeeder;
 use Database\Seeders\TaxonomiesSeeder;
+use Database\Seeders\TaxonomyValuesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
   {
     $this->call([
       // RolesSeeder::class,
-      TaxonomiesTypesSeeder::class,
       TaxonomiesSeeder::class,
+      TaxonomyValuesSeeder::class,
     ]);
   }
 }
