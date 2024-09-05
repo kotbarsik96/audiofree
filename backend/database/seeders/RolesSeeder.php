@@ -14,13 +14,26 @@ class RolesSeeder extends Seeder
   {
     $now = DB::raw("NOW()");
 
-    foreach (config('constants.roles') as $name => $priority) {
-      DB::table('roles')->insert([
-        'name' => $name,
-        'priority' => $priority,
-        'created_at' => $now,
-        'updated_at' => $now
-      ]);
-    }
+    DB::table('roles')->insert([
+      'slug' => 'developer',
+      'name' => 'Разработчик',
+      'permissions' => '{"platform.index": "1", "platform.systems.roles": "1", "platform.systems.users": "1", "platform.systems.products": "1", "platform.systems.attachment": "1"}',
+      'created_at' => $now,
+      'updated_at' => $now
+    ]);
+    DB::table('roles')->insert([
+      'slug' => 'administrator',
+      'name' => 'Администратор',
+      'permissions' => '{"platform.index": "1", "platform.systems.roles": "0", "platform.systems.users": "1", "platform.systems.products": "1", "platform.systems.attachment": "1"}',
+      'created_at' => $now,
+      'updated_at' => $now
+    ]);
+    DB::table('roles')->insert([
+      'slug' => 'manager',
+      'name' => 'Менеджер',
+      'permissions' => '{"platform.index": "1", "platform.systems.roles": "0", "platform.systems.users": "0", "platform.systems.products": "1", "platform.systems.attachment": "1"}',
+      'created_at' => $now,
+      'updated_at' => $now
+    ]);
   }
 }

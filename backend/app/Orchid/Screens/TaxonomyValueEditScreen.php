@@ -19,6 +19,11 @@ class TaxonomyValueEditScreen extends Screen
   public $tValue;
 
   /**
+   * @var Taxonomy
+   */
+  public $taxonomy;
+
+  /**
    * Fetch data to be displayed on the screen.
    *
    * @return array
@@ -27,6 +32,7 @@ class TaxonomyValueEditScreen extends Screen
   {
     return [
       'tValue' => $tValue,
+      'taxonomy' => $taxonomy,
       'value' => $tValue->value,
       'slug' => $taxonomy->slug,
       'value_slug' => $tValue->value_slug,
@@ -41,7 +47,9 @@ class TaxonomyValueEditScreen extends Screen
    */
   public function name(): ?string
   {
-    return $this->tValue->exists ? 'Taxonomy value create' : 'Taxonomy value edit';
+    return $this->tValue->exists
+      ? __('Taxonomy value edit') . ': ' . $this->taxonomy->name
+      : 'Taxonomy value create';
   }
 
   /**
@@ -95,7 +103,7 @@ class TaxonomyValueEditScreen extends Screen
 
     Alert::info(__('orchid.success'));
 
-    return redirect()->back();
+    return redirect()->route('platform.taxonomy.edit', [$this->taxonomy->id]);
   }
 
   public function delete()
@@ -103,5 +111,7 @@ class TaxonomyValueEditScreen extends Screen
     $this->tValue->delete();
 
     Alert::info(__('orchid.success'));
+
+    return redirect()->route('platform.taxonomy.edit', [$this->taxonomy->id]);
   }
 }

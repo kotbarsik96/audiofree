@@ -99,9 +99,9 @@ class TaxonomyEditScreen extends Screen
       Layout::block([
         Layout::rows([
           Link::make(__('Create'))
-            ->route('platform.taxonomy.value.edit', [$this->taxonomy->id])
+            ->route('platform.taxonomy.value.edit', [$this->taxonomy->id ?? 0])
             ->icon('pencil')
-        ]),
+        ])->canSee($this->taxonomy->exists),
 
         TaxonomyValuesListTable::class,
       ])
@@ -129,6 +129,15 @@ class TaxonomyEditScreen extends Screen
   public function delete(Taxonomy $taxonomy)
   {
     $taxonomy->delete();
+
+    Alert::info(__('orchid.success'));
+
+    return redirect()->route('platform.taxonomies');
+  }
+
+  public function deleteValue(TaxonomyValue $tValue)
+  {
+    $tValue->delete();
 
     Alert::info(__('orchid.success'));
   }

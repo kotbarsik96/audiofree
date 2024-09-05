@@ -5,8 +5,6 @@ namespace App\Orchid\Layouts\Taxonomy;
 use App\Models\Taxonomy\TaxonomyValue;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Fields\Group;
-use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -40,7 +38,7 @@ class TaxonomyValuesListTable extends Table
         ->render(function (TaxonomyValue $tValue) {
           return Button::make(__('Delete'))
             ->icon('trash')
-            ->method('delete', ['taxonomyValue' => $tValue->id])
+            ->method('deleteValue', ['tValue' => $tValue->id])
             ->confirm(__('Are you sure to delete taxonomy?' . ' (' . $tValue->value . ')'));
         })
     ];
