@@ -94,22 +94,22 @@ class ProductEditScreen extends Screen
 
         Select::make('status_id')
           ->options($this->getTaxonomyOptions('product_status'))
-          ->set('value', $this->getAttr('status'))
+          ->set('value', $this->getAttr('status_id'))
           ->title(__('Status')),
 
         Select::make('type_id')
           ->options($this->getTaxonomyOptions('type'))
-          ->set('value', $this->getAttr('type'))
+          ->set('value', $this->getAttr('type_id'))
           ->title(__('Type')),
 
         Select::make('brand_id')
           ->options($this->getTaxonomyOptions('brand'))
-          ->set('value', $this->getAttr('brand'))
+          ->set('value', $this->getAttr('brand_id'))
           ->title(__('Brand')),
 
         Select::make('category_id')
           ->options($this->getTaxonomyOptions('category'))
-          ->set('value', $this->getAttr('category'))
+          ->set('value', $this->getAttr('category_id'))
           ->title(__('Category')),
 
         Quill::make('description')
@@ -166,6 +166,7 @@ class ProductEditScreen extends Screen
 
   public function create(ProductRequest $request)
   {
+    
     $request->merge([
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,
