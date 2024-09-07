@@ -19,14 +19,11 @@ class Product extends FilterableModel
 
   protected $fillable = [
     'name',
-    'price',
-    'discount',
     'description',
-    'status',
-    'brand',
-    'category',
-    'type',
-    'image_path',
+    'status_id',
+    'brand_id',
+    'category_id',
+    'type_id',
     'created_by',
     'updated_by'
   ];
@@ -39,11 +36,6 @@ class Product extends FilterableModel
     'quantity' => 'integer',
     'rating' => 'integer'
   ];
-
-  public function getImagePath()
-  {
-    return 'products/' . $this->id . '/';
-  }
 
   public static function allowsStore(Product | null $product = null)
   {

@@ -35,7 +35,7 @@ class ProductValidation
 
   public static function taxonomy($required = false)
   {
-    $array = ['string', 'exists:taxonomies,name'];
+    $array = ['exists:taxonomy_values,id'];
     if ($required) array_push($array, 'required');
     return $array;
   }
@@ -44,11 +44,6 @@ class ProductValidation
   {
     $max = config('constants.product.rating.max');
     return ['numeric', 'min:0', 'max:' . $max];
-  }
-
-  public static function imagePath()
-  {
-    return 'exists:images,path';
   }
 
   public static function description()
@@ -73,7 +68,6 @@ class ProductValidation
       'category.exists' => __('validation.category.exists'),
       'brand.exists' => __('validation.brand.exists'),
       'required' => __('validation.required'),
-      'image_path' => __('validation.image_path'),
       'rating_value' => __('validation.rating_value'),
       'description.max' => __('validation.product.description.max')
     ];

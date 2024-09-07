@@ -59,7 +59,7 @@ class ProductVariationScreen extends Screen
    */
   public function name(): ?string
   {
-    return __('orchid.product.variation');
+    return __('orchid.product.variationFor', ['product' => $this->product->name]);
   }
 
   /**

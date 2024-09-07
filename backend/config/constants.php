@@ -20,7 +20,7 @@ return [
       'product_status'
     ],
     'description' => [
-      'maxlength' => 300
+      'maxlength' => 2000
     ],
     'variation' => [
       'image_group' => 'product_variation_image',

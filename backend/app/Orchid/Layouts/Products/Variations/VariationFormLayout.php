@@ -80,8 +80,7 @@ class VariationFormLayout extends Rows
         ->targetId(),
       Input::make('id')
         ->type('hidden')
-        ->set('value', $id)
-        ->canSee(!!$variation),
+        ->set('value', $id),
       Input::make('product_id')
         ->type('hidden')
         ->set('value', $product->id),

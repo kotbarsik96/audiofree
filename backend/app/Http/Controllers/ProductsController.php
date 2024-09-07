@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ProductFilter;
-use App\Http\Requests\Product\VariationGalleryRequest;
 use App\Http\Requests\Product\ProductInfoRequest;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Http\Requests\Product\ProductRemoveRatingRequest;
-use App\Http\Requests\Product\ProductRequest;
-use App\Http\Requests\Product\ProductVariationRequest;
 use App\Models\Product;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
@@ -16,104 +13,6 @@ use App\Models\Product\ProductVariation;
 
 class ProductsController extends Controller
 {
-  public function store(ProductRequest $request)
-  {
-    $validated = array_merge($request->validated(), [
-      'created_by' => auth()->user()->id
-    ]);
-    $product = Product::create($validated);
-
-    return response([
-      'ok' => true,
-      'data' => $product
-    ], 201);
-  }
-
-  public function update(ProductRequest $request)
-  {
-    $validated = $request->validated();
-
-    $product = $request->product;
-    if (!$product)
-      abort(404, __('general.notFoundProduct'));
-
-    $product->update(array_merge($validated, [
-      'updated_by' => auth()->user()->id,
-    ]));
-
-    return response([
-      'ok' => true,
-      'data' => $product
-    ]);
-  }
-
-  public function delete()
-  {
-    $product = Product::getOrAbort(request()->product_id);
-
-    $variations = ProductVariation::where('product_id', $product->id)->get();
-    foreach ($variations as $variation) {
-      $variation->deleteVariation();
-    }
-
-    $name = $product->name;
-    $product->delete();
-
-    return [
-      'ok' => true,
-      'message' => __('general.deletedProduct', ['name' => $name])
-    ];
-  }
-
-  public function storeVariation(ProductVariationRequest $request)
-  {
-    $validated = $request->validated();
-    $product = $request->product;
-
-    $uploadedImage = array_key_exists('image', $validated) ? $validated['image'] : null;
-    $image = $uploadedImage ? ProductVariation::uploadImage($product, $uploadedImage) : null;
-
-    $data = array_merge(['quantity' => 0], $validated);
-    if ($image)
-      $data['image_path'] = $image->path;
-
-    $variation = ProductVariation::createOrUpdate($product, $data);
-    $variation->createOrUpdateGallery();
-
-    $images = array_key_exists('images', $validated)
-      ? $validated['images'] : null;
-    if (is_array($images))
-      $variation->uploadGallery($images, $product);
-
-    return response([
-      'ok' => true
-    ], 200);
-  }
-
-  public function deleteVariation(ProductVariationRequest $request)
-  {
-    $variation = $request->variation;
-    if (!$variation)
-      abort(404, __('abortions.variationNotFound', ['value' => $request->value]));
-
-    $variation->deleteVariation();
-
-    return response([
-      'ok' => true
-    ], 200);
-  }
-
-  public function uploadGallery(VariationGalleryRequest $request)
-  {
-    $request->variation->uploadGallery(
-      $request->images,
-      $request->product
-    );
-
-    return [
-      'ok' => true
-    ];
-  }
 
   public function storeInfo(ProductInfoRequest $request)
   {

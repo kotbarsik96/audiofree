@@ -35,16 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
 
-  // 2. Product-admin
-  Route::post('product', [ProductsController::class, 'store']); // 2.1
-  Route::post('product/update', [ProductsController::class, 'update']); // 2.2
-  Route::delete('product', [ProductsController::class, 'delete']); // 2.3
-  Route::post('product/variation', [ProductsController::class, 'storeVariation']); // 2.4
-  Route::delete('product/variation', [ProductsController::class, 'deleteVariation']); // 2.5
-  Route::post('product/gallery', [ProductsController::class, 'uploadGallery']); // 2.6
-  Route::post('product/info', [ProductsController::class, 'storeInfo']); // 2.7
-  Route::get('products/list', [ProductsController::class, 'productsList']); // 2.8
-
   // 3. Image
   Route::post('image', [ImagesController::class, 'upload']); // 3.1
   Route::delete('image', [ImagesController::class, 'delete']); // 3.2

@@ -6,7 +6,6 @@ use App\Http\Requests\Product\ProductRequest;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
-use App\Models\Taxonomy\TaxonomyValue;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -14,7 +13,6 @@ use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
@@ -94,22 +92,22 @@ class ProductEditScreen extends Screen
           ->set('value', $this->getAttr('name'))
           ->title(__('orchid.product.name')),
 
-        Select::make('status')
+        Select::make('status_id')
           ->options($this->getTaxonomyOptions('product_status'))
           ->set('value', $this->getAttr('status'))
           ->title(__('Status')),
 
-        Select::make('type')
+        Select::make('type_id')
           ->options($this->getTaxonomyOptions('type'))
           ->set('value', $this->getAttr('type'))
           ->title(__('Type')),
 
-        Select::make('brand')
+        Select::make('brand_id')
           ->options($this->getTaxonomyOptions('brand'))
           ->set('value', $this->getAttr('brand'))
           ->title(__('Brand')),
 
-        Select::make('category')
+        Select::make('category_id')
           ->options($this->getTaxonomyOptions('category'))
           ->set('value', $this->getAttr('category'))
           ->title(__('Category')),
@@ -162,7 +160,7 @@ class ProductEditScreen extends Screen
     $taxonomy = Taxonomy::where('slug', $slug)
       ->first();
     return $taxonomy
-      ? $taxonomy->values()->get()->pluck('value')
+      ? $taxonomy->values()->get()->pluck('value', 'id')
       : [];
   }
 
