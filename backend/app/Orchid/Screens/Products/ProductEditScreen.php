@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
+use App\Orchid\Screens\Fields\ProductInfoField;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Cropper;
@@ -19,7 +20,12 @@ use Orchid\Support\Facades\Layout;
 
 class ProductEditScreen extends Screen
 {
+  /**
+   * @var Product;
+   */
   public $product;
+
+  public $info;
 
   public function permission(): ?iterable
   {
@@ -41,7 +47,8 @@ class ProductEditScreen extends Screen
     return [
       'product' => $product,
       'variations' => $product->variations()->get(),
-      'image' => $image ? $image->url() : null
+      'image' => $image ? $image->url() : null,
+      'info' => $product->info()->get()
     ];
   }
 
@@ -124,6 +131,9 @@ class ProductEditScreen extends Screen
           ->groups(config('constants.product.image_group'))
           ->targetId(),
 
+        ProductInfoField::make('info')
+          ->setInfo($this->info),
+
         Button::make(__('orchid.create'))
           ->icon('pencil')
           ->method('create')
@@ -166,7 +176,7 @@ class ProductEditScreen extends Screen
 
   public function create(ProductRequest $request)
   {
-    
+
     $request->merge([
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
+use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductVariation;
 use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Support\Facades\Gate;
@@ -85,5 +86,10 @@ class Product extends FilterableModel
   public function variations()
   {
     return $this->hasMany(ProductVariation::class, 'product_id');
+  }
+
+  public function info()
+  {
+    return $this->hasMany(ProductInfo::class, 'product_id');
   }
 }

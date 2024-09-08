@@ -23,5 +23,7 @@
   "Group": "Группа",
   "Slug": "Метка (URL)",
   "Taxonomy value create": "Создать значение таксономии",
-  "Taxonomy value edit": "Редактировать значение таксономии"
+  "Taxonomy value edit": "Редактировать значение таксономии",
+  "Product info title": "Название характеристики товара",
+  "Product info value": "Значение характеристики товара"
 }

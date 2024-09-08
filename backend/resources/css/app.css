@@ -1,0 +1,32 @@
+._icon-btn {
+  background-color: #d4d4d4;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0px;
+  transition: all 0.3s;
+}
+._icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+._icon-btn:hover {
+  background-color: #969696;
+}
+
+.p-info-table td {
+  border: 1px solid #000;
+  width: 300px;
+}
+.p-info-table input {
+  border: none;
+  width: 100%;
+}
+.p-info-table .p-info-table__actions {
+  border: 0;
+  padding-left: 10px;
+  width: auto;
+}
