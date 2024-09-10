@@ -53,6 +53,11 @@ class ProductValidation
     return ['max:' . $max];
   }
 
+  public static function infoNameAndValue()
+  {
+    return ['distinct:ignore_case,strict'];
+  }
+
   public static function messages()
   {
     return [
@@ -69,7 +74,7 @@ class ProductValidation
       'brand.exists' => __('validation.brand.exists'),
       'required' => __('validation.required'),
       'rating_value' => __('validation.rating_value'),
-      'description.max' => __('validation.product.description.max')
+      'description.max' => __('validation.product.description.max'),
     ];
   }
 }

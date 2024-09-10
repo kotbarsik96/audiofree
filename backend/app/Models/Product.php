@@ -26,7 +26,7 @@ class Product extends FilterableModel
     'category_id',
     'type_id',
     'created_by',
-    'updated_by'
+    'updated_by',
   ];
 
   protected $casts = [
@@ -91,5 +91,22 @@ class Product extends FilterableModel
   public function info()
   {
     return $this->hasMany(ProductInfo::class, 'product_id');
+  }
+
+  public function updateInfo(array $newInfo = null)
+  { 
+    $newNames = collect($newInfo)->pluck('name')->toArray();
+
+    ProductInfo::where('product_id', $this->id)
+      ->whereNotIn('name', $newNames)
+      ->delete();
+
+    foreach($newInfo as $item) {
+      ProductInfo::updateOrCreate([
+        'product_id' => $this->id,
+        'name' => $item['name'],
+        'value' => $item['value'],
+      ]);
+    }
   }
 }

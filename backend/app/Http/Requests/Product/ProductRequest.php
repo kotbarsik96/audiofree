@@ -12,6 +12,17 @@ class ProductRequest extends FormRequest
     return true;
   }
 
+  public function prepareForValidation()
+  {
+    $this->merge([
+      'info' => collect($this->infoName)
+        ->combine($this->infoValue)
+        ->unique()
+        ->map(fn($value, $name) => ['name' => $name, 'value' => $value])
+        ->toArray()
+    ]);
+  }
+
   /**
    * Get the validation rules that apply to the request.
    *
@@ -29,7 +40,8 @@ class ProductRequest extends FormRequest
       'type_id' => $taxonomyValidation,
       'brand_id' => $taxonomyValidation,
       'category_id' => $taxonomyValidation,
-      'description' => ProductValidation::description()
+      'description' => ProductValidation::description(),
+      'info' => 'array'
     ];
   }
 

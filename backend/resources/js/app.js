@@ -11,7 +11,7 @@ function createElement(tagName, attributes = "", innerHTML = "") {
 
 class InfoTable extends window.Controller {
   static get targets() {
-    return ["lastRowForAdd", "removeRowBtn", "row"]
+    return ["lastRowForAdd", "removeRowBtn", "row", "addTitle", "addValue"]
   }
 
   removeRow(event) {
@@ -33,8 +33,10 @@ class InfoTable extends window.Controller {
   }
 
   addNewRow() {
-    const name = ""
-    const value = ""
+    const name = this.addTitleTarget.value.trim()
+    const value = this.addValueTarget.value.trim()
+    if (!name || !value) return
+
     const rows = this.rowTargets.sort((a, b) => {
       return Number(b.dataset.i) - Number(a.dataset.i)
     })
@@ -52,7 +54,7 @@ class InfoTable extends window.Controller {
           <input type="text" name="infoValue[]" value="${value}">
         </td>
         <td class="p-info-table__actions">
-          <button class="_icon-btn" data-info-table-target="removeRowBtn" data-action="click->info-table#removeRow"
+          <button class="_icon-btn _icon-btn--red" data-info-table-target="removeRowBtn" data-action="click->info-table#removeRow"
             data-i="${nextRowI}" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
               class="overflow-visible" viewBox="0 0 16 16" role="img" path="bs.trash3" componentname="orchid-icon">
@@ -67,6 +69,9 @@ class InfoTable extends window.Controller {
 
     this.lastRowForAddTarget.before(tr)
     this.rowTargets.push(tr)
+
+    this.addTitleTarget.value = ""
+    this.addValueTarget.value = ""
   }
 }
 

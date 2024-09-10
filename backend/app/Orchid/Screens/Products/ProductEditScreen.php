@@ -176,7 +176,6 @@ class ProductEditScreen extends Screen
 
   public function create(ProductRequest $request)
   {
-
     $request->merge([
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,
@@ -185,6 +184,7 @@ class ProductEditScreen extends Screen
     $product = Product::create($validated);
 
     $product->attachSingle(config('constants.product.image_group'), $request->input('image'));
+    $product->updateInfo($validated['info']);
 
     Alert::info(__('orchid.success'));
 
@@ -199,6 +199,7 @@ class ProductEditScreen extends Screen
     $validated = $request->validated();
 
     $this->product->update($validated);
+    $this->product->updateInfo($validated['info']);
 
     if ($request->input('image')) {
       $this->product->attachSingle(

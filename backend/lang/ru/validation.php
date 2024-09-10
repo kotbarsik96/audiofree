@@ -180,7 +180,7 @@ return [
   'product' => [
     'description' => [
       'max' => 'Описание должно содержать не более :max символов'
-    ]
+    ],
   ],
 
   'taxonomy' => [

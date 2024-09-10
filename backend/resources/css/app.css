@@ -9,9 +9,16 @@
   border: 0px;
   transition: all 0.3s;
 }
+._icon-btn--green {
+  background-color: green;
+}
+._icon-btn--red {
+  background-color: rgb(141, 0, 0);
+}
 ._icon-btn svg {
   width: 16px;
   height: 16px;
+  color: #ffffff;
 }
 ._icon-btn:hover {
   background-color: #969696;
