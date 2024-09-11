@@ -14,11 +14,17 @@ class ProductRequest extends FormRequest
 
   public function prepareForValidation()
   {
+    /** реверс - чтобы новые столбцы с дублирующими ключами не перезаписали исходные
+     * Например, если передать ['Bluetooth', 'Bluetooth'], ['5.1', '6.1'] - будет взят только 'Bluetooth 5.1'
+     */
+    $infoNames = collect($this->infoName)->reverse();
+    $infoValues = collect($this->infoValue)->reverse();
+
     $this->merge([
-      'info' => collect($this->infoName)
-        ->combine($this->infoValue)
-        ->unique()
+      'info' => $infoNames
+        ->combine($infoValues->toArray())
         ->map(fn($value, $name) => ['name' => $name, 'value' => $value])
+        ->unique('name')
         ->toArray()
     ]);
   }

@@ -43,11 +43,11 @@ class ProductEditScreen extends Screen
   {
     $product->load('attachment');
     $image = $product->attachment(config('constants.product.image_group'))->first();
-
+    
     return [
       'product' => $product,
       'variations' => $product->variations()->get(),
-      'image' => $image ? $image->url() : null,
+      'image' => $image ? $image->id : null,
       'info' => $product->info()->get()
     ];
   }

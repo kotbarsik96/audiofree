@@ -73,6 +73,19 @@ class InfoTable extends window.Controller {
     this.addTitleTarget.value = ""
     this.addValueTarget.value = ""
   }
+
+  refreshCell(event) {
+    const input = event.target.closest("td").querySelector("input")
+    input.value = input.dataset.originValue
+    input.dispatchEvent(new Event("input"))
+  }
+
+  onCellInput(event) {
+    const input = event.target
+    if (input.value === input.dataset.originValue)
+      input.closest("td").classList.remove("unsaved")
+    else input.closest("td").classList.add("unsaved")
+  }
 }
 
 application.register("info-table", InfoTable)
