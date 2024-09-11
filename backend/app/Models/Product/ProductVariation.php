@@ -3,19 +3,20 @@
 namespace App\Models\Product;
 
 use App\Models\Product;
-use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
+use Orchid\Attachment\Models\Attachment;
 
 class ProductVariation extends Model
 {
-  use HasFactory, Attachable, HandleOrchidAttachments;
+  use HasFactory, Attachable;
 
   protected $fillable = [
     'product_id',
+    'image_id',
     'price',
     'discount',
     'image_path',
@@ -105,7 +106,11 @@ class ProductVariation extends Model
 
   public function detachAndDelete()
   {
-    $this->detachAll();
     $this->delete();
+  }
+
+  public function image()
+  {
+    return $this->hasOne(Attachment::class, 'id', 'image_id')->withDefault();
   }
 }

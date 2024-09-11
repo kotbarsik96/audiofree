@@ -42,12 +42,11 @@ class ProductEditScreen extends Screen
   public function query(Product $product): iterable
   {
     $product->load('attachment');
-    $image = $product->attachment(config('constants.product.image_group'))->first();
     
     return [
       'product' => $product,
       'variations' => $product->variations()->get(),
-      'image' => $image ? $image->id : null,
+      'image_id' => $product->image_id,
       'info' => $product->info()->get()
     ];
   }
@@ -123,12 +122,11 @@ class ProductEditScreen extends Screen
           ->title(__('Description'))
           ->set('value', $this->getAttr('description')),
 
-        Cropper::make('image')
+        Cropper::make('image_id')
           ->title(__('orchid.product.image'))
           ->path('images/products')
           ->width(300)
           ->height(300)
-          ->groups(config('constants.product.image_group'))
           ->targetId(),
 
         ProductInfoField::make('info')
@@ -183,7 +181,6 @@ class ProductEditScreen extends Screen
     $validated = $request->validated();
     $product = Product::create($validated);
 
-    $product->attachSingle(config('constants.product.image_group'), $request->input('image'));
     $product->updateInfo($validated['info']);
 
     Alert::info(__('orchid.success'));
@@ -200,14 +197,6 @@ class ProductEditScreen extends Screen
 
     $this->product->update($validated);
     $this->product->updateInfo($validated['info']);
-
-    if ($request->input('image')) {
-      $this->product->attachSingle(
-        config('constants.product.image_group'),
-        $request->input('image')
-      );
-    } else
-      $this->product->detachByGroup(config('constants.product.image_group'));
 
     Alert::info(__('orchid.success'));
   }

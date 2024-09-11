@@ -58,6 +58,11 @@ class ProductValidation
     return ['distinct:ignore_case,strict'];
   }
 
+  public static function imageId()
+  {
+    return ['nullable', 'exists:attachments,id'];
+  }
+
   public static function messages()
   {
     return [
@@ -75,6 +80,7 @@ class ProductValidation
       'required' => __('validation.required'),
       'rating_value' => __('validation.rating_value'),
       'description.max' => __('validation.product.description.max'),
+      'image_id' => __('validation.product.attachmentDoesntExist'),
     ];
   }
 }

@@ -178,6 +178,7 @@ return [
   'incorrectLink' => 'Недействительная ссылка',
 
   'product' => [
+    'attachmentDoesntExist' => 'Вложение не существует',
     'description' => [
       'max' => 'Описание должно содержать не более :max символов'
     ],

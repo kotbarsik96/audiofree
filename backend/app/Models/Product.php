@@ -6,20 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductVariation;
-use App\Models\Traits\HandleOrchidAttachments;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
+use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
 
 class Product extends FilterableModel
 {
-  use HasFactory, AsSource, Attachable, HandleOrchidAttachments;
+  use HasFactory, AsSource, Attachable;
 
   protected $fillable = [
     'name',
+    'image_id',
     'description',
     'status_id',
     'brand_id',
@@ -77,7 +78,6 @@ class Product extends FilterableModel
 
   public function deleteAndAlert()
   {
-    $this->detachAll();
     $this->delete();
 
     Alert::info(__('orchid.success'));
@@ -108,5 +108,10 @@ class Product extends FilterableModel
         'value' => $item['value'],
       ]);
     }
+  }
+
+  public function image()
+  {
+    return $this->hasOne(Attachment::class, 'id', 'image_id')->withDefault();
   }
 }

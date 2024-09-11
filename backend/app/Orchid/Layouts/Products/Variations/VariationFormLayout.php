@@ -70,12 +70,11 @@ class VariationFormLayout extends Rows
           'max' => 1000
         ])
         ->set('value', $quantity),
-      Cropper::make('image')
+      Cropper::make('image_id')
         ->title(__('orchid.product.variationImage'))
         ->path('images/products')
         ->width(300)
         ->height(300)
-        ->groups(config('constants.product.variation.image_group'))
         ->set('value', $image ? $image->url : null)
         ->targetId(),
       Input::make('id')

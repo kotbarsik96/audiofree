@@ -39,6 +39,7 @@ class ProductVariationRequest extends FormRequest
           ->ignore($ignoreId),
         'min:2'
       ],
+      'image_id' => ProductValidation::imageId()
     ];
   }
 

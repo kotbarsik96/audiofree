@@ -43,16 +43,13 @@ class ProductVariationScreen extends Screen
     $this->variation = $variation;
     $this->product = $product;
     $this->maxGalleryImages = config('constants.product.variation.max_gallery_images');
-    $this->image = $variation->attachment(config('constants.product.variation.image_group'))->first();
 
     return [
       'variation' => $variation,
       'product' => $product,
       'variations' => $product->variations()->get(),
-      'image' => $this->image ? $this->image->id : 0,
-      'gallery' => $this->variation->getAttachmentsIds(
-        config('constants.product.variation.gallery_group')
-      )->toArray()
+      'image_id' => $variation->image_id,
+      'gallery' => $variation->attachment(config('constants.product.variation.gallery_group'))->get()->pluck('id')->toArray()
     ];
   }
 
@@ -117,10 +114,6 @@ class ProductVariationScreen extends Screen
     $validated = $request->validated();
 
     $variation = ProductVariation::create($validated);
-    $variation->attachSingle(
-      config('constants.product.variation.image_group'),
-      $request->input('image')
-    );
 
     Alert::info(__('orchid.success'));
 
@@ -135,13 +128,6 @@ class ProductVariationScreen extends Screen
     $validated = $request->validated();
 
     $this->variation->update($validated);
-    if ($request->input('image')) {
-      $this->variation->attachSingle(
-        config('constants.product.variation.image_group'),
-        $request->input('image')
-      );
-    } else
-      $this->variation->detachByGroup(config('constants.product.variation.image_group'));
 
     Alert::info(__('orchid.success'));
   }
@@ -160,14 +146,13 @@ class ProductVariationScreen extends Screen
 
   public function saveGallery(Request $request)
   {
-    $galleryGroup = config('constants.product.variation.gallery_group');
     $galleryMaxImages = config('constants.product.variation.max_gallery_images');
 
     $gallery = collect($request->input('gallery') ?? [])
       ->slice(0, $galleryMaxImages)
       ->toArray();
 
-    $this->variation->attachMany($gallery, $galleryGroup);
+    $this->variation->attachment()->syncWithoutDetaching($gallery);
 
     Alert::info(__('orchid.success'));
   }
