@@ -158,16 +158,14 @@ class AuthController extends Controller
       'email' => AuthValidation::email()
     ]);
 
-    try {
-      EmailConfirmation::checkIfValidCodeExists('verify_email', auth()->user()->id);
-    } catch (Exception $err) {
-      abort(401, 'На текущий привязанный email недавно уже был запрошен код подтверждения');
-    }
-
-    User::changeEmail($validated['email']);
+    $changed = User::changeEmail($validated['email']);
+    if ($changed['wasVerified'])
+      $this->requestVerifyEmail();
 
     return response([
-      'message' => __('general.emailAddressChanged')
+      'message' => $changed['wasVerified']
+        ? __('general.emailAddressChangedCodeSent')
+        : __('general.emailAddressChanged')
     ]);
   }
 

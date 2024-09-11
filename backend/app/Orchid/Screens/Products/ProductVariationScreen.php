@@ -17,10 +17,12 @@ use Orchid\Support\Facades\Layout;
 class ProductVariationScreen extends Screen
 {
   public $variation;
-  
+
   public $product;
 
   public $maxGalleryImages;
+
+  public $image;
 
   public function permission(): ?iterable
   {
@@ -41,11 +43,13 @@ class ProductVariationScreen extends Screen
     $this->variation = $variation;
     $this->product = $product;
     $this->maxGalleryImages = config('constants.product.variation.max_gallery_images');
+    $this->image = $variation->attachment(config('constants.product.variation.image_group'))->first();
 
     return [
       'variation' => $variation,
       'product' => $product,
       'variations' => $product->variations()->get(),
+      'image' => $this->image ? $this->image->id : 0,
       'gallery' => $this->variation->getAttachmentsIds(
         config('constants.product.variation.gallery_group')
       )->toArray()
@@ -163,10 +167,7 @@ class ProductVariationScreen extends Screen
       ->slice(0, $galleryMaxImages)
       ->toArray();
 
-    if ($gallery)
-      $this->variation->attachMany($gallery);
-    else
-      $this->variation->detachByGroup($galleryGroup);
+    $this->variation->attachMany($gallery, $galleryGroup);
 
     Alert::info(__('orchid.success'));
   }

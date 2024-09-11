@@ -131,12 +131,17 @@ class User extends Authenticatable
    */
   public static function changeEmail($newEmail)
   {
-    $user = self::authUserEloquent();
+    $user = self::current();
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    $wasVerified = $user->email_verified_at;
     $user->update([
       'email_verified_at' => null,
       'email' => $newEmail
     ]);
-    User::sendEmailVerifyCode('был изменен адрес электронной почты');
+
+    return ['wasVerified' => $wasVerified];
   }
 
   /** 
@@ -144,7 +149,10 @@ class User extends Authenticatable
    */
   public static function changePassword($newPassword)
   {
-    $user = self::authUserEloquent();
+    $user = self::current();
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
     if (!Hash::check(request('current_password'), $user->password)) {
       abort(401, __('validation.current_password'));
     }

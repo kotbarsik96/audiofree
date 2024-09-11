@@ -13,18 +13,6 @@ use App\Models\Product\ProductVariation;
 
 class ProductsController extends Controller
 {
-
-  public function storeInfo(ProductInfoRequest $request)
-  {
-    $info = $request->validated()['info'];
-    ProductInfo::removeNotInRequest($info, $request->product);
-    ProductInfo::storeFromRequest($info, $request->product);
-
-    return [
-      'ok' => true
-    ];
-  }
-
   public function setRating(ProductRatingRequest $request)
   {
     $product = $request->product;

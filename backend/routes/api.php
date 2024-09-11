@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoritesController;
-use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TaxonomiesController;
@@ -20,10 +19,10 @@ Route::post(
 ); // 1.6.2
 Route::post('profile/reset-password/new-password', [AuthController::class, 'resetPassword']); // 1.6.3
 
-// 4. Catalog
-Route::get('products/catalog', [ProductsController::class, 'catalog']); // 4.1
-Route::get('products/catalog/single', [ProductsController::class, 'productPage']); // 4.2
-Route::get('products/catalog/taxonomies', [TaxonomiesController::class, 'getTypesForCatalog']); // 4.3
+// 2. Catalog
+Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
+Route::get('products/catalog/single', [ProductsController::class, 'productPage']); // 2.2
+Route::get('products/catalog/taxonomies', [TaxonomiesController::class, 'getTypesForCatalog']); // 2.3
 
 Route::middleware('auth:sanctum')->group(function () {
   // 1. User
@@ -34,10 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('profile/verify-email', [AuthController::class, 'verifyEmail']); // 1.7.2
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
-
-  // 3. Image
-  Route::post('image', [ImagesController::class, 'upload']); // 3.1
-  Route::delete('image', [ImagesController::class, 'delete']); // 3.2
 
   // 5. Product rating
   Route::post('product/rating', [ProductsController::class, 'setRating']); // 5.1

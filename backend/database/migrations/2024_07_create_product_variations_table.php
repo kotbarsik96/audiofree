@@ -15,7 +15,8 @@ return new class extends Migration
       $table->id();
       $table->foreignId('product_id')->constrained(table: 'products')
         ->cascadeOnDelete();
-      $table->string('name'); 
+      $table->string('name');
+      $table->foreignId('image_id')->nullable()->constrained('attachments', 'id')->nullOnDelete();
       $table->unsignedInteger('price');
       $table->unsignedSmallInteger('discount')->nullable();
       $table->unsignedInteger('quantity');

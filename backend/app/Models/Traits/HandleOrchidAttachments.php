@@ -22,17 +22,17 @@ trait HandleOrchidAttachments
   {
     if ($attId) {
       $this->detachByGroup($attGroup);
-      $this->attachment()->sync($attId);
+      $this->attachment()->syncWithoutDetaching($attId);
     }
   }
 
   /**
    * Прикрепить переданные аттачменты, открепив все ранее прикрепленные
    */
-  public function attachMany(array | null $ids = null)
+  public function attachMany(array | null $ids = null, $attGroup = null)
   {
     if ($ids) {
-      $this->attachment()->sync($ids);
+      $this->attachment($attGroup)->syncWithoutDetaching($ids);
     }
   }
   

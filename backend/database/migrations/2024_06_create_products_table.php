@@ -15,6 +15,7 @@ return new class extends Migration
       $table->id();
       $table->string("name");
       $table->text('description')->nullable();
+      $table->foreignId('image_id')->nullable()->constrained('attachments', 'id')->nullOnDelete();
       $table->foreignId('status_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
       $table->foreignId('brand_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
       $table->foreignId('category_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
