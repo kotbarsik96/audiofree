@@ -28,8 +28,31 @@ return [
       'max_gallery_images' => 5
     ]
   ],
-  'order' => [
-    'statuses' => [
+  'taxonomy' => [
+    'brands' => [
+      'Apple',
+      'Samsung',
+      'Huawei',
+      'Xiaomi',
+      'JBL',
+      'Sony',
+      'Phillips',
+      'Sennheiser',
+      'Pioneer'
+    ],
+    'types' => [
+      'Проводные' => 'wired',
+      'Беспроводные' => 'wireless',
+      'Беспроводные с шейным ободом' => 'wireless_neckband'
+    ],
+    'product_statuses' => [
+      'Активен' => 'active',
+      'Неактивен' => 'inactive'
+    ],
+    'categories' => [
+      'Наушники' => 'headphones'
+    ],
+    'order_statuses' => [
       'Ожидает оплаты' => 'waiting_payment',
       'В доставке, оплачен' => 'in_delivery_paid',
       'В доставке, не оплачен' => 'in_delivery_not_paid',
@@ -38,6 +61,6 @@ return [
       'Отменён' => 'canceled',
       'Ожидается возврат' => 'waiting_return',
       'Возвращен' => 'returned'
-    ]
-  ]
+    ],
+  ],
 ];

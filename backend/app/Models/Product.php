@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductVariation;
+use Database\Factories\Product\ProductFactory;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
@@ -38,6 +40,11 @@ class Product extends FilterableModel
     'quantity' => 'integer',
     'rating' => 'integer'
   ];
+
+  public static function newFactory(): Factory
+  {
+    return ProductFactory::new();
+  }
 
   public static function allowsStore(Product | null $product = null)
   {

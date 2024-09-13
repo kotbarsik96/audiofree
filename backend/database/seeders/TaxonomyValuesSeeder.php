@@ -15,84 +15,51 @@ class TaxonomyValuesSeeder extends Seeder
     $now = DB::raw("NOW()");
 
     // brands
-    DB::table('taxonomy_values')->insert([
-      'value' => 'Apple',
-      'value_slug' => 'apple',
-      'slug' => 'brand',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomy_values')->insert([
-      'value' => 'Samsung',
-      'value_slug' => 'samsung',
-      'slug' => 'brand',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomy_values')->insert([
-      'value' => 'Huawei',
-      'value_slug' => 'huawei',
-      'slug' => 'brand',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomy_values')->insert([
-      'value' => 'Xiaomi',
-      'value_slug' => 'xiaomi',
-      'slug' => 'brand',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomy_values')->insert([
-      'value' => 'JBL',
-      'value_slug' => 'jbl',
-      'slug' => 'brand',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
+    foreach (config('constants.taxonomy.brands') as $brand) {
+      DB::table('taxonomy_values')->insert([
+        'value' => $brand,
+        'value_slug' => strtolower($brand),
+        'slug' => 'brand',
+        'created_at' => $now,
+        'updated_at' => $now
+      ]);
+    }
 
     // types
-    DB::table('taxonomy_values')->insert([
-      'value_slug' => 'wired',
-      'value' => 'Проводные',
-      'slug' => 'type',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomy_values')->insert([
-      'value_slug' => 'wireless',
-      'value' => 'Беспроводные',
-      'slug' => 'type',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
+    foreach (config('constants.taxonomy.types') as $name => $slug) {
+      DB::table('taxonomy_values')->insert([
+        'value_slug' => $slug,
+        'value' => $name,
+        'slug' => 'type',
+        'created_at' => $now,
+        'updated_at' => $now
+      ]);
+    }
 
     // category
-    DB::table('taxonomy_values')->insert([
-      'value' => 'Наушники',
-      'value_slug' => 'headphones',
-      'slug' => 'category',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
+    foreach (config('constants.taxonomy.categories') as $name => $slug) {
+      DB::table('taxonomy_values')->insert([
+        'value' => $name,
+        'value_slug' => $slug,
+        'slug' => 'category',
+        'created_at' => $now,
+        'updated_at' => $now
+      ]);
+    }
 
-    DB::table('taxonomy_values')->insert([
-      'value_slug' => 'active',
-      'value' => 'Активен',
-      'slug' => 'product_status',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
-    DB::table('taxonomy_values')->insert([
-      'value_slug' => 'inactive',
-      'value' => 'Неактивен',
-      'slug' => 'product_status',
-      'created_at' => $now,
-      'updated_at' => $now
-    ]);
+    // product_status
+    foreach (config('constants.taxonomy.product_statuses') as $name => $slug) {
+      DB::table('taxonomy_values')->insert([
+        'value_slug' => $slug,
+        'value' => $name,
+        'slug' => 'product_status',
+        'created_at' => $now,
+        'updated_at' => $now
+      ]);
+    }
 
     // order_status
-    foreach (config('constants.order.statuses') as $name => $slug) {
+    foreach (config('constants.taxonomy.order_statuses') as $name => $slug) {
       DB::table('taxonomy_values')->insert([
         'value' => $name,
         'value_slug' => $slug,
