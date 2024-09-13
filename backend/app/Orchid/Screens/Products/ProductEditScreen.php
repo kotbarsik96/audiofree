@@ -42,7 +42,7 @@ class ProductEditScreen extends Screen
   public function query(Product $product): iterable
   {
     $product->load('attachment');
-    
+
     return [
       'product' => $product,
       'variations' => $product->variations()->get(),
@@ -146,7 +146,6 @@ class ProductEditScreen extends Screen
           ->type('hidden')
           ->set('value', $this->getAttr('id'))
           ->canSee($this->product->exists),
-
       ])->title(__('orchid.product.generalInfo')),
 
       Layout::block([

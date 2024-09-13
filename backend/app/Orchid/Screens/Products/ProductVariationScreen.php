@@ -9,6 +9,7 @@ use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Upload;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
@@ -49,7 +50,11 @@ class ProductVariationScreen extends Screen
       'product' => $product,
       'variations' => $product->variations()->get(),
       'image_id' => $variation->image_id,
-      'gallery' => $variation->attachment(config('constants.product.variation.gallery_group'))->get()->pluck('id')->toArray()
+      'gallery' => $variation
+        ->attachment(config('constants.product.variation.gallery_group'))
+        ->get()
+        ->pluck('id')
+        ->toArray()
     ];
   }
 
@@ -60,7 +65,7 @@ class ProductVariationScreen extends Screen
    */
   public function name(): ?string
   {
-    return __('orchid.product.variationFor', ['product' => $this->product->name]);
+    return __('orchid.product.variationFor') . $this->product->name;
   }
 
   /**
@@ -74,7 +79,10 @@ class ProductVariationScreen extends Screen
       Button::make(__('orchid.delete'))
         ->method('delete')
         ->confirm(__('orchid.product.areYouSureToDeleteVariation'))
-        ->canSee($this->variation->exists)
+        ->canSee($this->variation->exists),
+
+      Link::make($this->product->name)
+        ->route('platform.product.edit', [$this->product->id])
     ];
   }
 

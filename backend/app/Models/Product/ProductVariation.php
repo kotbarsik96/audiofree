@@ -97,13 +97,6 @@ class ProductVariation extends Model
     return $this->belongsTo(Product::class, 'product_id');
   }
 
-  public function gallery()
-  {
-    return $this->attachment(
-      config('constants.product.variation.gallery_group')
-    );
-  }
-
   public function detachAndDelete()
   {
     $this->delete();
@@ -112,5 +105,12 @@ class ProductVariation extends Model
   public function image()
   {
     return $this->hasOne(Attachment::class, 'id', 'image_id')->withDefault();
+  }
+
+  public function gallery()
+  {
+    return $this->attachment(
+      config('constants.product.variation.gallery_group')
+    );
   }
 }
