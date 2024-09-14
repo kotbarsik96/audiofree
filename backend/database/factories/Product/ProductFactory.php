@@ -4,6 +4,7 @@ namespace Database\Factories\Product;
 
 use App\Models\Product;
 use App\Models\Taxonomy\TaxonomyValue;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -78,8 +79,66 @@ class ProductFactory extends Factory
       'brand_id' => fake()->randomElement($brands),
       'category_id' => fake()->randomElement($categories),
       'type_id' => fake()->randomElement($types),
-      'created_by' => 1,
-      'updated_by' => 1,
+      'created_by' => User::first()->id,
+      'updated_by' => User::first()->id,
     ];
+  }
+
+  public function clearDuplicateVariations(Product $product)
+  {
+    $variations = $product->variations()->get();
+
+    foreach ($variations as $variation) {
+      $withSameName = $variations->filter(fn($v) => $v->name === $variation->name);
+      if ($withSameName->count() > 1) {
+        $takenNames = $product->variations()->get()->pluck('name')->toArray();
+
+        foreach ($withSameName->slice(1) as $dupVariation) {
+          $elementsWithoutDuplicates = collect(ProductVariationFactory::$names)
+            ->filter(fn($name) => !array_search($name, $takenNames));
+
+          $newName = fake()->randomElement($elementsWithoutDuplicates);
+          array_push($takenNames, $newName);
+
+          $dupVariation->update([
+            'name' => $newName
+          ]);
+        }
+      }
+    }
+  }
+
+  public function clearDuplicateInfo(Product $product)
+  {
+    $info = $product->info()->get();
+
+    foreach($info as $item) {
+      $withSameName = $info->filter(fn($i) => $i->name === $item->name);
+      if($withSameName->count() > 1) {
+        $takenNames = $info->pluck('name')->toArray();
+
+        foreach($withSameName->slice(1) as $dupInfo) {
+          $elementsWithoutDuplicates = collect(ProductInfoFactory::$namesAndValues)
+            ->filter(
+              fn($nameAndValue) => array_search($nameAndValue['name'], $takenNames) === false
+            );
+          
+          $newName = fake()->randomElement($elementsWithoutDuplicates)['name'];
+
+          $dupInfo->update([
+            'name' => $newName,
+            'value' => ProductInfoFactory::getRandomValue($newName)
+          ]);
+        }
+      }
+    }
+  }
+
+  public function configure()
+  {
+    return $this->afterCreating(function (Product $product) {
+      $this->clearDuplicateVariations($product);
+      $this->clearDuplicateInfo($product);
+    });
   }
 }

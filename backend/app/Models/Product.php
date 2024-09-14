@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\FilterableModel;
 use App\Models\Product\ProductInfo;
+use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
 use Database\Factories\Product\ProductFactory;
 use Illuminate\Support\Facades\Gate;
@@ -120,5 +121,10 @@ class Product extends FilterableModel
   public function image()
   {
     return $this->hasOne(Attachment::class, 'id', 'image_id')->withDefault();
+  }
+
+  public function rating()
+  {
+    return $this->hasMany(ProductRating::class, 'product_id');
   }
 }

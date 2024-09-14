@@ -3,9 +3,11 @@
 namespace App\Models\Product;
 
 use App\Models\Product;
+use Database\Factories\Product\ProductVariationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
@@ -19,7 +21,6 @@ class ProductVariation extends Model
     'image_id',
     'price',
     'discount',
-    'image_path',
     'quantity',
     'name',
     'created_by',
@@ -34,6 +35,11 @@ class ProductVariation extends Model
   ];
 
   protected $table = 'product_variations';
+
+  public static function newFactory(): Factory
+  {
+    return ProductVariationFactory::new();
+  }
 
   public function scopeGetCurrentPriceQuery()
   {

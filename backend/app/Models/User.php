@@ -9,11 +9,14 @@ use Orchid\Platform\Models\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\EmailConfirmation;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-  use HasApiTokens, Notifiable;
+  use HasApiTokens, Notifiable, HasFactory;
 
   /**
    * The attributes that are mass assignable.
@@ -81,6 +84,11 @@ class User extends Authenticatable
     'updated_at',
     'created_at',
   ];
+
+  public static function newFactory(): Factory 
+  {
+    return UserFactory::new();
+  }
 
   /** 
    * Проверяет, авторизован ли пользователь

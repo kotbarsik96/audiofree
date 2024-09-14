@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use App\Models\Product\ProductInfo;
+use App\Models\Product\ProductRating;
+use App\Models\Product\ProductVariation;
 use Database\Factories\Product\ProductFactory;
 use Illuminate\Database\Seeder;
 
@@ -15,9 +17,13 @@ class ProductSeeder extends Seeder
   public function run(): void
   {
     $productCount = count(ProductFactory::$productNames);
-    Product::factory()
-      ->count($productCount)
-      ->has(ProductInfo::factory()->count(3), 'info')
-      ->create();
+
+    for ($i = 0; $i < $productCount; $i++) {
+      Product::factory()
+        ->has(ProductInfo::factory()->count(rand(15, 20)), 'info')
+        ->has(ProductVariation::factory()->count(rand(1, 3)), 'variations')
+        ->has(ProductRating::factory()->count(rand(1, 50)), 'rating')
+        ->create();
+    }
   }
 }

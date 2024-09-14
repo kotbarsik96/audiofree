@@ -3,6 +3,8 @@
 namespace App\Models\Product;
 
 use App\Models\Product;
+use Database\Factories\ProductRatingFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +19,11 @@ class ProductRating extends Model
     'user_id',
     'value'
   ];
+
+  public static function newFactory(): Factory
+  {
+    return ProductRatingFactory::new();
+  }
 
   public static function getOrAbort($productId, $userId)
   {

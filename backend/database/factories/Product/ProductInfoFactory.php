@@ -93,7 +93,7 @@ class ProductInfoFactory extends Factory
     ],
   ];
 
-  public function getRandomValue(string $name)
+  public static function getRandomValue(string $name)
   {
     $item = self::$namesAndValues[array_search($name, array_column(self::$namesAndValues, 'name'))];
     return fake()->randomElement(explode(' / ', $item['value']));
@@ -115,7 +115,7 @@ class ProductInfoFactory extends Factory
   public function configure()
   {
     return $this->afterCreating(function (ProductInfo $pInfo) {
-      $value = $this->getRandomValue($pInfo->name);
+      $value = self::getRandomValue($pInfo->name);
       $pInfo->update(['value' => $value]);
     });
   }

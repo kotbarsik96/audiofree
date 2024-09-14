@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Filters\ProductFilter;
-use App\Http\Requests\Product\ProductInfoRequest;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Http\Requests\Product\ProductRemoveRatingRequest;
 use App\Models\Product;
