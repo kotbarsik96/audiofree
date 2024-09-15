@@ -23,7 +23,6 @@ return [
       'maxlength' => 2000
     ],
     'variation' => [
-      'image_group' => 'product_variation_image',
       'gallery_group' => 'product_variation_gallery',
       'max_gallery_images' => 5
     ]

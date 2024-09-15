@@ -37,4 +37,20 @@ class ImageService
       unlink($oldImagePath);
     }
   }
+
+  public function imageToWebp($imagePath)
+  {
+    $newImagePath = $imagePath;
+    $imageExtension = pathinfo($imagePath, PATHINFO_EXTENSION);
+
+    if($imageExtension !== 'webp') {
+      $imageName = pathinfo($imagePath, PATHINFO_FILENAME);
+      $newImage = $this->imageManager->read($imagePath);
+      $newImagePath = dirname($imagePath) . '/' . $imageName . '.webp';
+      $newImage->toWebp(75)->save($newImagePath);
+      unlink($imagePath);
+    }
+
+    return $newImagePath;
+  }
 }

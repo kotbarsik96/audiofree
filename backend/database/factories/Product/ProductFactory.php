@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Taxonomy\TaxonomyValue;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Orchid\Attachment\Models\Attachment;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
@@ -71,10 +72,13 @@ class ProductFactory extends Factory
     $brands = TaxonomyValue::where('slug', 'brand')->get()->pluck('id');
     $categories = TaxonomyValue::where('slug', 'category')->get()->pluck('id');
     $types = TaxonomyValue::where('slug', 'type')->get()->pluck('id');
+    $images = Attachment::where('group', config('constants.product.image_group'))
+      ->get()->pluck('id');
 
     return [
       'name' => fake()->unique()->randomElement($names),
       'description' => fake()->randomElement($descriptions),
+      'image_id' => fake()->randomElement($images),
       'status_id' => $statusId,
       'brand_id' => fake()->randomElement($brands),
       'category_id' => fake()->randomElement($categories),
@@ -112,17 +116,17 @@ class ProductFactory extends Factory
   {
     $info = $product->info()->get();
 
-    foreach($info as $item) {
+    foreach ($info as $item) {
       $withSameName = $info->filter(fn($i) => $i->name === $item->name);
-      if($withSameName->count() > 1) {
+      if ($withSameName->count() > 1) {
         $takenNames = $info->pluck('name')->toArray();
 
-        foreach($withSameName->slice(1) as $dupInfo) {
+        foreach ($withSameName->slice(1) as $dupInfo) {
           $elementsWithoutDuplicates = collect(ProductInfoFactory::$namesAndValues)
             ->filter(
               fn($nameAndValue) => array_search($nameAndValue['name'], $takenNames) === false
             );
-          
+
           $newName = fake()->randomElement($elementsWithoutDuplicates)['name'];
 
           $dupInfo->update([

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
       TaxonomiesSeeder::class,
       TaxonomyValuesSeeder::class,
       UserSeeder::class,
+      AttachmentSeeder::class,
       ProductSeeder::class,
     ]);
   }
