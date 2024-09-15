@@ -49,7 +49,7 @@ class ProductVariationFactory extends Factory
   {
     $this->galleryImagesIds = Attachment::where('group', config('constants.product.variation.gallery_group'))
       ->get()->pluck('id');
-      
+
     $count = fake()->numberBetween(1, config('constants.product.variation.max_gallery_images'));
 
     for ($i = 0; $i < $count; $i++) {
@@ -63,8 +63,6 @@ class ProductVariationFactory extends Factory
 
   public function configure()
   {
-    \Illuminate\Support\Facades\Log::info($this->galleryImagesIds);
-
     return $this->afterCreating(function (ProductVariation $variation) {
       $this->attachGalleries($variation);
     });

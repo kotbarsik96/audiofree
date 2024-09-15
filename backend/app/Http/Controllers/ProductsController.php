@@ -39,48 +39,31 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $products =  Product::filter($request)->catalog()->onlyInStock()->get();
-    foreach ($products as $product) {
-      $priceAndDiscount = ProductVariation::minPriceAndDiscount($product->id)
-        ->first();
-      $product->price = $priceAndDiscount?->price;
-      $product->current_min_price = $priceAndDiscount?->current_price;
-      $product->discount = $priceAndDiscount?->discount;
-    }
-    return $products;
-  }
+  //   // $products =  Product::filter($request)->catalog()->onlyInStock()->get();
+  //   // foreach ($products as $product) {
+  //   //   $priceAndDiscount = ProductVariation::minPriceAndDiscount($product->id)
+  //   //     ->first();
+  //   //   $product->price = $priceAndDiscount?->price;
+  //   //   $product->current_min_price = $priceAndDiscount?->current_price;
+  //   //   $product->discount = $priceAndDiscount?->discount;
+  //   // }
+  //   // return $products;
+  // }
 
-  public function productPage()
-  {
-    $product = Product::forPage(request()->product_id)
-      ->first();
-    if (!$product)
-      abort(404, __('general.notFoundProduct'));
+  // public function productPage()
+  // {
+  //   // $product = Product::forPage(request()->product_id)
+  //   //   ->first();
+  //   // if (!$product)
+  //   //   abort(404, __('general.notFoundProduct'));
 
-    return response([
-      'ok' => true,
-      'data' => [
-        'product' => $product,
-        'variations' => ProductVariation::forProduct($product->id, true),
-        'info' => ProductInfo::forProduct($product->id)->get()
-      ]
-    ]);
-  }
-
-  public function productsList(ProductFilter $request)
-  {
-    if (!Product::allowsStore())
-      abort(401, __('abortions.unauthorized'));
-
-    $products = Product::filter($request)
-      ->catalog()
-      ->get();
-
-    return response([
-      'ok' => true,
-      'data' => [
-        'products' => $products
-      ]
-    ]);
+  //   // return response([
+  //   //   'ok' => true,
+  //   //   'data' => [
+  //   //     'product' => $product,
+  //   //     'variations' => ProductVariation::forProduct($product->id, true),
+  //   //     'info' => ProductInfo::forProduct($product->id)->get()
+  //   //   ]
+  //   // ]);
   }
 }

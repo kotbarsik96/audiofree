@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\FilterableModel;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
+use App\Traits\Filterable;
 use Database\Factories\Product\ProductFactory;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,7 @@ use Orchid\Support\Facades\Alert;
 
 class Product extends FilterableModel
 {
-  use HasFactory, AsSource, Attachable;
+  use HasFactory, AsSource, Attachable, Filterable;
 
   protected $fillable = [
     'name',
@@ -45,43 +46,6 @@ class Product extends FilterableModel
   public static function newFactory(): Factory
   {
     return ProductFactory::new();
-  }
-
-  public static function allowsStore(Product | null $product = null)
-  {
-    if (!$product) $product = Product::find(request()->product_id);
-    $allows = $product
-      ? Gate::allows('update-product', $product)
-      : Gate::allows('create-product');
-    return $allows;
-  }
-
-  public function scopeCatalog(Builder $query)
-  {
-    $query->select([
-      'products.id',
-      'products.name',
-      'products.category',
-      'products.type',
-      DB::raw('AVG(products_rating.value) as rating'),
-    ])
-      ->leftJoin('products_rating', 'products_rating.product_id', '=', 'products.id')
-      ->groupBy('products.id');
-  }
-
-  public function scopeOnlyInStock(Builder $query)
-  {
-    $query->addSelect([
-      DB::raw('MAX(product_variations.quantity) as max_quantity'),
-    ])->leftJoin('product_variations', 'product_variations.product_id', '=', 'products.id')
-      ->having('max_quantity', '>', 0);
-  }
-
-  public function scopeForPage(Builder $query, $productId)
-  {
-    $query->catalog()
-      ->addSelect(['products.status', 'products.description'])
-      ->where('products.id', $productId);
   }
 
   public function deleteAndAlert()
