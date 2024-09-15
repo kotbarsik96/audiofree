@@ -2,14 +2,18 @@
 
 namespace Database\Factories\Product;
 
+use App\Models\Product\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchid\Attachment\Models\Attachment;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
 class ProductVariationFactory extends Factory
 {
+  protected $galleryImagesIds = [];
+
   public static $names = [
     'Чёрный',
     'Белый',
@@ -39,5 +43,30 @@ class ProductVariationFactory extends Factory
       'created_by' => 1,
       'updated_by' => 1,
     ];
+  }
+
+  public function attachGalleries(ProductVariation $variation)
+  {
+    $this->galleryImagesIds = Attachment::where('group', config('constants.product.variation.gallery_group'))
+      ->get()->pluck('id');
+      
+    $count = fake()->numberBetween(1, config('constants.product.variation.max_gallery_images'));
+
+    for ($i = 0; $i < $count; $i++) {
+      DB::table('attachmentable')->insert([
+        'attachmentable_type' => ProductVariation::class,
+        'attachmentable_id' => $variation->id,
+        'attachment_id' => fake()->randomElement($this->galleryImagesIds)
+      ]);
+    }
+  }
+
+  public function configure()
+  {
+    \Illuminate\Support\Facades\Log::info($this->galleryImagesIds);
+
+    return $this->afterCreating(function (ProductVariation $variation) {
+      $this->attachGalleries($variation);
+    });
   }
 }
