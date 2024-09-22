@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
+use App\Models\Taxonomy\TaxonomyValue;
 use App\Traits\Filterable;
 use Database\Factories\Product\ProductFactory;
 use Illuminate\Support\Facades\Gate;
@@ -18,7 +19,7 @@ use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
 
-class Product extends FilterableModel
+class Product extends Model
 {
   use HasFactory, AsSource, Attachable, Filterable;
 
@@ -66,14 +67,14 @@ class Product extends FilterableModel
   }
 
   public function updateInfo(array $newInfo = null)
-  { 
+  {
     $newNames = collect($newInfo)->pluck('name')->toArray();
 
     ProductInfo::where('product_id', $this->id)
       ->whereNotIn('name', $newNames)
       ->delete();
 
-    foreach($newInfo as $item) {
+    foreach ($newInfo as $item) {
       ProductInfo::updateOrCreate([
         'product_id' => $this->id,
         'name' => $item['name'],
@@ -90,5 +91,19 @@ class Product extends FilterableModel
   public function rating()
   {
     return $this->hasMany(ProductRating::class, 'product_id');
+  }
+
+  public function scopeActiveStatus(Builder $query)
+  {
+    $status = TaxonomyValue::where('slug', 'product_status')
+      ->where('value_slug', 'active')
+      ->first();
+
+    return $query->where('status_id', $status->id);
+  }
+
+  public function status()
+  {
+    return $this->hasOne(TaxonomyValue::class, 'id', 'status_id');
   }
 }

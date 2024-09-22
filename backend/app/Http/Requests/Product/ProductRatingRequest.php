@@ -14,8 +14,7 @@ class ProductRatingRequest extends FormRequest
 
   public function authorize(): bool
   {
-    $this->product = Product::getOrAbort(request()->product_id);
-    return Gate::allows('set-rating');
+    return !!auth()->user();
   }
 
   /**

@@ -119,4 +119,9 @@ class ProductVariation extends Model
       config('constants.product.variation.gallery_group')
     );
   }
+
+  public function priceWithDiscount()
+  {
+    return $this->price - ($this->price / 100 * $this->discount);
+  }
 }

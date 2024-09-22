@@ -40,30 +40,23 @@ class ProductRating extends Model
   {
     $user = auth()->user();
 
-    $ratingInfo = self::where('product_id', $product->id)
-      ->where('user_id', $user->id)
-      ->first();
-    if ($ratingInfo && $ratingInfo->value !== $value) {
-      $ratingInfo->update([
-        'value' => $value
-      ]);
-    } else {
-      self::create([
+    $rating = ProductRating::firstOrCreate(
+      [
         'product_id' => $product->id,
-        'user_id' => $user->id,
-        'value' => $value
-      ]);
-    }
+        'user_id' => $user->id
+      ],
+      ['value' => $value]
+    );
+    $rating->value = $value;
+    $rating->save();
   }
 
   public static function removeRating(Product $product)
   {
     $user = auth()->user();
 
-    $ratingInfo = self::where('product_id', $product->id)
+    self::where('product_id', $product->id)
       ->where('user_id', $user->id)
-      ->first();
-
-    if ($ratingInfo) $ratingInfo->delete();
+      ->delete();
   }
 }

@@ -21,7 +21,7 @@ Route::post('profile/reset-password/new-password', [AuthController::class, 'rese
 
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
-Route::get('products/catalog/single', [ProductsController::class, 'productPage']); // 2.2
+Route::get('product', [ProductsController::class, 'productPage']); // 2.2
 Route::get('products/catalog/taxonomies', [TaxonomiesController::class, 'getTypesForCatalog']); // 2.3
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -34,9 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
 
-  // 5. Product rating
-  Route::post('product/rating', [ProductsController::class, 'setRating']); // 5.1
-  Route::delete('product/rating', [ProductsController::class, 'removeRating']); // 5.2
+  // 3. Product rating
+  Route::post('product/rating', [ProductsController::class, 'setRating']); // 3.1
+  Route::delete('product/rating', [ProductsController::class, 'removeRating']); // 3.2
 
   // 6. Product cart
   Route::post('product/cart', [CartController::class, 'store']); // 6.1

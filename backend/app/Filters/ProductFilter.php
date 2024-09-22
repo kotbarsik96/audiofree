@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use App\Filters\QueryFilter;
+use App\Models\Taxonomy\TaxonomyValue;
 
 class ProductFilter extends QueryFilter
 {
@@ -13,12 +14,15 @@ class ProductFilter extends QueryFilter
     $this->builder->where('name', 'LIKE', '%' . $value . '%');
   }
 
-  public function taxonomy(array | null $taxonomies, string $type)
+  public function taxonomy(array | null $taxonomies, string $slug)
   {
+    $taxonomyValues = TaxonomyValue::where('slug', $slug)
+      ->whereIn('value_slug', $taxonomies)
+      ->get();
     if (!$taxonomies) return;
     if (count($taxonomies) < 1) return;
 
-    $this->builder->whereIn($type, $taxonomies);
+    $this->builder->whereIn($slug . '_id', $taxonomyValues->pluck('id'));
   }
 
   public function brand(array $values)
