@@ -4,13 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
-use App\Http\Requests\Product\ProductRemoveRatingRequest;
 use App\Models\Product;
-use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
-use App\Models\Product\ProductVariation;
-use App\Models\Taxonomy\TaxonomyValue;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
@@ -42,26 +37,25 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $products = Product::select(['id', 'name', 'image_id', 'status_id'])
+    $products = Product::select([
+      'products.id',
+      'products.name',
+      'products.image_id',
+      'status_id',
+      DB::raw('MIN(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as min_price'),
+      DB::raw('MAX(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as max_price'),
+    ])
       ->filter($request)
       ->activeStatus()
-      ->with('image:id,name,extension,path,alt,disk')
-      ->get()
-      ->map(function ($product) {
-        $variations = $product->variations();
-        $product->min_price = (int) $variations
-          ->min(DB::raw('price - (price / 100 * discount)'));
-        $product->max_price = (int) $variations
-          ->max(DB::raw('price - (price / 100 * discount)'));
-        $product->variation = $variations->first()->id;
+      ->with([
+        'image:id,name,extension,path,alt,disk',
+        'firstVariation:id,product_id'
+      ])
+      ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
+      ->groupBy('products.id')
+      ->paginate(request('per_page') ?? 12);
 
-        return $product;
-      });
-
-    return response([
-      'ok' => true,
-      'data' => $products
-    ]);
+    return $products;
   }
 
   public function productPage()

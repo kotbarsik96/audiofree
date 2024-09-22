@@ -38,10 +38,10 @@ class Product extends Model
   protected $casts = [
     'price' => 'integer',
     'discount' => 'integer',
-    'current_min_price' => 'float',
-    'current_price' => 'integer',
     'quantity' => 'integer',
-    'rating' => 'integer'
+    'rating' => 'integer',
+    'min_price' => 'float',
+    'max_price' => 'float',
   ];
 
   public static function newFactory(): Factory
@@ -59,6 +59,11 @@ class Product extends Model
   public function variations()
   {
     return $this->hasMany(ProductVariation::class, 'product_id');
+  }
+
+  public function firstVariation()
+  {
+    return $this->hasOne(ProductVariation::class, 'product_id');
   }
 
   public function info()
