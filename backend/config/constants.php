@@ -12,13 +12,6 @@ return [
       'max' => 5
     ],
     'image_group' => 'product_image',
-    // типы таксономий, доступные для фильтров в каталоге
-    'catalog_taxonomies' => [
-      'brand',
-      'category',
-      'type',
-      'product_status'
-    ],
     'description' => [
       'maxlength' => 2000
     ],
