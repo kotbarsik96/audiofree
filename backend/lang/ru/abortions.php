@@ -20,4 +20,6 @@ return [
   'alreadyInFavorites' => 'Товар уже в избранном',
   'notInFavorites' => 'Товара нет в избранном',
   'emailAlreadyVerified' => 'Email уже подтверждён',
+  'cartItemNotFound' => 'Товара нет в корзине',
+  'wrongQuantity' => 'Неверное количество'
 ];

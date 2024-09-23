@@ -2,13 +2,10 @@
 
 namespace App\Models\Cart;
 
-use App\Models\Product;
 use App\Models\Product\ProductVariation;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Cart extends Model
 {
@@ -26,4 +23,23 @@ class Cart extends Model
   protected $casts = [
     'current_price' => 'integer'
   ];
+
+  public function variation()
+  {
+    return $this->hasOne(ProductVariation::class, 'id', 'variation_id');
+  }
+
+  public static function itemOrFail(int $variationId = null, $isOneclick = null)
+  {
+    if(empty($variationId)) $variationId = request('variation_id');
+    if(empty($isOneclick)) $isOneclick = request('is_oneclick');
+
+    $item =  Cart::where('variation_id', $variationId)
+      ->where('is_oneclick', (int) !!$isOneclick)
+      ->first();
+
+    throw_if(!$item, new NotFoundHttpException(__('abortions.cartItemNotFound')));
+
+    return $item;
+  }
 }

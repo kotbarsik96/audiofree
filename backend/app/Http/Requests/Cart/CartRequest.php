@@ -18,7 +18,14 @@ class CartRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'variation_id' => 'exists:product_variations,id'
+      'variation_id' => 'exists:product_variations,id',
+    ];
+  }
+
+  public function messages()
+  {
+    return [
+      'variation_id' => __('validation.cart.variation_id')
     ];
   }
 }
