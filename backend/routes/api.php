@@ -43,10 +43,10 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('product/cart', [CartController::class, 'get']); // 4.2
   Route::delete('product/cart/item', [CartController::class, 'delete']); // 4.3
 
-  // 7. Product favorites
-  Route::post('product/favorites', [FavoritesController::class, 'store']); // 7.1
-  Route::get('product/favorites', [FavoritesController::class, 'get']); // 7.2
-  Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 7.3
+  // 5. Product favorites
+  Route::post('product/favorites', [FavoritesController::class, 'store']); // 5.1
+  Route::get('product/favorites', [FavoritesController::class, 'get']); // 5.2
+  Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 5.3
 
   // 8. Product order
   Route::post('product/order', [OrdersController::class, 'store']); // 8.1

@@ -34,7 +34,7 @@ class Cart extends Model
     if(empty($variationId)) $variationId = request('variation_id');
     if(empty($isOneclick)) $isOneclick = request('is_oneclick');
 
-    $item =  Cart::where('variation_id', $variationId)
+    $item =  self::where('variation_id', $variationId)
       ->where('is_oneclick', (int) !!$isOneclick)
       ->first();
 

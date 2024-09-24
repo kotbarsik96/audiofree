@@ -22,6 +22,8 @@ return [
   'orderAccepted' => 'Заказ оформлен',
   'orderCanceled' => 'Заказ отменен',
   'notInFavorites' => 'Товар не в избранном',
+  'addedToFavorites' => 'Товар :product (:variation) добавлен в избранное',
+  'removedFromFavorites' => 'Товар :product (:variation) больше не в избранном',
   'helloUser' => 'Здравствуйте, :username',
   'byeUser' => 'До свидания, :username',
   'emailSent' => 'Письмо отправлено на указанный адрес email',

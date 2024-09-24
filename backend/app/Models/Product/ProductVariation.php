@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProductVariation extends Model
 {
@@ -123,5 +124,13 @@ class ProductVariation extends Model
   public function priceWithDiscount()
   {
     return $this->price - ($this->price / 100 * $this->discount);
+  }
+
+  public static function itemOrFail($variationId)
+  {
+    $variation = self::find($variationId);
+    throw_if(!$variation, new NotFoundHttpException(__('abortions.variationNotFound2')));
+
+    return $variation;
   }
 }
