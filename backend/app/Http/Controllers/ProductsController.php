@@ -49,7 +49,8 @@ class ProductsController extends Controller
       ->activeStatus()
       ->with([
         'image:id,name,extension,path,alt,disk',
-        'firstVariation:id,product_id'
+        'firstVariation:id,product_id',
+        'status:id,value,value_slug'
       ])
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id')
