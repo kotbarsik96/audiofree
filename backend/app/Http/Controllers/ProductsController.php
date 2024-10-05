@@ -42,6 +42,7 @@ class ProductsController extends Controller
       'products.name',
       'products.image_id',
       'status_id',
+      'brand_id',
       DB::raw('MIN(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as min_price'),
       DB::raw('MAX(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as max_price'),
     ])
@@ -50,7 +51,8 @@ class ProductsController extends Controller
       ->with([
         'image:id,name,extension,path,alt,disk',
         'firstVariation:id,product_id',
-        'status:id,value,value_slug'
+        'status:id,value,value_slug',
+        'brand:id,value,value_slug'
       ])
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id')

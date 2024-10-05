@@ -111,4 +111,9 @@ class Product extends Model
   {
     return $this->hasOne(TaxonomyValue::class, 'id', 'status_id');
   }
+
+  public function brand()
+  {
+    return $this->hasOne(TaxonomyValue::class, 'id', 'brand_id');
+  }
 }
