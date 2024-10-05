@@ -2,23 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Taxonomy\Taxonomy;
 use App\Models\Taxonomy\TaxonomyValue;
 
 class TaxonomiesController extends Controller
 {
-  public function getTypesForCatalog()
+  public function catalog()
   {
-    $taxonomies = TaxonomyValue::forCatalog()
-      ->get()
-      ->groupBy('type')
-      ->map(fn($item, $type) => ['type' => $type, 'values' => $item->pluck('name')])
-      ->toArray();
+    $taxonomies = Taxonomy::catalog()->select(['id', 'name', 'slug'])->get();
 
     return response([
       'ok' => true,
-      'data' => [
-        'taxonomies' => array_values($taxonomies)
-      ]
+      'data' => $taxonomies
     ], 200);
   }
 }

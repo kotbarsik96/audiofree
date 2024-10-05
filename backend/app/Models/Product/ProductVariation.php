@@ -3,22 +3,25 @@
 namespace App\Models\Product;
 
 use App\Models\Product;
-use App\Models\Traits\HandleOrchidAttachments;
+use Database\Factories\Product\ProductVariationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
+use Orchid\Attachment\Models\Attachment;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProductVariation extends Model
 {
-  use HasFactory, Attachable, HandleOrchidAttachments;
+  use HasFactory, Attachable;
 
   protected $fillable = [
     'product_id',
+    'image_id',
     'price',
     'discount',
-    'image_path',
     'quantity',
     'name',
     'created_by',
@@ -33,6 +36,11 @@ class ProductVariation extends Model
   ];
 
   protected $table = 'product_variations';
+
+  public static function newFactory(): Factory
+  {
+    return ProductVariationFactory::new();
+  }
 
   public function scopeGetCurrentPriceQuery()
   {
@@ -96,6 +104,16 @@ class ProductVariation extends Model
     return $this->belongsTo(Product::class, 'product_id');
   }
 
+  public function detachAndDelete()
+  {
+    $this->delete();
+  }
+
+  public function image()
+  {
+    return $this->hasOne(Attachment::class, 'id', 'image_id')->withDefault();
+  }
+
   public function gallery()
   {
     return $this->attachment(
@@ -103,9 +121,16 @@ class ProductVariation extends Model
     );
   }
 
-  public function detachAndDelete()
+  public function priceWithDiscount()
   {
-    $this->detachAll();
-    $this->delete();
+    return $this->price - ($this->price / 100 * $this->discount);
+  }
+
+  public static function itemOrFail($variationId)
+  {
+    $variation = self::find($variationId);
+    throw_if(!$variation, new NotFoundHttpException(__('abortions.variationNotFound2')));
+
+    return $variation;
   }
 }

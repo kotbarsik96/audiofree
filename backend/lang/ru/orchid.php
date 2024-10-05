@@ -33,6 +33,7 @@ return [
     'delete' => 'Удалить',
     'confirmDelete' => 'Подтвердите удаление товара',
     'variation' => 'Вариация',
+    'variationFor' => 'Вариация товара ',
     'variations' => 'Вариации',
     'generalInfo' => 'Общая информация',
     'image' => 'Изображение товара',

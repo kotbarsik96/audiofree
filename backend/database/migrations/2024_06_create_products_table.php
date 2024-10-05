@@ -15,22 +15,20 @@ return new class extends Migration
       $table->id();
       $table->string("name");
       $table->text('description')->nullable();
-      $table->string('status')->nullable();
-      $table->string('brand')->nullable();
-      $table->string('category')->nullable();
-      $table->string('type')->nullable();
+      $table->unsignedInteger('image_id')->nullable();
+      $table->foreignId('status_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
+      $table->foreignId('brand_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
+      $table->foreignId('category_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
+      $table->foreignId('type_id')->nullable()->constrained('taxonomy_values', 'id')->nullOnDelete();
       $table->foreignId('created_by')->nullable()->constrained(table: 'users')->nullOnDelete();
       $table->foreignId('updated_by')->nullable()->constrained(table: 'users')->nullOnDelete();
       $table->timestamps();
 
-      $table->foreign('status')
-        ->references('name')->on('taxonomies')->cascadeOnUpdate()->nullOnDelete();
-      $table->foreign('brand')
-        ->references('name')->on('taxonomies')->cascadeOnUpdate()->nullOnDelete();
-      $table->foreign('category')
-        ->references('name')->on('taxonomies')->cascadeOnUpdate()->nullOnDelete();
-      $table->foreign('type')
-        ->references('name')->on('taxonomies')->cascadeOnUpdate()->nullOnDelete();
+      $table->foreign('image_id')
+        ->references('id')
+        ->on('attachments')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
     });
   }
 

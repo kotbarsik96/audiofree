@@ -9,11 +9,14 @@ use Orchid\Platform\Models\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\EmailConfirmation;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-  use HasApiTokens, Notifiable;
+  use HasApiTokens, Notifiable, HasFactory;
 
   /**
    * The attributes that are mass assignable.
@@ -82,6 +85,11 @@ class User extends Authenticatable
     'created_at',
   ];
 
+  public static function newFactory(): Factory 
+  {
+    return UserFactory::new();
+  }
+
   /** 
    * Проверяет, авторизован ли пользователь
    */
@@ -131,12 +139,17 @@ class User extends Authenticatable
    */
   public static function changeEmail($newEmail)
   {
-    $user = self::authUserEloquent();
+    $user = self::current();
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
+    $wasVerified = $user->email_verified_at;
     $user->update([
       'email_verified_at' => null,
       'email' => $newEmail
     ]);
-    User::sendEmailVerifyCode('был изменен адрес электронной почты');
+
+    return ['wasVerified' => $wasVerified];
   }
 
   /** 
@@ -144,7 +157,10 @@ class User extends Authenticatable
    */
   public static function changePassword($newPassword)
   {
-    $user = self::authUserEloquent();
+    $user = self::current();
+    if (!$user)
+      abort(404, __('abortions.userNotFound'));
+
     if (!Hash::check(request('current_password'), $user->password)) {
       abort(401, __('validation.current_password'));
     }

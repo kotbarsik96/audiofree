@@ -1,0 +1,49 @@
+._icon-btn {
+  background-color: #d4d4d4;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0px;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+._icon-btn--green {
+  background-color: green;
+}
+._icon-btn--red {
+  background-color: rgb(141, 0, 0);
+}
+._icon-btn svg {
+  width: 16px;
+  height: 16px;
+  color: #ffffff;
+}
+._icon-btn:hover {
+  background-color: #969696;
+}
+
+.p-info-table td {
+  border: 1px solid #000;
+  width: 300px;
+  padding: 5px;
+  height: 3rem;
+}
+.p-info-table input {
+  border: none;
+  width: 100%;
+}
+.p-info-table .p-info-table__actions {
+  border: 0;
+  padding-left: 10px;
+  width: auto;
+}
+
+.p-info-table__refresh-btn {
+  display: none;
+}
+.p-info-table td.unsaved .p-info-table__refresh-btn {
+  display: flex;
+}

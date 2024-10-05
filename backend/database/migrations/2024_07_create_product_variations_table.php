@@ -15,13 +15,20 @@ return new class extends Migration
       $table->id();
       $table->foreignId('product_id')->constrained(table: 'products')
         ->cascadeOnDelete();
-      $table->string('name'); 
+      $table->string('name');
+      $table->unsignedInteger('image_id')->nullable();
       $table->unsignedInteger('price');
       $table->unsignedSmallInteger('discount')->nullable();
       $table->unsignedInteger('quantity');
       $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
       $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
       $table->timestamps();
+
+      $table->foreign('image_id')
+        ->references('id')
+        ->on('attachments')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
     });
   }
 

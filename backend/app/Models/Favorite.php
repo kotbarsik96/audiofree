@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Favorite extends Model
 {
@@ -23,24 +24,8 @@ class Favorite extends Model
     'current_price' => 'integer',
   ];
 
-  public function scopeList(Builder $query, $userId)
+  public function variation()
   {
-    $query->select([
-      'favorites.variation_id',
-      'products.name',
-      'products.status',
-      'products.brand',
-      'products.category',
-      'products.type',
-      'product_variations.product_id',
-      'product_variations.value',
-      'product_variations.price',
-      'product_variations.discount',
-      DB::raw(ProductVariation::getCurrentPriceQuery()),
-      'product_variations.image_path',
-      'product_variations.quantity',
-    ])->where('user_id', $userId)
-      ->leftJoin('product_variations', 'product_variations.id', '=', 'favorites.variation_id')
-      ->leftJoin('products', 'products.id', '=', 'product_variations.product_id');
+    return $this->hasOne(ProductVariation::class, 'id', 'variation_id');
   }
 }

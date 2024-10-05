@@ -3,60 +3,66 @@
 namespace App\Http\Controllers;
 
 use App\Models\Favorite;
+use App\Models\Product;
 use App\Models\Product\ProductVariation;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FavoritesController extends Controller
 {
-  public function store()
+  public function store(Request $request)
   {
-    $userId = auth()->user()->id;
-    $variationId = request()->variation_id;
+    $variation = ProductVariation::itemOrFail($request->input('variation_id'));
 
-    $variation = ProductVariation::find($variationId);
-    if(!$variation)
-      abort(404, __('abortions.variationNotFound2'));
-
-    $item = Favorite::where('user_id', $userId)
-      ->where('variation_id', $variationId)
-      ->first();
-    if ($item)
-      abort(400, __('abortions.alreadyInFavorites'));
-
-    Favorite::create([
-      'user_id' => $userId,
-      'variation_id' => $variationId
+    Favorite::firstOrCreate([
+      'user_id' => auth()->user()->id,
+      'variation_id' => $variation->id,
     ]);
+    $product = Product::find($variation->product_id);
 
-    return [
+    return response([
       'ok' => true,
-    ];
+      'message' => __(
+        'general.addedToFavorites',
+        [
+          'product' => $product->name,
+          'variation' => $variation->name
+        ]
+      ),
+    ]);
   }
 
   public function get()
   {
-    $favorites = Favorite::list(auth()->user()->id)->get();
-
-    return [
+    return response([
       'ok' => true,
-      'favorites' => $favorites
-    ];
+      'data' => Favorite::where('user_id', auth()->user()->id)
+        ->with([
+          'variation:id,name,image_id,price,discount,quantity,product_id',
+          'variation.product:id,name',
+          'variation.image:id,name,extension,path,alt,disk',
+        ])
+        ->get()
+    ]);
   }
 
-  public function delete()
+  public function delete(Request $request)
   {
-    $userId = auth()->user()->id;
-    $variationId = request()->variation_id;
+    $variation = ProductVariation::itemOrFail($request->input('variation_id'));
 
-    $item = Favorite::where('user_id', $userId)
-      ->where('variation_id', $variationId)
-      ->first();
-    if (!$item)
-      abort(404, __('general.notInFavorites'));
+    Favorite::firstOrNew([
+      'user_id' => auth()->user()->id,
+      'variation_id' => $variation->id
+    ])->delete();
 
-    $item->delete();
+    $product = Product::find($variation->product_id);
 
-    return [
-      'ok' => true
-    ];
+    return response([
+      'ok' => true,
+      'message' => __('general.removedFromFavorites', [
+        'product' => $product->name,
+        'variation' => $variation->name
+      ])
+    ]);
   }
 }

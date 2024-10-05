@@ -9,6 +9,7 @@ use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Upload;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
@@ -17,10 +18,12 @@ use Orchid\Support\Facades\Layout;
 class ProductVariationScreen extends Screen
 {
   public $variation;
-  
+
   public $product;
 
   public $maxGalleryImages;
+
+  public $image;
 
   public function permission(): ?iterable
   {
@@ -46,9 +49,12 @@ class ProductVariationScreen extends Screen
       'variation' => $variation,
       'product' => $product,
       'variations' => $product->variations()->get(),
-      'gallery' => $this->variation->getAttachmentsIds(
-        config('constants.product.variation.gallery_group')
-      )->toArray()
+      'image_id' => $variation->image_id,
+      'gallery' => $variation
+        ->attachment(config('constants.product.variation.gallery_group'))
+        ->get()
+        ->pluck('id')
+        ->toArray()
     ];
   }
 
@@ -59,7 +65,7 @@ class ProductVariationScreen extends Screen
    */
   public function name(): ?string
   {
-    return __('orchid.product.variation');
+    return __('orchid.product.variationFor') . $this->product->name;
   }
 
   /**
@@ -73,7 +79,10 @@ class ProductVariationScreen extends Screen
       Button::make(__('orchid.delete'))
         ->method('delete')
         ->confirm(__('orchid.product.areYouSureToDeleteVariation'))
-        ->canSee($this->variation->exists)
+        ->canSee($this->variation->exists),
+
+      Link::make($this->product->name)
+        ->route('platform.product.edit', [$this->product->id])
     ];
   }
 
@@ -113,10 +122,6 @@ class ProductVariationScreen extends Screen
     $validated = $request->validated();
 
     $variation = ProductVariation::create($validated);
-    $variation->attachSingle(
-      config('constants.product.variation.image_group'),
-      $request->input('image')
-    );
 
     Alert::info(__('orchid.success'));
 
@@ -131,13 +136,6 @@ class ProductVariationScreen extends Screen
     $validated = $request->validated();
 
     $this->variation->update($validated);
-    if ($request->input('image')) {
-      $this->variation->attachSingle(
-        config('constants.product.variation.image_group'),
-        $request->input('image')
-      );
-    } else
-      $this->variation->detachByGroup(config('constants.product.variation.image_group'));
 
     Alert::info(__('orchid.success'));
   }
@@ -156,17 +154,13 @@ class ProductVariationScreen extends Screen
 
   public function saveGallery(Request $request)
   {
-    $galleryGroup = config('constants.product.variation.gallery_group');
     $galleryMaxImages = config('constants.product.variation.max_gallery_images');
 
     $gallery = collect($request->input('gallery') ?? [])
       ->slice(0, $galleryMaxImages)
       ->toArray();
 
-    if ($gallery)
-      $this->variation->attachMany($gallery);
-    else
-      $this->variation->detachByGroup($galleryGroup);
+    $this->variation->attachment()->syncWithoutDetaching($gallery);
 
     Alert::info(__('orchid.success'));
   }

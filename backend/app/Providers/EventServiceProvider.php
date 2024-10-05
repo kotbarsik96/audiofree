@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\Product;
+use App\Models\Product\ProductVariation;
+use App\Observers\ProductObserver;
+use App\Observers\ProductVariationObserver;
 use App\Services\ImageService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Storage;
 use Orchid\Platform\Events\UploadFileEvent;
 
 class EventServiceProvider extends ServiceProvider
@@ -28,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
    */
   public function boot(): void
   {
+    Product::observe(ProductObserver::class);
+    ProductVariation::observe(ProductVariationObserver::class);
+
     Event::listen(function (UploadFileEvent $event) {
       $att = $event->attachment;
       $imageService = new ImageService();

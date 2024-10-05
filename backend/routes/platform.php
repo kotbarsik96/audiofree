@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Products\ProductEditScreen;
 use App\Orchid\Screens\Products\ProductsListScreen;
@@ -91,10 +90,10 @@ Route::screen('/products', ProductsListScreen::class)
       ->push(__('general.products'))
   );
 // Platform > Product Variation
-Route::screen('/product/{productd}/variation/{variation?}', ProductVariationScreen::class)
+Route::screen('/product/{product}/variation/{variation?}', ProductVariationScreen::class)
   ->name('platform.product.variation.edit');
 // Platform > Product
-Route::screen('/product/{productd?}', ProductEditScreen::class)
+Route::screen('/product/{product?}', ProductEditScreen::class)
   ->name('platform.product.edit');
 
 // Platform > Taxonomies

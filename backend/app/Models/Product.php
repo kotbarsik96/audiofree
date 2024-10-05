@@ -3,88 +3,54 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\FilterableModel;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Product\ProductInfo;
+use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
-use App\Models\Traits\HandleOrchidAttachments;
+use App\Models\Taxonomy\TaxonomyValue;
+use App\Traits\Filterable;
+use Database\Factories\Product\ProductFactory;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
+use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
 
-class Product extends FilterableModel
+class Product extends Model
 {
-  use HasFactory, AsSource, Attachable, HandleOrchidAttachments;
+  use HasFactory, AsSource, Attachable, Filterable;
 
   protected $fillable = [
     'name',
-    'price',
-    'discount',
+    'image_id',
     'description',
-    'status',
-    'brand',
-    'category',
-    'type',
-    'image_path',
+    'status_id',
+    'brand_id',
+    'category_id',
+    'type_id',
     'created_by',
-    'updated_by'
+    'updated_by',
   ];
 
   protected $casts = [
     'price' => 'integer',
     'discount' => 'integer',
-    'current_min_price' => 'float',
-    'current_price' => 'integer',
     'quantity' => 'integer',
-    'rating' => 'integer'
+    'rating' => 'integer',
+    'min_price' => 'float',
+    'max_price' => 'float',
   ];
 
-  public function getImagePath()
+  public static function newFactory(): Factory
   {
-    return 'products/' . $this->id . '/';
-  }
-
-  public static function allowsStore(Product | null $product = null)
-  {
-    if (!$product) $product = Product::find(request()->product_id);
-    $allows = $product
-      ? Gate::allows('update-product', $product)
-      : Gate::allows('create-product');
-    return $allows;
-  }
-
-  public function scopeCatalog(Builder $query)
-  {
-    $query->select([
-      'products.id',
-      'products.name',
-      'products.category',
-      'products.type',
-      DB::raw('AVG(products_rating.value) as rating'),
-    ])
-      ->leftJoin('products_rating', 'products_rating.product_id', '=', 'products.id')
-      ->groupBy('products.id');
-  }
-
-  public function scopeOnlyInStock(Builder $query)
-  {
-    $query->addSelect([
-      DB::raw('MAX(product_variations.quantity) as max_quantity'),
-    ])->leftJoin('product_variations', 'product_variations.product_id', '=', 'products.id')
-      ->having('max_quantity', '>', 0);
-  }
-
-  public function scopeForPage(Builder $query, $productId)
-  {
-    $query->catalog()
-      ->addSelect(['products.status', 'products.description'])
-      ->where('products.id', $productId);
+    return ProductFactory::new();
   }
 
   public function deleteAndAlert()
   {
-    $this->detachAll();
     $this->delete();
 
     Alert::info(__('orchid.success'));
@@ -93,5 +59,56 @@ class Product extends FilterableModel
   public function variations()
   {
     return $this->hasMany(ProductVariation::class, 'product_id');
+  }
+
+  public function firstVariation()
+  {
+    return $this->hasOne(ProductVariation::class, 'product_id');
+  }
+
+  public function info()
+  {
+    return $this->hasMany(ProductInfo::class, 'product_id');
+  }
+
+  public function updateInfo(array $newInfo = null)
+  {
+    $newNames = collect($newInfo)->pluck('name')->toArray();
+
+    ProductInfo::where('product_id', $this->id)
+      ->whereNotIn('name', $newNames)
+      ->delete();
+
+    foreach ($newInfo as $item) {
+      ProductInfo::updateOrCreate([
+        'product_id' => $this->id,
+        'name' => $item['name'],
+        'value' => $item['value'],
+      ]);
+    }
+  }
+
+  public function image()
+  {
+    return $this->hasOne(Attachment::class, 'id', 'image_id')->withDefault();
+  }
+
+  public function rating()
+  {
+    return $this->hasMany(ProductRating::class, 'product_id');
+  }
+
+  public function scopeActiveStatus(Builder $query)
+  {
+    $status = TaxonomyValue::where('slug', 'product_status')
+      ->where('value_slug', 'active')
+      ->first();
+
+    return $query->where('status_id', $status->id);
+  }
+
+  public function status()
+  {
+    return $this->hasOne(TaxonomyValue::class, 'id', 'status_id');
   }
 }

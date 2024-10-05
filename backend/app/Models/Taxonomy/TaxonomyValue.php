@@ -17,11 +17,4 @@ class TaxonomyValue extends Model
   ];
 
   protected $table = 'taxonomy_values';
-
-  public function scopeForCatalog(Builder $query)
-  {
-    $catalogTaxonomies = config('constants.product.catalog_taxonomies');
-    $query->select(['slug', 'value'])
-      ->whereIn('slug', $catalogTaxonomies);
-  }
 }
