@@ -39,7 +39,7 @@ class Product extends Model
     'price' => 'integer',
     'discount' => 'integer',
     'quantity' => 'integer',
-    'rating' => 'integer',
+    'rating' => 'float',
     'min_price' => 'float',
     'max_price' => 'float',
   ];

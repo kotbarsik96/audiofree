@@ -44,7 +44,7 @@ class ProductsController extends Controller
       'status_id',
       'brand_id',
       DB::raw('MIN(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as min_price'),
-      DB::raw('MAX(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as max_price'),
+      DB::raw('MAX(product_variations.price - (product_variations.price / 100 * product_variations.discount)) as max_price')
     ])
       ->filter($request)
       ->activeStatus()
@@ -54,6 +54,7 @@ class ProductsController extends Controller
         'status:id,value,value_slug',
         'brand:id,value,value_slug'
       ])
+      ->withAvg('rating as rating', 'value')
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id')
       ->paginate(request('per_page') ?? 12);
@@ -78,7 +79,7 @@ class ProductsController extends Controller
       'data' => [
         'product' => $product,
         'variations' => $variations,
-        'rating' => round((float) $product->rating()->avg('value'), 2),
+        'rating' => ProductRating::avgForProduct($product),
         'images' => $images
       ]
     ]);
