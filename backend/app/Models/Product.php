@@ -10,7 +10,6 @@ use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\TaxonomyValue;
 use App\Traits\Filterable;
 use Database\Factories\Product\ProductFactory;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +42,11 @@ class Product extends Model
     'min_price' => 'float',
     'max_price' => 'float',
   ];
+
+  public static function priceWithDiscountFormula()
+  {
+    return 'product_variations.price - (product_variations.price / 100 * product_variations.discount)';
+  }
 
   public static function newFactory(): Factory
   {
@@ -115,5 +119,33 @@ class Product extends Model
   public function brand()
   {
     return $this->hasOne(TaxonomyValue::class, 'id', 'brand_id');
+  }
+
+  public function scopeMinPrice(Builder $query)
+  {
+    return $query->addSelect(
+      DB::raw('MIN(' . self::priceWithDiscountFormula() . ') as min_price')
+    )
+      ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
+      ->groupBy('products.id');;
+  }
+  public function scopeMaxPrice(Builder $query)
+  {
+    return $query->addSelect(
+      DB::raw('MAX(' . self::priceWithDiscountFormula() . ') as max_price')
+    )
+      ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
+      ->groupBy('products.id');
+  }
+  public function scopeMinAndMaxPrice(Builder $query)
+  {
+    return $query
+      ->addSelect(
+        'products.id',
+        DB::raw('MIN(' . self::priceWithDiscountFormula() . ') as min_price'),
+        DB::raw('MAX(' . self::priceWithDiscountFormula() . ') as max_price'),
+      )
+      ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
+      ->groupBy('products.id');
   }
 }

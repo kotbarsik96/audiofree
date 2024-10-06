@@ -2,6 +2,8 @@
 
 namespace App\Models\Taxonomy;
 
+use App\Filters\QueryFilter;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +25,7 @@ class Taxonomy extends Model
     return $this->hasMany(TaxonomyValue::class, 'slug', 'slug');
   }
 
-  public function scopeCatalog(Builder $query)
+  public function scopeFilters(Builder $query)
   {
     return $query->whereIn('slug', [
       'brand',
@@ -31,5 +33,60 @@ class Taxonomy extends Model
       'type',
       'product_status'
     ]);
+  }
+
+  public static function mapFilters($filters)
+  {
+    $filters = $filters->map(function ($item) {
+      switch ($item->slug) {
+        case 'brand':
+          $item->type = 'checkbox';
+          break;
+        case 'category':
+          $item->type = 'checkbox';
+          break;
+        case 'type':
+          $item->type = 'radio';
+          break;
+        case 'product_status':
+          $item->type = 'checkbox';
+          break;
+      }
+
+      return $item;
+    });
+
+    $filters->push(self::getPricesFilter());
+
+    $filters->push([
+      'type' => 'checkbox',
+      'slug' => 'has_discount',
+      'values' => [
+        [
+          'value' => 'Есть скидка',
+          'value_slug' => true
+        ],
+        [
+          'value' => 'Нет скидки',
+          'value_slug' => false
+        ],
+      ],
+    ]);
+
+    return $filters;
+  }
+
+  public static function getPricesFilter()
+  {
+    return Product::select([
+      'min_price' => Product::minPrice()
+        ->orderBy('min_price')
+        ->limit(1),
+      'max_price' => Product::maxPrice()
+        ->orderByDesc('max_price')
+        ->limit(1)
+    ])
+      ->filter(new QueryFilter(request()))
+      ->first();
   }
 }
