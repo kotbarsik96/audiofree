@@ -61,6 +61,7 @@ class Taxonomy extends Model
     $filters->push([
       'type' => 'checkbox',
       'slug' => 'has_discount',
+      'name' => 'Скидка',
       'values' => [
         [
           'value' => 'Есть скидка',
@@ -78,7 +79,7 @@ class Taxonomy extends Model
 
   public static function getPricesFilter()
   {
-    return Product::select([
+    $prices = Product::select([
       'min_price' => Product::minPrice()
         ->orderBy('min_price')
         ->limit(1),
@@ -88,5 +89,13 @@ class Taxonomy extends Model
     ])
       ->filter(new QueryFilter(request()))
       ->first();
+
+    return [
+      'type' => 'range',
+      'slug' => 'price',
+      'name' => 'Цена',
+      'min_price' => $prices->min_price,
+      'max_price' => $prices->max_price,
+    ];
   }
 }
