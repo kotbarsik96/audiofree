@@ -94,8 +94,8 @@ class Taxonomy extends Model
       'type' => 'range',
       'slug' => 'price',
       'name' => 'Цена',
-      'min_price' => $prices->min_price,
-      'max_price' => $prices->max_price,
+      'min' => $prices->min_price,
+      'max' => $prices->max_price,
     ];
   }
 }
