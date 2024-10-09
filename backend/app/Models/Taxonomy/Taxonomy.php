@@ -59,17 +59,13 @@ class Taxonomy extends Model
     $filters->push(self::getPricesFilter());
 
     $filters->push([
-      'type' => 'checkbox',
+      'type' => 'checkbox_boolean',
       'slug' => 'has_discount',
       'name' => 'Скидка',
       'values' => [
         [
           'value' => 'Есть скидка',
-          'value_slug' => true
-        ],
-        [
-          'value' => 'Нет скидки',
-          'value_slug' => false
+          'value_slug' => 'has_discount'
         ],
       ],
     ]);
