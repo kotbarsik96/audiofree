@@ -127,7 +127,7 @@ class Product extends Model
       DB::raw('MIN(' . self::priceWithDiscountFormula() . ') as min_price')
     )
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
-      ->groupBy('products.id');;
+      ->groupBy('products.id');
   }
   public function scopeMaxPrice(Builder $query)
   {

@@ -2,7 +2,7 @@
 
 namespace App\Models\Taxonomy;
 
-use App\Filters\QueryFilter;
+use App\Filters\ProductFilter;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -75,15 +75,18 @@ class Taxonomy extends Model
 
   public static function getPricesFilter()
   {
+    $filter = new ProductFilter(request());
+
     $prices = Product::select([
       'min_price' => Product::minPrice()
+        ->filter($filter)
         ->orderBy('min_price')
         ->limit(1),
       'max_price' => Product::maxPrice()
+        ->filter($filter)
         ->orderByDesc('max_price')
-        ->limit(1)
+        ->limit(1),
     ])
-      ->filter(new QueryFilter(request()))
       ->first();
 
     return [
