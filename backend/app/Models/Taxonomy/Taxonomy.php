@@ -46,7 +46,7 @@ class Taxonomy extends Model
           $item->type = 'checkbox';
           break;
         case 'type':
-          $item->type = 'radio';
+          $item->type = 'checkbox';
           break;
         case 'product_status':
           $item->type = 'checkbox';

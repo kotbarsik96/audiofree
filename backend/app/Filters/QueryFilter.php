@@ -38,4 +38,10 @@ class QueryFilter
   {
     return explode($this->delimeter, $param);
   }
+
+  // для случая, когда ожидается массив, а приходит строка
+  public function convertToArray(array | string | null $input)
+  {
+    if(!$input) return $input;
+  }
 }

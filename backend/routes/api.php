@@ -22,7 +22,7 @@ Route::post('profile/reset-password/new-password', [AuthController::class, 'rese
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
 Route::get('product', [ProductsController::class, 'productPage']); // 2.2
-Route::get('products/catalog/filters', [TaxonomiesController::class, 'filters']); // 2.3
+Route::post('products/catalog/update-filters', [TaxonomiesController::class, 'filters']); // 2.3
 
 Route::middleware('auth:sanctum')->group(function () {
   // 1. User
