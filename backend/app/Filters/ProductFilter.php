@@ -25,22 +25,22 @@ class ProductFilter extends QueryFilter
     $this->builder->whereIn($slug . '_id', $taxonomyValues->pluck('id'));
   }
 
-  public function brand(array $values)
+  public function brand(array | null $values)
   {
     $this->taxonomy($values, 'brand');
   }
 
-  public function category(array $values)
+  public function category(array | null $values)
   {
     $this->taxonomy($values, 'category');
   }
 
-  public function type(array $values)
+  public function type(array | null $values)
   {
     $this->taxonomy($values, 'type');
   }
 
-  public function status(array $values)
+  public function status(array | null $values)
   {
     $this->taxonomy($values, 'status');
   }
