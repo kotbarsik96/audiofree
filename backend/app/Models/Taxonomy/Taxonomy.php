@@ -97,4 +97,14 @@ class Taxonomy extends Model
       'max' => $prices->max_price,
     ];
   }
+
+  public static function sorts()
+  {
+    return [
+      [
+        'label' => 'Цена',
+        'value' => 'min_price'
+      ],
+    ];
+  }
 }

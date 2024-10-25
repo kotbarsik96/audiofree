@@ -19,4 +19,12 @@ class TaxonomiesController extends Controller
       'data' => $filters,
     ], 200);
   }
+
+  public function sorts()
+  {
+    return response([
+      'ok' => true,
+      'data' => Taxonomy::sorts()
+    ]);
+  }
 }

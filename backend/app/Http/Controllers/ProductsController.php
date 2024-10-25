@@ -6,7 +6,7 @@ use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Models\Product;
 use App\Models\Product\ProductRating;
-use Illuminate\Support\Facades\DB;
+use App\Models\Taxonomy\Taxonomy;
 
 class ProductsController extends Controller
 {
@@ -37,6 +37,11 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
+    $defaultSort = Taxonomy::sorts();
+    $sort = explode('__', $request->request->query('sort', $defaultSort[0]['value'] . '__asc'));
+    $sortType = $sort[0];
+    $sortDirection = $sort[1];
+
     $products = Product::select([
       'products.id',
       'products.name',
@@ -54,6 +59,7 @@ class ProductsController extends Controller
         'brand:id,value,value_slug'
       ])
       ->withAvg('rating as rating', 'value')
+      ->orderBy($sortType, $sortDirection)
       ->paginate(request('per_page') ?? 12);
 
     return $products;
