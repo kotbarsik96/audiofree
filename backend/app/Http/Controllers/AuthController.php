@@ -12,7 +12,6 @@ use App\Models\EmailConfirmation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\VerifyEmail;
-use Exception;
 
 class AuthController extends Controller
 {
@@ -45,9 +44,7 @@ class AuthController extends Controller
   public function user()
   {
     return response()->json([
-      'data' => [
-        'user' => auth()->user()
-      ]
+      'data' => auth()->user()
     ]);
   }
 
