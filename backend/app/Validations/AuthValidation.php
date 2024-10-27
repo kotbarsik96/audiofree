@@ -27,7 +27,7 @@ class AuthValidation
 
   public static function userField()
   {
-    return 'min:2';
+    return 'min:1';
   }
 
   public static function phoneNumber()

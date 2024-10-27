@@ -38,7 +38,7 @@ class AuthController extends Controller
       ];
     }
 
-    return response(['ok' => false], 401);
+    return response(['ok' => false, 'message' => __('validation.incorrectLoginOrPassword')], 401);
   }
 
   public function user()

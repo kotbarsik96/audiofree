@@ -200,6 +200,8 @@ return [
     'variation_id' => 'Вариация не существует'
   ],
 
+  'incorrectLoginOrPassword' => 'Неверный логин или пароль',
+
   /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
