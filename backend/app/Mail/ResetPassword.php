@@ -22,7 +22,7 @@ class ResetPassword extends Mailable
    */
   public function __construct(string $code, User $user)
   {
-    $frontUrl = env("APP_FRONTEND_LINK", "") . "/reset-password?code=" . $code . "&email=" . $user->email;
+    $frontUrl = env("APP_FRONTEND_LINK", "") . "/confirmation/reset-password?code=" . $code . "&email=" . $user->email;
     $this->link = '<a href="' . $frontUrl . '">Сбросить пароль</a>';
     $this->user = $user;
   }

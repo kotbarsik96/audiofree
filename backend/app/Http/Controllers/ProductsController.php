@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\Product\ProductRating;
 use App\Models\Taxonomy\Taxonomy;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ProductsController extends Controller
 {
@@ -67,7 +69,19 @@ class ProductsController extends Controller
 
   public function productPage()
   {
-    $product = Product::findOrFail(request('product_id'));
+    $product = Product::select(
+      [
+        'id',
+        'name',
+        'description',
+        'image_id',
+        'status_id',
+        'brand_id',
+        'category_id',
+        'type_id'
+      ]
+    )
+      ->findOrFail(request('product_id'));
     $variations = $product->variations()
       ->select(['id', 'name', 'image_id', 'price', 'discount', 'quantity'])
       ->get();
