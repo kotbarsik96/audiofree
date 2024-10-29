@@ -21,7 +21,7 @@ Route::post('profile/reset-password/new-password', [AuthController::class, 'rese
 
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
-Route::get('product', [ProductsController::class, 'productPage']); // 2.2
+Route::get('product/{productId}/{variationId}', [ProductsController::class, 'productPage']); // 2.2
 Route::get('products/catalog/filters', [TaxonomiesController::class, 'filters']); // 2.3
 Route::get('products/catalog/sorts', [TaxonomiesController::class, 'sorts']); // 2.4
 

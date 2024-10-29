@@ -41,6 +41,7 @@ class Product extends Model
     'rating' => 'float',
     'min_price' => 'float',
     'max_price' => 'float',
+    'current_price' => 'float',
   ];
 
   public static function priceWithDiscountFormula()
@@ -119,6 +120,32 @@ class Product extends Model
   public function brand()
   {
     return $this->hasOne(TaxonomyValue::class, 'id', 'brand_id');
+  }
+
+  public function category()
+  {
+    return $this->hasOne(TaxonomyValue::class, 'id', 'category_id');
+  }
+
+  public function type()
+  {
+    return $this->hasOne(TaxonomyValue::class, 'id', 'type_id');
+  }
+
+  public function scopeVariation(Builder $query, $variationId)
+  {
+    return $query->addSelect(
+      'products.id',
+      'products.name as product_name',
+      'product_variations.id',
+      'product_variations.price',
+      'product_variations.discount',
+      'product_variations.name as variation_name',
+      'product_variations.quantity',
+      DB::raw(self::priceWithDiscountFormula() . ' as current_price'),
+    )
+      ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
+      ->having('product_variations.id', '=', $variationId);
   }
 
   public function scopeMinPrice(Builder $query)

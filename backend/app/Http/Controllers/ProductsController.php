@@ -67,37 +67,41 @@ class ProductsController extends Controller
     return $products;
   }
 
-  public function productPage()
+  public function productPage($productId, $variationId)
   {
     $product = Product::select(
       [
-        'id',
-        'name',
-        'description',
-        'image_id',
-        'status_id',
-        'brand_id',
-        'category_id',
-        'type_id'
+        'products.description',
+        'products.image_id',
+        'products.status_id',
+        'products.brand_id',
+        'products.category_id',
+        'products.type_id',
       ]
     )
-      ->findOrFail(request('product_id'));
-    $variations = $product->variations()
-      ->select(['id', 'name', 'image_id', 'price', 'discount', 'quantity'])
-      ->get();
-    $images = $variations
-      ->first(fn($variation) => $variation->id === (int) request('variation_id'))
-      ->gallery()
-      ->select(['attachments.id', 'name', 'extension', 'sort', 'path', 'alt', 'disk'])
-      ->get();
+      ->where('products.id', $productId)
+      ->variation($variationId)
+      ->with([
+        'status:id,slug,value,value_slug',
+        'brand:id,slug,value,value_slug',
+        'category:id,slug,value,value_slug',
+        'type:id,slug,value,value_slug'
+      ])
+      ->firstOrFail();
+    // $variations = $product->variations()
+    //   ->select(['id', 'name', 'image_id', 'price', 'discount', 'quantity'])
+    //   ->get();
+    // $images = $variations
+    //   ->first(fn($variation) => $variation->id === (int) request('variation_id'))
+    //   ->gallery()
+    //   ->select(['attachments.id', 'name', 'extension', 'sort', 'path', 'alt', 'disk'])
+    //   ->get();
 
     return response([
       'ok' => true,
       'data' => [
         'product' => $product,
-        'variations' => $variations,
-        'rating' => ProductRating::avgForProduct($product),
-        'images' => $images
+        // 'rating' => ProductRating::avgForProduct($product),
       ]
     ]);
   }
