@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
-use App\Models\Image;
 use App\Models\Product;
+use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
+use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
@@ -70,38 +71,44 @@ class ProductsController extends Controller
   public function productPage($productId, $variationId)
   {
     $product = Product::select(
-      [
-        'products.description',
-        'products.image_id',
-        'products.status_id',
-        'products.brand_id',
-        'products.category_id',
-        'products.type_id',
-      ]
+      'products.id',
+      'products.name as product_name',
+      'products.description',
+      'products.image_id',
+      'products.status_id',
+      'products.brand_id',
+      'products.category_id',
+      'products.type_id',
     )
       ->where('products.id', $productId)
-      ->variation($variationId)
       ->with([
         'status:id,slug,value,value_slug',
         'brand:id,slug,value,value_slug',
         'category:id,slug,value,value_slug',
-        'type:id,slug,value,value_slug'
+        'type:id,slug,value,value_slug',
+        'info:id,product_id,name,value',
+        'variations:id,product_id,name'
       ])
       ->firstOrFail();
-    // $variations = $product->variations()
-    //   ->select(['id', 'name', 'image_id', 'price', 'discount', 'quantity'])
-    //   ->get();
-    // $images = $variations
-    //   ->first(fn($variation) => $variation->id === (int) request('variation_id'))
-    //   ->gallery()
-    //   ->select(['attachments.id', 'name', 'extension', 'sort', 'path', 'alt', 'disk'])
-    //   ->get();
+
+    $variation = ProductVariation::select(
+      'product_variations.id',
+      'product_variations.price',
+      'product_variations.discount',
+      'product_variations.name as variation_name',
+      'product_variations.quantity',
+      DB::raw(Product::priceWithDiscountFormula() . ' as current_price'),
+    )
+      ->where('id', $variationId)
+      ->with(['gallery:id,name,extension,path,alt,disk'])
+      ->firstOrFail();
 
     return response([
       'ok' => true,
       'data' => [
         'product' => $product,
-        // 'rating' => ProductRating::avgForProduct($product),
+        'variation' => $variation,
+        'rating' => ProductRating::avgForProduct($product),
       ]
     ]);
   }

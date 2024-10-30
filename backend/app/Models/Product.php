@@ -12,6 +12,7 @@ use App\Traits\Filterable;
 use Database\Factories\Product\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
@@ -132,20 +133,12 @@ class Product extends Model
     return $this->hasOne(TaxonomyValue::class, 'id', 'type_id');
   }
 
-  public function scopeVariation(Builder $query, $variationId)
+  public function variation($variationId): HasOne
   {
-    return $query->addSelect(
-      'products.id',
-      'products.name as product_name',
-      'product_variations.id',
-      'product_variations.price',
-      'product_variations.discount',
-      'product_variations.name as variation_name',
-      'product_variations.quantity',
-      DB::raw(self::priceWithDiscountFormula() . ' as current_price'),
-    )
-      ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
-      ->having('product_variations.id', '=', $variationId);
+    return $this->hasOne(ProductVariation::class, 'product_id')
+      ->ofMany('id', function (Builder $query) use($variationId) {
+        $query->where('id', $variationId);
+      });
   }
 
   public function scopeMinPrice(Builder $query)
