@@ -72,7 +72,7 @@ class ProductsController extends Controller
   {
     $product = Product::select(
       'products.id',
-      'products.name as product_name',
+      'products.name',
       'products.description',
       'products.image_id',
       'products.status_id',
@@ -95,7 +95,7 @@ class ProductsController extends Controller
       'product_variations.id',
       'product_variations.price',
       'product_variations.discount',
-      'product_variations.name as variation_name',
+      'product_variations.name',
       'product_variations.quantity',
       DB::raw(Product::priceWithDiscountFormula() . ' as current_price'),
     )
