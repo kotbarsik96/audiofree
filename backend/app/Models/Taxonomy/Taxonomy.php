@@ -105,6 +105,10 @@ class Taxonomy extends Model
         'label' => 'Цена',
         'value' => 'min_price'
       ],
+      [
+        'label' => 'Количество отзывов',
+        'value' => 'rating_count'
+      ]
     ];
   }
 }

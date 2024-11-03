@@ -61,7 +61,8 @@ class ProductsController extends Controller
         'status:id,value,value_slug',
         'brand:id,value,value_slug'
       ])
-      ->withAvg('rating as rating', 'value')
+      ->withAvg('rating as rating_value', 'value')
+      ->withCount('rating as rating_count')
       ->orderBy($sortType, $sortDirection)
       ->paginate(request('per_page') ?? 12);
 
@@ -87,8 +88,11 @@ class ProductsController extends Controller
         'category:id,slug,value,value_slug',
         'type:id,slug,value,value_slug',
         'info:id,product_id,name,value',
-        'variations:id,product_id,name'
+        'variations:id,product_id,name',
+        'rating:id,product_id,user_id,description,pros,cons,value'
       ])
+      ->withAvg('rating as rating_value', 'value')
+      ->withCount('rating as rating_count')
       ->firstOrFail();
 
     $variation = ProductVariation::select(
@@ -108,7 +112,6 @@ class ProductsController extends Controller
       'data' => [
         'product' => $product,
         'variation' => $variation,
-        'rating' => ProductRating::avgForProduct($product),
       ]
     ]);
   }

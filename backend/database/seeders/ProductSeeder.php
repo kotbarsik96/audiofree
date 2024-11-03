@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
       Product::factory()
         ->has(ProductInfo::factory()->count(rand(15, 20)), 'info')
         ->has(ProductVariation::factory()->count(rand(1, 3)), 'variations')
-        ->has(ProductRating::factory()->count(rand(1, 50)), 'rating')
+        ->has(ProductRating::factory()->count(rand(1, 20)), 'rating')
         ->create();
     }
   }

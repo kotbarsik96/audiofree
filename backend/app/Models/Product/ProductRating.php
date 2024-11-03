@@ -59,12 +59,4 @@ class ProductRating extends Model
       ->where('user_id', $user->id)
       ->delete();
   }
-
-  public static function avgForProduct($productOrId)
-  {
-    if (is_numeric($productOrId))
-      $productOrId = Product::find($productOrId);
-
-    return round((float) $productOrId->rating()->avg('value'), 2);
-  }
 }
