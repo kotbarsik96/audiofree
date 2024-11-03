@@ -11,6 +11,7 @@ return [
     'rating' => [
       'max' => 5,
       'max_pros_cons_length' => 300,
+      'reviews_per_page' => 5,
     ],
     'image_group' => 'product_image',
     'description' => [

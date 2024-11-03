@@ -89,7 +89,6 @@ class ProductsController extends Controller
         'type:id,slug,value,value_slug',
         'info:id,product_id,name,value',
         'variations:id,product_id,name',
-        'rating:id,product_id,user_id,description,pros,cons,value'
       ])
       ->withAvg('rating as rating_value', 'value')
       ->withCount('rating as rating_count')
@@ -113,6 +112,20 @@ class ProductsController extends Controller
         'product' => $product,
         'variation' => $variation,
       ]
+    ]);
+  }
+
+  public function reviews($productId)
+  {
+    $defaultPerPage = config('constants.product.rating.reviews_per_page');
+
+    $reviews = ProductRating::where('product_id', $productId)
+      ->with('user:id,name')
+      ->paginate(request('per_page') ?? $defaultPerPage);
+
+    return response([
+      'ok' => true,
+      'data' => $reviews
     ]);
   }
 }

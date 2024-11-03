@@ -3,6 +3,7 @@
 namespace App\Models\Product;
 
 use App\Models\Product;
+use App\Models\User;
 use Database\Factories\Product\ProductRatingFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,5 +59,10 @@ class ProductRating extends Model
     self::where('product_id', $product->id)
       ->where('user_id', $user->id)
       ->delete();
+  }
+
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'user_id', 'id');
   }
 }
