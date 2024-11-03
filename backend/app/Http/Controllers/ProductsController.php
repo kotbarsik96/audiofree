@@ -5,20 +5,38 @@ namespace App\Http\Controllers;
 use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Models\Product;
-use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
+  public User | null $user = null;
+
+  public function __construct()
+  {
+    $this->middleware(function($request, $next){
+      $this->user = auth()->user();
+      return $next($request);
+    });
+  }
+
   public function setRating(ProductRatingRequest $request)
   {
     $product = Product::findOrFail($request->product_id);
     $value = request('rating_value');
+    $description = request('description');
+    $pros = request('pros');
+    $cons = request('cons');
 
-    ProductRating::setOrUpdate($product, $value);
+    ProductRating::setOrUpdate($product, [
+      'value' => $value,
+      'description' => $description,
+      'pros' => $pros,
+      'cons' => $cons
+    ]);
 
     return response([
       'ok' => true,
@@ -91,7 +109,6 @@ class ProductsController extends Controller
         'variations:id,product_id,name',
       ])
       ->withAvg('rating as rating_value', 'value')
-      ->withCount('rating as rating_count')
       ->firstOrFail();
 
     $variation = ProductVariation::select(
@@ -118,14 +135,26 @@ class ProductsController extends Controller
   public function reviews($productId)
   {
     $defaultPerPage = config('constants.product.rating.reviews_per_page');
+    $user = auth()->user();
 
     $reviews = ProductRating::where('product_id', $productId)
       ->with('user:id,name')
       ->paginate(request('per_page') ?? $defaultPerPage);
 
+    $currentUserReview = null;
+    if ((int) request('page') === 1) {
+      $user = auth()->user(); // ???
+      if ($user) {
+        $currentUserReview = ProductRating::where('user_id', $user->id)->first();
+      }
+    } 
+
     return response([
       'ok' => true,
-      'data' => $reviews
+      'data' => [
+        'reviews' => $reviews,
+        'current_user_review' => $currentUserReview
+      ]
     ]);
   }
 }

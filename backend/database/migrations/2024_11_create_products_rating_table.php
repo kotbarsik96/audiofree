@@ -16,8 +16,8 @@ return new class extends Migration
       $table->foreignId('product_id')->constrained(table: 'products')->cascadeOnDelete();
       $table->foreignId('user_id')->constrained(table: 'users')->cascadeOnDelete();
       $table->text('description')->nullable();
-      $table->string('pros', config('constants.max_pros_cons_length'))->nullable();
-      $table->string('cons', config('constants.max_pros_cons_length'))->nullable();
+      $table->text('pros')->nullable();
+      $table->text('cons')->nullable();
       $table->unsignedSmallInteger('value');
       $table->timestamps();
     });

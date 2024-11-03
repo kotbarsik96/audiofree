@@ -18,7 +18,10 @@ class ProductRating extends Model
   protected $fillable = [
     'product_id',
     'user_id',
-    'value'
+    'value',
+    'pros',
+    'cons',
+    'description'
   ];
 
   public static function newFactory(): Factory
@@ -37,19 +40,17 @@ class ProductRating extends Model
     return $rating;
   }
 
-  public static function setOrUpdate(Product $product, int $value)
+  public static function setOrUpdate(Product $product, iterable $data)
   {
     $user = auth()->user();
 
-    $rating = ProductRating::firstOrCreate(
+    ProductRating::updateOrCreate(
       [
         'product_id' => $product->id,
         'user_id' => $user->id
       ],
-      ['value' => $value]
+      $data
     );
-    $rating->value = $value;
-    $rating->save();
   }
 
   public static function removeRating(Product $product)
