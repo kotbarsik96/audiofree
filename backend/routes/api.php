@@ -21,7 +21,7 @@ Route::post('profile/reset-password/new-password', [AuthController::class, 'rese
 
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
-Route::get('product/{productId}/{variationId}', [ProductsController::class, 'productPage']); // 2.2
+// 2.2 внизу
 Route::get('products/catalog/filters', [TaxonomiesController::class, 'filters']); // 2.3
 Route::get('products/catalog/sorts', [TaxonomiesController::class, 'sorts']); // 2.4
 Route::get('products/{productId}/reviews', [ProductsController::class, 'reviews']); // 2.5
@@ -35,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('profile/verify-email', [AuthController::class, 'verifyEmail']); // 1.7.2
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
+
+  // 2. Catalog
+  Route::get('/product/{productId}/user-review', [ProductsController::class, 'userReview']); // 2.6
 
   // 3. Product rating
   Route::post('product/rating', [ProductsController::class, 'setRating']); // 3.1
@@ -56,3 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('product/orders/products', [OrdersController::class, 'getProducts']); // 8.3
   Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
 });
+
+// 2. Catalog
+Route::get('product/{productId}/{variationId}', [ProductsController::class, 'productPage']); // 2.2

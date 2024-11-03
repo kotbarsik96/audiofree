@@ -8,21 +8,10 @@ use App\Models\Product;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
-  public User | null $user = null;
-
-  public function __construct()
-  {
-    $this->middleware(function($request, $next){
-      $this->user = auth()->user();
-      return $next($request);
-    });
-  }
-
   public function setRating(ProductRatingRequest $request)
   {
     $product = Product::findOrFail($request->product_id);
@@ -135,26 +124,25 @@ class ProductsController extends Controller
   public function reviews($productId)
   {
     $defaultPerPage = config('constants.product.rating.reviews_per_page');
-    $user = auth()->user();
 
     $reviews = ProductRating::where('product_id', $productId)
       ->with('user:id,name')
       ->paginate(request('per_page') ?? $defaultPerPage);
 
-    $currentUserReview = null;
-    if ((int) request('page') === 1) {
-      $user = auth()->user(); // ???
-      if ($user) {
-        $currentUserReview = ProductRating::where('user_id', $user->id)->first();
-      }
-    } 
-
     return response([
       'ok' => true,
-      'data' => [
-        'reviews' => $reviews,
-        'current_user_review' => $currentUserReview
-      ]
+      'data' => $reviews
     ]);
+  }
+
+  public function userReview($productId)
+  {
+    return [
+      'ok' => true,
+      'data' => ProductRating::
+        where('user_id', auth()->user()->id)
+        ->where('product_id', $productId)
+        ->first()
+    ];
   }
 }
