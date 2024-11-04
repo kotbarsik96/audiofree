@@ -43,7 +43,7 @@ class ProductValidation
   public static function ratingValue()
   {
     $max = config('constants.product.rating.max');
-    return ['numeric', 'min:0', 'max:' . $max];
+    return ['numeric', 'min:1', 'max:' . $max];
   }
 
   public static function ratingDescription()
@@ -86,7 +86,8 @@ class ProductValidation
       'category.exists' => __('validation.category.exists'),
       'brand.exists' => __('validation.brand.exists'),
       'required' => __('validation.required'),
-      'rating_value' => __('validation.rating_value'),
+      'rating_value.min' => __('validation.rating_value.min'),
+      'rating_value.max' => __('validation.rating_value.max'),
       'description.max' => __('validation.product.description.max'),
       'image_id' => __('validation.product.attachmentDoesntExist'),
     ];
