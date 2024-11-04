@@ -25,7 +25,10 @@ class ProductRatingRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'rating_value' => ProductValidation::ratingValue()
+      'rating_value' => ProductValidation::ratingValue(),
+      'description' => ProductValidation::ratingDescription(),
+      'pros' => ProductValidation::ratingDescription(),
+      'cons' => ProductValidation::ratingDescription(),
     ];
   }
 

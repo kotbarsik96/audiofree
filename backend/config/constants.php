@@ -10,7 +10,8 @@ return [
   'product' => [
     'rating' => [
       'max' => 5,
-      'max_pros_cons_length' => 300,
+      'min_description_length' => 20,
+      'max_description_length' => 400,
     ],
     'image_group' => 'product_image',
     'description' => [

@@ -46,6 +46,14 @@ class ProductValidation
     return ['numeric', 'min:0', 'max:' . $max];
   }
 
+  public static function ratingDescription()
+  {
+    $min = config('constants.product.rating.min_description_length');
+    $max = config('constants.product.rating.max_description_length');
+
+    return ['min:' . $min, 'max:' . $max];
+  }
+
   public static function description()
   {
     $max = config('constants.product.description.maxlength');

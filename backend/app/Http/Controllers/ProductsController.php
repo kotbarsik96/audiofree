@@ -15,10 +15,10 @@ class ProductsController extends Controller
   public function setRating(ProductRatingRequest $request)
   {
     $product = Product::findOrFail($request->product_id);
-    $value = request('rating_value');
-    $description = request('description');
-    $pros = request('pros');
-    $cons = request('cons');
+    $value = $request->rating_value;
+    $description = $request->description;
+    $pros = $request->pros;
+    $cons = $request->cons;
 
     ProductRating::setOrUpdate($product, [
       'value' => $value,
@@ -125,8 +125,7 @@ class ProductsController extends Controller
   {
     $defaultPerPage = config('constants.product.rating.reviews_per_page');
 
-    $reviews = ProductRating::where('product_id', $productId)
-      ->with('user:id,name')
+    $reviews = ProductRating::forProduct($productId)
       ->paginate(request('per_page') ?? $defaultPerPage);
 
     return response([
@@ -141,7 +140,7 @@ class ProductsController extends Controller
       'ok' => true,
       'data' => ProductRating::
         where('user_id', auth()->user()->id)
-        ->where('product_id', $productId)
+        ->forProduct($productId)
         ->first()
     ];
   }

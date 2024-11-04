@@ -5,6 +5,7 @@ namespace App\Models\Product;
 use App\Models\Product;
 use App\Models\User;
 use Database\Factories\Product\ProductRatingFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,5 +66,11 @@ class ProductRating extends Model
   public function user()
   {
     return $this->belongsTo(User::class, 'user_id', 'id');
+  }
+
+  public function scopeForProduct(Builder $query, int $productId)
+  {
+    return $query->where('product_id', $productId)
+      ->with('user:id,name');
   }
 }
