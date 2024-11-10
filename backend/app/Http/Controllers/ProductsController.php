@@ -109,6 +109,7 @@ class ProductsController extends Controller
       DB::raw(Product::priceWithDiscountFormula() . ' as current_price'),
     )
       ->where('id', $variationId)
+      ->where('product_id', $productId)
       ->with(['gallery:id,name,extension,path,alt,disk'])
       ->firstOrFail();
 

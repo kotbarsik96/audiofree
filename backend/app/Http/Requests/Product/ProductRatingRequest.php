@@ -5,7 +5,6 @@ namespace App\Http\Requests\Product;
 use App\Models\Product;
 use App\Validations\ProductValidation;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 
 
 class ProductRatingRequest extends FormRequest
