@@ -17,8 +17,6 @@ class UsersController extends Controller
   {
     $validated = $request->validate([
       'name' => AuthValidation::userField(),
-      'surname' => AuthValidation::userField(),
-      'patronymic' => AuthValidation::userField(),
       'phone_number' => AuthValidation::phoneNumber(),
       'location' => AuthValidation::userField(),
       'street' => AuthValidation::userField(),

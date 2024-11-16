@@ -27,12 +27,12 @@ class AuthValidation
 
   public static function userField()
   {
-    return 'min:1';
+    return 'min:0';
   }
 
   public static function phoneNumber()
   {
-    return ['regex:/^\+7\d\d\d\d\d\d\d\d\d\d$/'];
+    return ['regex:/^\+7 \(\d\d\d\) \d\d\d \d\d \d\d$/'];
   }
 
   public static function messages()
@@ -47,7 +47,7 @@ class AuthValidation
       'email.unique' => __('validation.email.unique'),
       'name.required' => __('validation.username.required'),
       'name.min' => __('validation.name.min'),
-      'phone_number.regex' => __('validation.phone_number.regex')
+      'phone_number' => __('validation.phone_number.regex')
     ];
   }
 }

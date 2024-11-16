@@ -139,8 +139,7 @@ class ProductsController extends Controller
   {
     return [
       'ok' => true,
-      'data' => ProductRating::
-        where('user_id', auth()->user()->id)
+      'data' => ProductRating::where('user_id', auth()->user()->id)
         ->forProduct($productId)
         ->first()
     ];
