@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\EmailConfirmation;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
@@ -85,7 +86,18 @@ class User extends Authenticatable
     'created_at',
   ];
 
-  public static function newFactory(): Factory 
+  protected $appends = ['confirmations'];
+
+  protected function confirmations(): Attribute
+  {
+    $verifyEmail = !!EmailConfirmation::select('purpose')->where('purpose', 'verify_email')->first();
+
+    return new Attribute(get: fn() => [
+      'verify_email' => $verifyEmail || false
+    ]);
+  }
+
+  public static function newFactory(): Factory
   {
     return UserFactory::new();
   }

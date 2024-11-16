@@ -21,7 +21,7 @@ class VerifyEmail extends Mailable
    */
   public function __construct(string $code)
   {
-    $frontUrl = env("APP_FRONTEND_LINK", "") . "/verify-email?code=" . $code;
+    $frontUrl = env("APP_FRONTEND_LINK", "") . "/confirmation/verify-email?code=" . $code;
 
     $this->link = '<a href="' . $frontUrl . '">Подтвердить Email</a>';
   }

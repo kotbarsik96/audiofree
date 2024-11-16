@@ -26,9 +26,9 @@ class AuthController extends Controller
   public function login($credentials = null)
   {
     if (!$credentials) $credentials = request(['email', 'password']);
-    $user = User::getByEmail($credentials['email']);
+    $user = User::where('email', $credentials['email'])->first();
 
-    if (Hash::check($credentials['password'], $user->password)) {
+    if ($user && Hash::check($credentials['password'], $user->password)) {
       return [
         'ok' => true,
         'message' => __('general.helloUser', ['username' => $user->name]),
