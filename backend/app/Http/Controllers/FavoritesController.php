@@ -34,15 +34,19 @@ class FavoritesController extends Controller
 
   public function get()
   {
+    $favorites = Favorite::where('user_id', auth()->user()->id)
+      ->with([
+        'variation:id,name,image_id,price,discount,quantity,product_id',
+        'variation.product:id,name',
+        'variation.image:id,name,extension,path,alt,disk',
+      ])
+      ->get();
+
+    ProductVariation::transformToSetCurrentPrice($favorites);
+
     return response([
       'ok' => true,
-      'data' => Favorite::where('user_id', auth()->user()->id)
-        ->with([
-          'variation:id,name,image_id,price,discount,quantity,product_id',
-          'variation.product:id,name',
-          'variation.image:id,name,extension,path,alt,disk',
-        ])
-        ->get()
+      'data' => $favorites
     ]);
   }
 

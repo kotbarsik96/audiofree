@@ -6,9 +6,7 @@ use App\Models\Product;
 use Database\Factories\Product\ProductVariationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -42,9 +40,15 @@ class ProductVariation extends Model
     return ProductVariationFactory::new();
   }
 
-  public function scopeGetCurrentPriceQuery()
+  public static function transformToSetCurrentPrice($collection)
   {
-    return "{$this->table}.price - ({$this->table}.price / 100 * {$this->table}.discount) as current_price";
+    return $collection->transform(function ($item) {
+      $item->variation->current_price = Product::priceWithDiscount(
+        $item->variation->price,
+        $item->variation->discount
+      );
+      return $item;
+    });
   }
 
   public static function getByName($productId, $varName)
@@ -68,37 +72,6 @@ class ProductVariation extends Model
     $this->delete();
   }
 
-  public function scopeForProduct(Builder $query, $productId)
-  {
-    $variations = $query
-      ->select([
-        'id',
-        'name',
-        'price',
-        'discount',
-        'quantity',
-        DB::raw($this->getCurrentPriceQuery()),
-        'product_variations.image_path',
-      ])
-      ->where('product_id', $productId)->get();
-
-    foreach ($variations as $variation) {
-      $variation->gallery = $variation->getGallery();
-    }
-
-    return $variations;
-  }
-
-  public function scopeMinPriceAndDiscount(Builder $query, $productId)
-  {
-    $query->select([
-      'price',
-      'discount',
-      DB::raw($this->getCurrentPriceQuery())
-    ])->where('product_variations.product_id', $productId)
-      ->orderBy('current_price');
-  }
-
   public function product()
   {
     return $this->belongsTo(Product::class, 'product_id');
@@ -119,11 +92,6 @@ class ProductVariation extends Model
     return $this->attachment(
       config('constants.product.variation.gallery_group')
     );
-  }
-
-  public function priceWithDiscount()
-  {
-    return $this->price - ($this->price / 100 * $this->discount);
   }
 
   public static function itemOrFail($variationId)

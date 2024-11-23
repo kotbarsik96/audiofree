@@ -42,21 +42,25 @@ class CartController extends Controller
 
   public function get(Request $request)
   {
+    $cart = Cart::select([
+      'cart.id',
+      'variation_id',
+      'cart.quantity'
+    ])
+      ->where('user_id', auth()->user()->id)
+      ->where('is_oneclick', (int) !!$request->input('is_oneclick'))
+      ->with([
+        'variation:id,product_id,name,image_id,price,discount,quantity',
+        'variation.product:id,name',
+        'variation.image:id,name,extension,path,disk'
+      ])
+      ->get();
+
+    ProductVariation::transformToSetCurrentPrice($cart);
+
     return response([
       'ok' => true,
-      'data' => Cart::select([
-        'cart.id',
-        'variation_id',
-        'cart.quantity'
-      ])
-        ->where('user_id', auth()->user()->id)
-        ->where('is_oneclick', (int) !!$request->input('is_oneclick'))
-        ->with([
-          'variation:id,product_id,name,image_id,price,discount,quantity',
-          'variation.product:id,name',
-          'variation.image:id,name,extension,path,disk'
-        ])
-        ->get()
+      'data' => $cart
     ]);
   }
 

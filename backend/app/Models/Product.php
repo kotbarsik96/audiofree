@@ -51,6 +51,11 @@ class Product extends Model
     return 'product_variations.price - (product_variations.price / 100 * product_variations.discount)';
   }
 
+  public static function priceWithDiscount($price, $discount)
+  {
+    return $price - ($price / 100 * $discount);
+  }
+
   public static function newFactory(): Factory
   {
     return ProductFactory::new();
