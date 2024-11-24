@@ -44,29 +44,33 @@ class UsersController extends Controller
     ]);
   }
 
-  public function transformProductCollection($collection)
-  {
-    return $collection->transform(function ($item) {
-      return [
-        'product_id' => $item->variation->product_id,
-        'variation_id' => $item->variation->id,
-      ];
-    });
-  }
-
   public function getProductsCollections()
   {
     $userId = auth()->user()->id;
-    $cart = $this->transformProductCollection(Cart::select('variation_id')
+    $cart = Cart::select('variation_id', 'quantity')
       ->where('user_id', $userId)
       ->where('is_oneclick', false)
       ->with(['variation:id,product_id' => [
         'product:id'
       ]])
-      ->get());
-    $favorites = $this->transformProductCollection(Favorite::select('variation_id')
+      ->get()
+      ->transform(function ($item) {
+        return [
+          'product_id' => $item->variation->product_id,
+          'variation_id' => $item->variation->id,
+          'quantity' => $item->quantity
+        ];
+      });
+    $favorites =
+      Favorite::select('variation_id')
       ->where('user_id', $userId)
-      ->get());
+      ->get()
+      ->transform(function ($item) {
+        return [
+          'product_id' => $item->variation->product_id,
+          'variation_id' => $item->variation->id,
+        ];
+      });
 
     return response([
       'ok' => true,
