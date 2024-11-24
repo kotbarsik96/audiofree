@@ -21,5 +21,5 @@ return [
   'notInFavorites' => 'Товара нет в избранном',
   'emailAlreadyVerified' => 'Email уже подтверждён',
   'cartItemNotFound' => 'Товара нет в корзине',
-  'wrongQuantity' => 'Неверное количество'
+  'wrongQuantity' => 'Неверное количество',
 ];

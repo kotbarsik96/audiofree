@@ -7,6 +7,7 @@ use App\Models\Cart\Cart;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CartController extends Controller
 {
@@ -22,22 +23,25 @@ class CartController extends Controller
       ['quantity' => 0]
     );
 
-    $cartItem->quantity = $cartItem->quantity + (int) $request->input('quantity');
-    if ($cartItem->quantity > 0) {
-      $cartItem->save();
-      $variation = ProductVariation::find($request->input('variation_id'));
-      $product = Product::find($variation->product_id);
+    $variation = ProductVariation::find($request->input('variation_id'));
+    $product = Product::find($variation->product_id);
 
-      return response([
-        'ok' => true,
-        'message' => __('general.productAddedToCart', [
-          'product' => $product->name,
-          'variation' => $variation->name
-        ])
-      ]);
-    } else {
-      return $this->deleteItem($cartItem);
-    }
+    $cartItem->quantity = (int) $request->input('quantity');
+
+    throw_if(
+      $cartItem->quantity > $variation->quantity || $cartItem->quantity < 1,
+      new BadRequestHttpException(__('abortions.wrongQuantity'))
+    );
+
+    $cartItem->save();
+
+    return response([
+      'ok' => true,
+      'message' => __('general.productAddedToCart', [
+        'product' => $product->name,
+        'variation' => $variation->name
+      ])
+    ]);
   }
 
   public function get(Request $request)
