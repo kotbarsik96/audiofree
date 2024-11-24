@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart\Cart;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Validations\AuthValidation;
@@ -38,6 +40,38 @@ class UsersController extends Controller
       'ok' => true,
       'data' => [
         'user' => $user
+      ]
+    ]);
+  }
+
+  public function transformProductCollection($collection)
+  {
+    return $collection->transform(function ($item) {
+      return [
+        'product_id' => $item->variation->product_id,
+        'variation_id' => $item->variation->id,
+      ];
+    });
+  }
+
+  public function getProductsCollections()
+  {
+    $userId = auth()->user()->id;
+    $cart = $this->transformProductCollection(Cart::select('variation_id')
+      ->where('user_id', $userId)
+      ->with(['variation:id,product_id' => [
+        'product:id'
+      ]])
+      ->get());
+    $favorites = $this->transformProductCollection(Favorite::select('variation_id')
+      ->where('user_id', $userId)
+      ->get());
+
+    return response([
+      'ok' => true,
+      'data' => [
+        'cart' => $cart,
+        'favorites' => $favorites
       ]
     ]);
   }

@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('profile/verify-email', [AuthController::class, 'verifyEmail']); // 1.7.2
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
+  Route::get('profile/products/collections', [UsersController::class, 'getProductsCollections']); // 1.10
 
   // 2. Catalog
   Route::get('/product/{productId}/user-review', [ProductsController::class, 'userReview']); // 2.6
