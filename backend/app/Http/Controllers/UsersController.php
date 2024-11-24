@@ -59,6 +59,7 @@ class UsersController extends Controller
     $userId = auth()->user()->id;
     $cart = $this->transformProductCollection(Cart::select('variation_id')
       ->where('user_id', $userId)
+      ->where('is_oneclick', false)
       ->with(['variation:id,product_id' => [
         'product:id'
       ]])
