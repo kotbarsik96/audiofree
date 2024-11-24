@@ -14,6 +14,11 @@ class CartController extends Controller
   public function store(CartRequest $request)
   {
     $isOneclick = $request->input('is_oneclick') ?? false;
+    if ($isOneclick) {
+      Cart::where('is_oneclick', 1)
+        ->where('user_id', auth()->user()->id)
+        ->delete();
+    }
     $cartItem = Cart::firstOrNew(
       [
         'user_id' => auth()->user()->id,
@@ -48,6 +53,7 @@ class CartController extends Controller
   {
     $cart = Cart::select([
       'cart.id',
+      'is_oneclick',
       'variation_id',
       'cart.quantity'
     ])
