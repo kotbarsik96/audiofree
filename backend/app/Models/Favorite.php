@@ -4,12 +4,9 @@ namespace App\Models;
 
 use App\Models\Product\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Models\BaseModel;
 
-class Favorite extends Model
+class Favorite extends BaseModel
 {
   use HasFactory;
 
@@ -21,7 +18,7 @@ class Favorite extends Model
   ];
 
   protected $casts = [
-    'current_price' => 'integer',
+    'current_price' => 'integer'
   ];
 
   public function variation()

@@ -2,10 +2,10 @@
 
 namespace App\Models\Gallery;
 
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Gallery extends Model
+class Gallery extends BaseModel
 {
   use HasFactory;
 

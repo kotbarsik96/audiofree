@@ -2,11 +2,10 @@
 
 namespace App\Models\Taxonomy;
 
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
-class TaxonomyValue extends Model
+class TaxonomyValue extends BaseModel
 {
   use HasFactory;
 

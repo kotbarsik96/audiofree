@@ -2,15 +2,15 @@
 
 namespace App\Models\Product;
 
+use App\Models\BaseModel;
 use App\Models\Product;
 use App\Models\User;
 use Database\Factories\Product\ProductRatingFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ProductRating extends Model
+class ProductRating extends BaseModel
 {
   use HasFactory;
 

@@ -2,10 +2,10 @@
 
 namespace App\Models\Cart;
 
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class CartProductVariation extends Model
+class CartProductVariation extends BaseModel
 {
   use HasFactory;
 

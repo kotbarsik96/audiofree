@@ -9,6 +9,7 @@ use Orchid\Platform\Models\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\EmailConfirmation;
+use App\Traits\CanUseTableNameStatically;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-  use HasApiTokens, Notifiable, HasFactory;
+  use HasApiTokens, Notifiable, HasFactory, CanUseTableNameStatically;
 
   /**
    * The attributes that are mass assignable.

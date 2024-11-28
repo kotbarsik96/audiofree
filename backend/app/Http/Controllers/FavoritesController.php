@@ -6,7 +6,7 @@ use App\Models\Favorite;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Support\Facades\DB;
 
 class FavoritesController extends Controller
 {
@@ -36,13 +36,29 @@ class FavoritesController extends Controller
   {
     $favorites = Favorite::where('user_id', auth()->user()->id)
       ->with([
-        'variation:id,name,image_id,price,discount,quantity,product_id',
-        'variation.product:id,name',
+        'variation' => function ($query) {
+          return $query->select(
+            'id',
+            'name',
+            'image_id',
+            'price',
+            'discount',
+            'quantity',
+            'product_id',
+            DB::raw(ProductVariation::currentPriceSelectFormula())
+          );
+        },
+        'variation.product' => function ($query) {
+          return $query->select('id', 'name');
+        },
+        'variation.product' => function ($query) {
+          return $query
+            ->withAvg('rating as rating_value', 'value')
+            ->withCount('rating');
+        },
         'variation.image:id,name,extension,path,alt,disk',
       ])
       ->get();
-
-    ProductVariation::transformToSetCurrentPrice($favorites);
 
     return response([
       'ok' => true,

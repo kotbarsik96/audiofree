@@ -7,6 +7,7 @@ use App\Models\Cart\Cart;
 use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CartController extends Controller
@@ -60,13 +61,22 @@ class CartController extends Controller
       ->where('user_id', auth()->user()->id)
       ->where('is_oneclick', (int) !!$request->input('is_oneclick'))
       ->with([
-        'variation:id,product_id,name,image_id,price,discount,quantity',
+        'variation' => function ($query) {
+          return $query->select(
+            'id',
+            'product_id',
+            'name',
+            'image_id',
+            'price',
+            'discount',
+            'quantity',
+            DB::raw(ProductVariation::currentPriceSelectFormula())
+          );
+        },
         'variation.product:id,name',
         'variation.image:id,name,extension,path,disk'
       ])
       ->get();
-
-    ProductVariation::transformToSetCurrentPrice($cart);
 
     return response([
       'ok' => true,

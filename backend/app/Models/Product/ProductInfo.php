@@ -3,14 +3,14 @@
 namespace App\Models\Product;
 
 use App\Helpers\AppHelper;
+use App\Models\BaseModel;
 use App\Models\Product;
 use Database\Factories\Product\ProductInfoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ProductInfo extends Model
+class ProductInfo extends BaseModel
 {
   use HasFactory;
 

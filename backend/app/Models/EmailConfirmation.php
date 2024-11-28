@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use \Carbon\Carbon;
 use App\Services\CodePhrase;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 
-class EmailConfirmation extends Model
+class EmailConfirmation extends BaseModel
 {
   use HasFactory;
 

@@ -3,12 +3,12 @@
 namespace App\Models\Taxonomy;
 
 use App\Filters\ProductFilter;
+use App\Models\BaseModel;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Taxonomy extends Model
+class Taxonomy extends BaseModel
 {
   use HasFactory;
 

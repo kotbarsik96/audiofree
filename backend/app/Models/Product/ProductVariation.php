@@ -2,16 +2,16 @@
 
 namespace App\Models\Product;
 
+use App\Models\BaseModel;
 use App\Models\Product;
 use Database\Factories\Product\ProductVariationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ProductVariation extends Model
+class ProductVariation extends BaseModel
 {
   use HasFactory, Attachable;
 
@@ -30,7 +30,7 @@ class ProductVariation extends Model
     'price' => 'integer',
     'discount' => 'integer',
     'current_price' => 'integer',
-    'quantity' => 'integer',
+    'quantity' => 'integer'
   ];
 
   protected $table = 'product_variations';
@@ -40,15 +40,10 @@ class ProductVariation extends Model
     return ProductVariationFactory::new();
   }
 
-  public static function transformToSetCurrentPrice($collection)
+  public static function currentPriceSelectFormula($as = 'current_price')
   {
-    return $collection->transform(function ($item) {
-      $item->variation->current_price = Product::priceWithDiscount(
-        $item->variation->price,
-        $item->variation->discount
-      );
-      return $item;
-    });
+    $tName = self::tableName();
+    return "$tName.price - ($tName.price / 100 * $tName.discount) as $as";
   }
 
   public static function getByName($productId, $varName)

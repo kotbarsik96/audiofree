@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
@@ -18,8 +17,9 @@ use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
+use App\Models\BaseModel;
 
-class Product extends Model
+class Product extends BaseModel
 {
   use HasFactory, AsSource, Attachable, Filterable;
 

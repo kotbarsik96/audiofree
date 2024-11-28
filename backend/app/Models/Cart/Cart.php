@@ -2,12 +2,12 @@
 
 namespace App\Models\Cart;
 
+use App\Models\BaseModel;
 use App\Models\Product\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Cart extends Model
+class Cart extends BaseModel
 {
   use HasFactory;
 
