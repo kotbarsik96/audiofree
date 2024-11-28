@@ -98,7 +98,7 @@ class Taxonomy extends BaseModel
     ];
   }
 
-  public static function sorts()
+  public static function catalogSorts()
   {
     return [
       [
@@ -106,8 +106,12 @@ class Taxonomy extends BaseModel
         'value' => 'min_price'
       ],
       [
-        'label' => 'Количество отзывов',
+        'label' => 'Популярность',
         'value' => 'rating_count'
+      ],
+      [
+        'label' => 'Рейтинг',
+        'value' => 'rating_value'
       ]
     ];
   }

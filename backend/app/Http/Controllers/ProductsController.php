@@ -47,10 +47,10 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $defaultSort = Taxonomy::sorts();
-    $sort = explode('__', $request->request->query('sort', $defaultSort[0]['value'] . '__asc'));
-    $sortType = $sort[0];
-    $sortDirection = $sort[1];
+    $defaultSort = Taxonomy::catalogSorts();
+    $sort = $request->request->query('sort', $defaultSort[0]['value']);
+    $sortOrder = trim(strtolower($request->request->query('sort_order')));
+    if ($sortOrder !== 'asc' && $sortOrder !== 'desc') $sortOrder = 'asc';
 
     $products = Product::select([
       'products.id',
@@ -70,7 +70,7 @@ class ProductsController extends Controller
       ])
       ->withAvg('rating as rating_value', 'value')
       ->withCount('rating as rating_count')
-      ->orderBy($sortType, $sortDirection)
+      ->orderBy($sort, $sortOrder)
       ->paginate(request('per_page') ?? 12);
 
     return $products;

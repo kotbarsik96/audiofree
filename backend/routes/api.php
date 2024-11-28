@@ -22,8 +22,8 @@ Route::post('profile/reset-password/new-password', [AuthController::class, 'rese
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
 // 2.2 внизу
-Route::get('products/catalog/filters', [TaxonomiesController::class, 'filters']); // 2.3
-Route::get('products/catalog/sorts', [TaxonomiesController::class, 'sorts']); // 2.4
+Route::get('products/catalog/filters', [TaxonomiesController::class, 'catalogFilters']); // 2.3
+Route::get('products/catalog/sorts', [TaxonomiesController::class, 'catalogSorts']); // 2.4
 Route::get('products/{productId}/reviews', [ProductsController::class, 'reviews']); // 2.5
 
 Route::middleware('auth:sanctum')->group(function () {

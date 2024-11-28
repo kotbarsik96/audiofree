@@ -6,7 +6,7 @@ use App\Models\Taxonomy\Taxonomy;
 
 class TaxonomiesController extends Controller
 {
-  public function filters()
+  public function catalogFilters()
   {
     $filters = Taxonomy::filters()->select(['id', 'name', 'slug'])
       ->with('values:id,slug,value,value_slug')
@@ -20,11 +20,11 @@ class TaxonomiesController extends Controller
     ], 200);
   }
 
-  public function sorts()
+  public function catalogSorts()
   {
     return response([
       'ok' => true,
-      'data' => Taxonomy::sorts()
+      'data' => Taxonomy::catalogSorts()
     ]);
   }
 }
