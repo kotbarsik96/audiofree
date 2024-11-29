@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ProductFilter;
 use App\Models\Favorite;
 use App\Models\Product;
 use App\Models\Product\ProductRating;
@@ -36,7 +37,7 @@ class FavoritesController extends Controller
     ]);
   }
 
-  public function get()
+  public function get(ProductFilter $request)
   {
     $sortData = SortService::getSortsFromQuery(Taxonomy::favoritesSorts());
 
@@ -52,7 +53,8 @@ class FavoritesController extends Controller
       ProductVariation::tableName() . '.price',
       ProductVariation::tableName() . '.discount',
       ProductVariation::tableName() . '.quantity',
-      DB::raw(ProductVariation::currentPriceSelectFormula())
+      DB::raw(ProductVariation::currentPriceSelectFormula()),
+      DB::raw('concat(' . Product::tableName() . '.name, " ",' . ProductVariation::tableName() . '.name) as full_name')
     ];
     $ratingFields = [
       DB::raw('avg(' . ProductRating::tableName() . '.value) as rating_value'),
@@ -84,6 +86,7 @@ class FavoritesController extends Controller
         '=',
         Product::tableName() . '.id'
       )
+      ->filter($request)
       ->orderBy($sortData['sort'], $sortData['sortOrder'])
       ->groupBy('favorites.id')
       ->paginate(request('per_page') ?? 12);

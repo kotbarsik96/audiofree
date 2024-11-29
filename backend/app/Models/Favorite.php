@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Models\Product\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\BaseModel;
+use App\Traits\Filterable;
 
 class Favorite extends BaseModel
 {
-  use HasFactory;
+  use HasFactory, Filterable;
 
   protected $table = 'favorites';
 

@@ -14,6 +14,13 @@ class ProductFilter extends QueryFilter
     $this->builder->where('name', 'LIKE', '%' . $value . '%');
   }
 
+  public function search($value)
+  {
+    if (!$value) return;
+
+    $this->builder->having('full_name', 'LIKE', '%' . $value . '%');
+  }
+
   public function taxonomy($taxonomies, string $slug)
   {
     if (!$taxonomies) return;
