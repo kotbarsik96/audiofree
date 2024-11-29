@@ -53,12 +53,13 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('product/favorites', [FavoritesController::class, 'store']); // 5.1
   Route::get('product/favorites', [FavoritesController::class, 'get']); // 5.2
   Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 5.3
+  Route::get('product/favorites/sorts', [TaxonomiesController::class, 'favoritesSorts']); // 5.4
 
   // 8. Product order
-  Route::post('product/order', [OrdersController::class, 'store']); // 8.1
-  Route::get('product/order', [OrdersController::class, 'getSingle']); // 8.2
-  Route::get('product/orders/products', [OrdersController::class, 'getProducts']); // 8.3
-  Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
+  // Route::post('product/order', [OrdersController::class, 'store']); // 8.1
+  // Route::get('product/order', [OrdersController::class, 'getSingle']); // 8.2
+  // Route::get('product/orders/products', [OrdersController::class, 'getProducts']); // 8.3
+  // Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
 });
 
 // 2. Catalog

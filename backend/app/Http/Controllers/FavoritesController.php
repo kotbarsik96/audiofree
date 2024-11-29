@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Favorite;
 use App\Models\Product;
+use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
+use App\Models\Taxonomy\Taxonomy;
+use App\Services\SortService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Orchid\Attachment\Models\Attachment;
 
 class FavoritesController extends Controller
 {
@@ -34,31 +38,60 @@ class FavoritesController extends Controller
 
   public function get()
   {
-    $favorites = Favorite::where('user_id', auth()->user()->id)
-      ->with([
-        'variation' => function ($query) {
-          return $query->select(
-            'id',
-            'name',
-            'image_id',
-            'price',
-            'discount',
-            'quantity',
-            'product_id',
-            DB::raw(ProductVariation::currentPriceSelectFormula())
-          );
-        },
-        'variation.product' => function ($query) {
-          return $query->select('id', 'name');
-        },
-        'variation.product' => function ($query) {
-          return $query
-            ->withAvg('rating as rating_value', 'value')
-            ->withCount('rating');
-        },
-        'variation.image:id,name,extension,path,alt,disk',
-      ])
-      ->get();
+    $sortData = SortService::getSortsFromQuery(Taxonomy::favoritesSorts());
+
+    $favoriteFields = ['favorites.id', 'favorites.created_at'];
+    $productFields = [
+      Product::tableName() . '.id as product_id',
+      Product::tableName() . '.name as product_name'
+    ];
+    $variationFields = [
+      ProductVariation::tableName() . '.id as variation_id',
+      ProductVariation::tableName() . '.image_id as image_id',
+      ProductVariation::tableName() . '.name as variation_name',
+      ProductVariation::tableName() . '.price',
+      ProductVariation::tableName() . '.discount',
+      ProductVariation::tableName() . '.quantity',
+      DB::raw(ProductVariation::currentPriceSelectFormula())
+    ];
+    $ratingFields = [
+      DB::raw('avg(' . ProductRating::tableName() . '.value) as rating_value'),
+      DB::raw('count(' . ProductRating::tableName() . '.value) as rating_count'),
+    ];
+
+    $favorites = Favorite::select(array_merge(
+      $favoriteFields,
+      $productFields,
+      $variationFields,
+      $ratingFields
+    ))
+      ->where('favorites.user_id', auth()->user()->id)
+      ->join(
+        ProductVariation::tableName(),
+        ProductVariation::tableName() . '.id',
+        '=',
+        'variation_id'
+      )
+      ->join(
+        Product::tableName(),
+        Product::tableName() . '.id',
+        '=',
+        ProductVariation::tableName() . '.product_id'
+      )
+      ->leftJoin(
+        ProductRating::tableName(),
+        ProductRating::tableName() . '.product_id',
+        '=',
+        Product::tableName() . '.id'
+      )
+      ->orderBy($sortData['sort'], $sortData['sortOrder'])
+      ->groupBy('favorites.id')
+      ->paginate(request('per_page') ?? 12);
+
+    $favorites->transform(function ($item) {
+      $item->image = Attachment::find($item->image_id)->url();
+      return $item;
+    });
 
     return response([
       'ok' => true,

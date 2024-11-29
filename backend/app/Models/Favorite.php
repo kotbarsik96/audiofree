@@ -18,7 +18,9 @@ class Favorite extends BaseModel
   ];
 
   protected $casts = [
-    'current_price' => 'integer'
+    'current_price' => 'integer',
+    'rating_value' => 'float',
+    'rating_count' => 'integer'
   ];
 
   public function variation()

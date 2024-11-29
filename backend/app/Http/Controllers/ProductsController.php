@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
+use App\Services\SortService;
 use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
@@ -47,10 +48,7 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $defaultSort = Taxonomy::catalogSorts();
-    $sort = $request->request->query('sort', $defaultSort[0]['value']);
-    $sortOrder = trim(strtolower($request->request->query('sort_order')));
-    if ($sortOrder !== 'asc' && $sortOrder !== 'desc') $sortOrder = 'asc';
+    $sortData = SortService::getSortsFromQuery(Taxonomy::catalogSorts());
 
     $products = Product::select([
       'products.id',
@@ -70,7 +68,7 @@ class ProductsController extends Controller
       ])
       ->withAvg('rating as rating_value', 'value')
       ->withCount('rating as rating_count')
-      ->orderBy($sort, $sortOrder)
+      ->orderBy($sortData['sort'], $sortData['sortOrder'])
       ->paginate(request('per_page') ?? 12);
 
     return $products;

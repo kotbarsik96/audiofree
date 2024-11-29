@@ -27,4 +27,12 @@ class TaxonomiesController extends Controller
       'data' => Taxonomy::catalogSorts()
     ]);
   }
+
+  public function favoritesSorts()
+  {
+    return response([
+      'ok' => true,
+      'data' => Taxonomy::favoritesSorts()
+    ]);
+  }
 }
