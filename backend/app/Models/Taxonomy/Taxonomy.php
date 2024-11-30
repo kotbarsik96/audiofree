@@ -102,12 +102,12 @@ class Taxonomy extends BaseModel
   {
     return [
       [
-        'label' => 'Цена',
-        'value' => 'min_price'
-      ],
-      [
         'label' => 'Популярность',
         'value' => 'rating_count'
+      ],
+      [
+        'label' => 'Цена',
+        'value' => 'min_price'
       ],
       [
         'label' => 'Рейтинг',
@@ -120,12 +120,12 @@ class Taxonomy extends BaseModel
   {
     return [
       [
-        'label' => 'Цена',
-        'value' => 'price'
-      ],
-      [
         'label' => 'Дата добавления',
         'value' => 'created_at'
+      ],
+      [
+        'label' => 'Цена',
+        'value' => 'price'
       ],
       [
         'label' => 'Популярность',
