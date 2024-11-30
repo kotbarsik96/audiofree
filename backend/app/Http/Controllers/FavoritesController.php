@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
+use App\Models\Taxonomy\TaxonomyValue;
 use App\Services\SortService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,8 @@ class FavoritesController extends Controller
     $favoriteFields = ['favorites.id', 'favorites.created_at'];
     $productFields = [
       Product::tableName() . '.id as product_id',
-      Product::tableName() . '.name as product_name'
+      Product::tableName() . '.name as product_name',
+      Product::tableName() . '.status_id as product_status_id',
     ];
     $variationFields = [
       ProductVariation::tableName() . '.id as variation_id',
@@ -93,6 +95,8 @@ class FavoritesController extends Controller
 
     $favorites->transform(function ($item) {
       $item->image = Attachment::find($item->image_id)->url();
+      $item->status = TaxonomyValue::find($item->product_status_id);
+      if ($item->status) $item->status = $item->status->value_slug;
       return $item;
     });
 
