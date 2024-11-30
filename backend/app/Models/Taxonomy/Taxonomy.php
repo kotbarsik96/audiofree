@@ -125,7 +125,7 @@ class Taxonomy extends BaseModel
       ],
       [
         'label' => 'Цена',
-        'value' => 'price'
+        'value' => 'current_price'
       ],
       [
         'label' => 'Популярность',
