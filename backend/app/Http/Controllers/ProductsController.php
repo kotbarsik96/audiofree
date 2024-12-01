@@ -63,13 +63,19 @@ class ProductsController extends Controller
       ->with([
         'image:id,name,extension,path,alt,disk',
         'firstVariation:id,product_id',
+        'variations:id,product_id',
         'status:id,value,value_slug',
-        'brand:id,value,value_slug'
+        'brand:id,value,value_slug',
       ])
       ->withAvg('rating as rating_value', 'value')
       ->withCount('rating as rating_count')
       ->orderBy($sortData['sort'], $sortData['sortOrder'])
       ->paginate(request('per_page') ?? 12);
+
+    $products->transform(function ($prod) {
+      $prod->variations = $prod->variations->transform(fn($data) => $data->id);
+      return $prod;
+    });
 
     return $products;
   }
