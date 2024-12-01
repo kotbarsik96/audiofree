@@ -18,6 +18,7 @@ use Orchid\Attachment\Models\Attachment;
 use Orchid\Screen\AsSource;
 use Orchid\Support\Facades\Alert;
 use App\Models\BaseModel;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Product extends BaseModel
 {
@@ -142,7 +143,7 @@ class Product extends BaseModel
   public function variation($variationId): HasOne
   {
     return $this->hasOne(ProductVariation::class, 'product_id')
-      ->ofMany('id', function (Builder $query) use($variationId) {
+      ->ofMany('id', function (Builder $query) use ($variationId) {
         $query->where('id', $variationId);
       });
   }
@@ -173,5 +174,13 @@ class Product extends BaseModel
       )
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id');
+  }
+
+  public static function itemOrFail($productId)
+  {
+    $product = self::find($productId);
+    throw_if(!$product, new NotFoundHttpException(__('abortions.productNotFound')));
+
+    return $product;
   }
 }

@@ -92,7 +92,7 @@ class ProductVariation extends BaseModel
   public static function itemOrFail($variationId)
   {
     $variation = self::find($variationId);
-    throw_if(!$variation, new NotFoundHttpException(__('abortions.variationNotFound2')));
+    throw_if(!$variation, new NotFoundHttpException(__('abortions.productNotFound')));
 
     return $variation;
   }

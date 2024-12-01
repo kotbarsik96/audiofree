@@ -29,5 +29,6 @@ return [
   'emailSent' => 'Письмо отправлено на указанный адрес email',
   'products' => 'Товары',
   'users' => 'Пользователи',
-  'roles' => 'Роли'
+  'roles' => 'Роли',
+  'removedProductFromFavorites' => 'Товар :product удален из корзины'
 ];

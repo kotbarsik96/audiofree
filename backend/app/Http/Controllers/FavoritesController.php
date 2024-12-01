@@ -108,8 +108,21 @@ class FavoritesController extends Controller
 
   public function delete(Request $request)
   {
-    $variation = ProductVariation::itemOrFail($request->input('variation_id'));
+    $result = null;
 
+    if ($request->input('variation_id')) {
+      $variation = ProductVariation::itemOrFail($request->input('variation_id'));
+      $result = $this->deleteByVariation($variation);
+    } else if ($request->input('product_id')) {
+      $product = Product::itemOrFail($request->input('product_id'));
+      $result = $this->deleteByProduct($product);
+    }
+
+    return $result;
+  }
+
+  public function deleteByVariation(ProductVariation $variation)
+  {
     Favorite::firstOrNew([
       'user_id' => auth()->user()->id,
       'variation_id' => $variation->id
@@ -122,6 +135,24 @@ class FavoritesController extends Controller
       'message' => __('general.removedFromFavorites', [
         'product' => $product->name,
         'variation' => $variation->name
+      ])
+    ]);
+  }
+
+  public function deleteByProduct(Product $product)
+  {
+    $variations = ProductVariation::select('id')->where('product_id', $product->id)->get();
+    $variations->each(
+      fn($var) =>
+      Favorite::where('variation_id', $var->id)
+        ->where('user_id', auth()->user()->id)
+        ->delete()
+    );
+
+    return response([
+      'ok' => true,
+      'message' => __('general.removedProductFromFavorites', [
+        'product' => $product->name
       ])
     ]);
   }
