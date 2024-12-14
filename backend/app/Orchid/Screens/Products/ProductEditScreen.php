@@ -8,6 +8,7 @@ use App\Models\Product\ProductVariation;
 use App\Models\Taxonomy\Taxonomy;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
 use App\Orchid\Screens\Fields\ProductInfoField;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Orchid\Screen\Actions\Button;
@@ -127,7 +128,7 @@ class ProductEditScreen extends Screen
         Cropper::make('image_id')
           ->title(__('orchid.product.image'))
           ->group(config('constants.product.image_group'))
-          ->path('images/products')
+          ->path(config('constants.paths.images.products'))
           ->width(300)
           ->height(300)
           ->targetId(),
