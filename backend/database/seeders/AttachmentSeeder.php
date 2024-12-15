@@ -9,48 +9,60 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Orchid\Attachment\Models\Attachment;
 use SplFileInfo;
+use Storage;
 
 class AttachmentSeeder extends Seeder
 {
-  protected $storagePath = 'app/public';
-
-  protected $productImagesPath = 'images/products';
-
-  public function getStoragePath($path)
+  public function productImagesPath(string|null $to = null): string
   {
-    return $this->storagePath . '/' . $path;
+    return config('constants.paths.images.products') . $to ?? '';
+  }
+
+  public function getStoragePath(string $path)
+  {
+    return "seeders/$path";
   }
 
   public function productImagesRun()
   {
-    $storagePath = storage_path($this->getStoragePath($this->productImagesPath));
+    // взять изображения из /storage/app/public/images/products
+    $storagePath = storage_path($this->getStoragePath($this->productImagesPath()));
     $images = File::allFiles($storagePath);
     $imageService = new ImageService();
 
+    // получить названия групп для изображения товаров и для галереи
     $groups = [
       config('constants.product.image_group'),
       config('constants.product.variation.gallery_group'),
     ];
 
     foreach ($images as $image) {
-      $imagePath = $imageService->imageToWebp($image->getPathname());
-      $image = new SplFileInfo($imagePath);
-      
-      $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
-      $filename = pathinfo($imagePath, PATHINFO_FILENAME);
+      // преобразовать изображение в .webp формат, если оно не .webp
+      $imageModified = $imageService->imageToWebp($image);
+      $image = $imageModified->image;
+      $imageInfo = $imageModified->imageInfo;
 
+      // получить расширение и имя файла
+      $extension = pathinfo($imageInfo->getRealPath(), PATHINFO_EXTENSION);
+      $filename = pathinfo($imageInfo->getRealPath(), PATHINFO_FILENAME);
+
+      // сохранить в хранилище изображений
+      $path = $this->productImagesPath("/$filename.$extension");
+      Storage::put($path, (string) $image);
+
+      // связать аттачмент с базой данных
       Attachment::create(
         [
           'name' => $filename,
-          'original_name' => $filename . '.' . $extension,
-          'mime' => 'image/' . $extension,
+          'original_name' => "$filename.$extension",
+          'mime' => "image/$extension",
           'extension' => $extension,
-          'size' => $image->getSize(),
-          'path' => $this->productImagesPath . '/',
+          'size' => $imageInfo->getSize(),
+          'path' => $this->productImagesPath() . '/',
           'user_id' => User::all()->random()->first()->id,
           'sort' => 0,
-          'hash' => Hash::make($imagePath),
-          'disk' => 'public',
+          'hash' => Hash::make($imageInfo->getRealPath()),
+          'disk' => 's3',
           'group' => fake()->randomElement($groups)
         ]
       );

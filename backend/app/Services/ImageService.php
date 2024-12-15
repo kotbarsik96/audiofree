@@ -5,10 +5,14 @@ namespace App\Services;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
+use Intervention\Image\Interfaces\EncodedImageInterface;
+use Intervention\Image\Interfaces\ImageInterface;
+use Orchid\Attachment\Models\Attachment;
+use SplFileInfo;
 
 class ImageService
 {
-  protected ImageManager $imageManager;
+  public ImageManager $imageManager;
 
   public function __construct()
   {
@@ -20,37 +24,84 @@ class ImageService
    * Обновляет базу attachments
    * @param $attImage = attachment image
    */
-  public function attachmentToWebp($attImage)
+  public function attachmentToWebp(Attachment $attachment)
   {
-    if ($attImage->extension !== 'webp') {
-      $path = Storage::path($attImage->disk . '/' . $attImage->path . $attImage->name);
-      $oldImagePath = $path  . '.' . $attImage->extension;
+    $isWebp = self::getExtensionFromURL($attachment->url()) === 'webp';
+    if (!$isWebp) {
+      // разбить url к изображению, чтобы ввыделить путь и название файла
+      $parsedUrl = parse_url($attachment->url());
+      $pathData = pathinfo($parsedUrl['path']);
+      $newPath = $pathData['dirname'] . '/' . $pathData['filename'] . '.webp';
 
-      $image = $this->imageManager->read($oldImagePath);
-      $image->toWebp(75)->save($path . '.webp');
+      // преобразовать изображение в webp
+      $image = file_get_contents($attachment->url());
+      $newImg = (string) $this->imageManager->read($image)->toWebp();
 
-      $attImage->update([
-        'extension' => 'webp',
-        'mime' => 'image/webp'
+      // удалить изображение в старом формате и сохранить в .webp
+      Storage::delete($attachment->physicalPath());
+      Storage::put($newPath, $newImg);
+
+      // обновить запись в базе данных
+      $attachment->update([
+        'mime' => 'image/webp',
+        'extension' => 'webp'
       ]);
-      
-      unlink($oldImagePath);
     }
   }
 
-  public function imageToWebp($imagePath)
+  /**
+   * 
+   * @param mixed $imagePath - путь к изображению, строка
+   * @return ImageService
+   */
+  public function imageToWebp(SplFileInfo $image): ImageServiceModified
   {
-    $newImagePath = $imagePath;
+    $imagePath = $image->getPathname();
     $imageExtension = pathinfo($imagePath, PATHINFO_EXTENSION);
 
-    if($imageExtension !== 'webp') {
-      $imageName = pathinfo($imagePath, PATHINFO_FILENAME);
-      $newImage = $this->imageManager->read($imagePath);
-      $newImagePath = dirname($imagePath) . '/' . $imageName . '.webp';
-      $newImage->toWebp(75)->save($newImagePath);
+    // сформировать новый путь на основе переданного
+    $imageName = pathinfo($imagePath, PATHINFO_FILENAME);
+    $newImagePath = dirname($imagePath) . "/$imageName.webp";
+    $newImage = $this->imageManager->read($newImagePath);
+
+    if ($imageExtension !== 'webp') {
+      // преобразовать в .webp, удалить изображение старого формата и сохранить новое
       unlink($imagePath);
+      $newImage = $newImage->toWebp(75);
+      $newImage->save($newImagePath);
+    } else {
+      $newImage = $newImage->encode();
     }
 
-    return $newImagePath;
+    return new ImageServiceModified($newImage, $newImagePath);
+  }
+
+  public static function getExtensionFromURL($url): string
+  {
+    return pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+  }
+}
+
+class ImageServiceModified
+{
+  public ImageManager $imageManager;
+
+  public EncodedImageInterface $image;
+
+  public SplFileInfo $imageInfo;
+
+  public function __construct(EncodedImageInterface $image, string $imagePath)
+  {
+    $this->imageManager = new ImageManager(Driver::class);
+    $this->image = $image;
+    $this->imageInfo = new SplFileInfo($imagePath);
+  }
+
+  public function resizeDown(int|null $width = null, int|null $height = null)
+  {
+    $this->image = $this->imageManager->read((string) $this->image)
+      ->resizeDown($width, $height)
+      ->encode();
+    return $this;
   }
 }

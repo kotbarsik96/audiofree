@@ -6,6 +6,7 @@ use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TaxonomiesController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,9 @@ Route::middleware('auth:sanctum')->group(function () {
   // Route::get('product/order', [OrdersController::class, 'getSingle']); // 8.2
   // Route::get('product/orders/products', [OrdersController::class, 'getProducts']); // 8.3
   // Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
+
+  // 99. Test
+  Route::post('test/image', [TestController::class, 'uploadImage']);
 });
 
 // 2. Catalog

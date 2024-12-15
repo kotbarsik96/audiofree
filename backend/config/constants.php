@@ -1,6 +1,11 @@
 <?php
 
 return [
+  'paths' => [
+    'images' => [
+      'products' => env('APP_NAME_SLUG') . '/images/products'
+    ]
+  ],
   'roles' => [
     'S_ADMINISTRATOR' => 1,
     'ADMINISTRATOR' => 5,
