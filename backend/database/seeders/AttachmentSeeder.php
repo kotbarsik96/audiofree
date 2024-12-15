@@ -8,17 +8,19 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Orchid\Attachment\Models\Attachment;
+use SplFileInfo;
+use Storage;
 
 class AttachmentSeeder extends Seeder
 {
-  public function productImagesPath(): string
+  public function productImagesPath(string|null $to = null): string
   {
-    return config('constants.paths.images.products');
+    return config('constants.paths.images.products') . $to ?? '';
   }
 
-  public function getStoragePath($path)
+  public function getStoragePath(string $path)
   {
-    return 'seeders/' . $path;
+    return "seeders/$path";
   }
 
   public function productImagesRun()
@@ -36,24 +38,30 @@ class AttachmentSeeder extends Seeder
 
     foreach ($images as $image) {
       // преобразовать изображение в .webp формат, если оно не .webp
-      $image = $imageService->imageToWebp($image->getPathname());
+      $imageModified = $imageService->imageToWebp($image);
+      $image = $imageModified->image;
+      $imageInfo = $imageModified->imageInfo;
 
       // получить расширение и имя файла
-      $extension = pathinfo($image->getRealPath(), PATHINFO_EXTENSION);
-      $filename = pathinfo($image->getRealPath(), PATHINFO_FILENAME);
+      $extension = pathinfo($imageInfo->getRealPath(), PATHINFO_EXTENSION);
+      $filename = pathinfo($imageInfo->getRealPath(), PATHINFO_FILENAME);
+
+      // сохранить в хранилище изображений
+      $path = $this->productImagesPath("/$filename.$extension");
+      Storage::put($path, (string) $image);
 
       // связать аттачмент с базой данных
       Attachment::create(
         [
           'name' => $filename,
-          'original_name' => $filename . '.' . $extension,
-          'mime' => 'image/' . $extension,
+          'original_name' => "$filename.$extension",
+          'mime' => "image/$extension",
           'extension' => $extension,
-          'size' => $image->getSize(),
+          'size' => $imageInfo->getSize(),
           'path' => $this->productImagesPath() . '/',
           'user_id' => User::all()->random()->first()->id,
           'sort' => 0,
-          'hash' => Hash::make($image->getRealPath()),
+          'hash' => Hash::make($imageInfo->getRealPath()),
           'disk' => 's3',
           'group' => fake()->randomElement($groups)
         ]
