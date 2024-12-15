@@ -84,13 +84,24 @@ class ImageService
 
 class ImageServiceModified
 {
+  public ImageManager $imageManager;
+
   public EncodedImageInterface $image;
 
   public SplFileInfo $imageInfo;
 
   public function __construct(EncodedImageInterface $image, string $imagePath)
   {
+    $this->imageManager = new ImageManager(Driver::class);
     $this->image = $image;
     $this->imageInfo = new SplFileInfo($imagePath);
+  }
+
+  public function resizeDown(int|null $width = null, int|null $height = null)
+  {
+    $this->image = $this->imageManager->read((string) $this->image)
+      ->resizeDown($width, $height)
+      ->encode();
+    return $this;
   }
 }
