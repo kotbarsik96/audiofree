@@ -116,6 +116,10 @@ class FavoritesController extends Controller
     } else if ($request->input('product_id')) {
       $product = Product::itemOrFail($request->input('product_id'));
       $result = $this->deleteByProduct($product);
+    } else {
+      return response([
+        'message' => __('abortions.productNotFound')
+      ], 400);
     }
 
     return $result;

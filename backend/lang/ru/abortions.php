@@ -13,7 +13,6 @@ return [
   'variationNotFound2' => 'Вариация не найдена',
   'variationValueNotSpecified' => 'Не указано значение вариации',
   'notEnoughInStock' => 'Такого количества товара нет в наличии',
-  'productIsInactive' => 'Товар неактивен',
   'notInCart' => 'Товара нет в корзине',
   'productIsInactive' => 'Товар :product неактивен и его нельзя заказать',
   'noProductsInCart' => 'Не товаров в корзине',
