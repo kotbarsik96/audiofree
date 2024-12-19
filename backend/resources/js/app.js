@@ -1,8 +1,8 @@
-function createElement(tagName, attributes = "", innerHTML = "") {
+function createElement(tagName, attributes = '', innerHTML = '') {
   const el = document.createElement(tagName)
-  attributes.split(" ").forEach((attr) => {
-    const split = attr.split("=")
-    el.setAttribute(split[0], split[1].replace(/"/g, ""))
+  attributes.split(' ').forEach((attr) => {
+    const split = attr.split('=')
+    el.setAttribute(split[0], split[1].replace(/"/g, ''))
   })
   el.innerHTML = innerHTML
 
@@ -11,13 +11,13 @@ function createElement(tagName, attributes = "", innerHTML = "") {
 
 class InfoTable extends window.Controller {
   static get targets() {
-    return ["lastRowForAdd", "removeRowBtn", "row", "addTitle", "addValue"]
+    return ['lastRowForAdd', 'removeRowBtn', 'row', 'addTitle', 'addValue']
   }
 
   removeRow(event) {
-    const button = event.target.hasAttribute("data-i")
+    const button = event.target.hasAttribute('data-i')
       ? event.target
-      : event.target.closest("button[data-i]")
+      : event.target.closest('button[data-i]')
 
     const i = button.dataset.i
     const row = this.element.querySelector(`tr[data-i="${i}"]`)
@@ -26,7 +26,7 @@ class InfoTable extends window.Controller {
 
   onBlankKeydown(event) {
     switch (event.key) {
-      case "Enter":
+      case 'Enter':
         this.addNewRow()
         break
     }
@@ -44,7 +44,7 @@ class InfoTable extends window.Controller {
     const nextRowI = Number(lastRowI) + 1
 
     const tr = createElement(
-      "tr",
+      'tr',
       `data-info-table-target="row" data-i="${nextRowI}"`,
       `
         <td>
@@ -70,22 +70,36 @@ class InfoTable extends window.Controller {
     this.lastRowForAddTarget.before(tr)
     this.rowTargets.push(tr)
 
-    this.addTitleTarget.value = ""
-    this.addValueTarget.value = ""
+    this.addTitleTarget.value = ''
+    this.addValueTarget.value = ''
   }
 
   refreshCell(event) {
-    const input = event.target.closest("td").querySelector("input")
+    const input = event.target.closest('td').querySelector('input')
     input.value = input.dataset.originValue
-    input.dispatchEvent(new Event("input"))
+    input.dispatchEvent(new Event('input'))
   }
 
   onCellInput(event) {
     const input = event.target
     if (input.value === input.dataset.originValue)
-      input.closest("td").classList.remove("unsaved")
-    else input.closest("td").classList.add("unsaved")
+      input.closest('td').classList.remove('unsaved')
+    else input.closest('td').classList.add('unsaved')
   }
 }
 
-application.register("info-table", InfoTable)
+/** описывает логику инпута, значение которого будет преобразовано в slug и отправлено в инпут с data-sluggable-target */
+class SluggableInput {
+  static get targets() {
+    return ['']
+  }
+
+  onInput(event) {
+    const slugTargets = document.querySelectorAll('[data-sluggable-target]')
+    console.log(slugTargets);
+    // slugTargets.forEach(target => target.)
+  }
+}
+
+application.register('info-table', InfoTable)
+application.register('sluggable-input', SluggableInput)

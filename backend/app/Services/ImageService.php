@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\EncodedImageInterface;
-use Intervention\Image\Interfaces\ImageInterface;
 use Orchid\Attachment\Models\Attachment;
 use SplFileInfo;
 

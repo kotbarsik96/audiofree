@@ -42,6 +42,7 @@ class ProductRequest extends FormRequest
 
     return [
       'name' => ProductValidation::name($isUpdate, $id),
+      'slug' => ProductValidation::slug($id),
       'image_id' => ProductValidation::imageId(),
       'status_id' => $taxonomyValidation,
       'type_id' => $taxonomyValidation,

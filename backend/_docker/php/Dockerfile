@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
   docker-php-ext-install bcmath && \
   docker-php-ext-install gd && \
   docker-php-ext-install zip && \
+  docker-php-ext-configure intl && \
+  docker-php-ext-install intl && \
   pecl install imagick && \
   docker-php-ext-enable imagick && \
   apt-get clean && \
@@ -23,9 +25,9 @@ COPY ./_docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer | php -- \
-    --filename=composer \
-    --install-dir=/usr/local/bin \
-    composer require
+  --filename=composer \
+  --install-dir=/usr/local/bin \
+  composer require
 
 RUN chown -R www-data:www-data /var/www
 

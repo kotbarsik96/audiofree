@@ -11,15 +11,17 @@ class ProductValidation
 
   public static function name($required = false, $ignoreId = null)
   {
-    $array = ['string', 'min:3', 'unique:products,name,' . $ignoreId];
-    if ($required) array_push($array, 'required');
+    $array = ['string', 'min:3', "unique:products,name,$ignoreId"];
+    if ($required)
+      array_push($array, 'required');
     return $array;
   }
 
   public static function price($required = false)
   {
     $array = ['numeric'];
-    if ($required) array_push($array, 'required');
+    if ($required)
+      array_push($array, 'required');
     return $array;
   }
 
@@ -36,7 +38,8 @@ class ProductValidation
   public static function taxonomy($required = false)
   {
     $array = ['exists:taxonomy_values,id'];
-    if ($required) array_push($array, 'required');
+    if ($required)
+      array_push($array, 'required');
     return $array;
   }
 
@@ -71,12 +74,18 @@ class ProductValidation
     return ['nullable', 'exists:attachments,id'];
   }
 
+  public static function slug(int|string $ignoreId = null)
+  {
+    return ['string', "unique:products,slug,$ignoreId"];
+  }
+
   public static function messages()
   {
     return [
       'name.required' => __('validation.name.required'),
       'name.min' => __('validation.name.min'),
       'name.unique' => __('validation.productName.unique'),
+      'slug.unique' => __('validation.productSlug.unique'),
       'price.numeric' => __('validation.price.numeric'),
       'discount' => __('validation.discount'),
       'price.min' => __('validation.price.min'),

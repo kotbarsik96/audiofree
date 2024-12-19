@@ -22,6 +22,7 @@ class ProductVariation extends BaseModel
     'discount',
     'quantity',
     'name',
+    'slug',
     'created_by',
     'updated_by',
   ];

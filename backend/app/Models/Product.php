@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Requests\Product\ProductRequest;
+use App\Services\InputModifier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
@@ -26,6 +28,7 @@ class Product extends BaseModel
 
   protected $fillable = [
     'name',
+    'slug',
     'image_id',
     'description',
     'status_id',

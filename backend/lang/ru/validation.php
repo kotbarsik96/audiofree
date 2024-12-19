@@ -122,7 +122,6 @@ return [
   'prohibited_unless' => 'Поле :attribute запрещено, если :other не находится в :values.',
   'prohibits' => 'Поле :attribute запрещает присутствие :other.',
   'regex' => 'Формат поля :attribute недопустим.',
-  'required' => 'Поле :attribute обязательно для заполнения.',
   'required_array_keys' => 'Поле :attribute должно содержать записи для: :values.',
   'required_if' => 'Поле :attribute обязательно для заполнения, когда :other равно :value.',
   'required_if_accepted' => 'Поле :attribute обязательно для заполнения, когда :other принято.',
@@ -156,9 +155,7 @@ return [
   'email.email' => 'Неверный формат email',
   'email.unique' => 'Пользователь уже существует',
   'username.required' => 'Не указано имя',
-  'name.min' => 'Имя от 2 символов',
   'phone_number.regex' => 'Неверный формат телефона',
-
   'name.required' => 'Не указано название',
   'name.min' => 'От :min символов',
   'price.numeric' => 'Неверный формат цены',

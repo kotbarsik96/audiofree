@@ -7,6 +7,7 @@ use App\Models\Taxonomy\TaxonomyValue;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchid\Attachment\Models\Attachment;
+use ElForastero\Transliterate\Facade as Transliterate;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
@@ -77,6 +78,7 @@ class ProductFactory extends Factory
 
     return [
       'name' => fake()->unique()->randomElement($names),
+      'slug' => fake()->unique()->randomElement($names),
       'description' => fake()->randomElement($descriptions),
       'image_id' => fake()->randomElement($images),
       'status_id' => $statusId,
@@ -138,11 +140,19 @@ class ProductFactory extends Factory
     }
   }
 
+  public function createSlugFromName(Product $product)
+  {
+    $product->update([
+      'slug' => Transliterate::slugify($product->name)
+    ]);
+  }
+
   public function configure()
   {
     return $this->afterCreating(function (Product $product) {
       $this->clearDuplicateVariations($product);
       $this->clearDuplicateInfo($product);
+      $this->createSlugFromName($product);
     });
   }
 }

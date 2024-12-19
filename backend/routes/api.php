@@ -63,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
   // Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
 
   // 99. Test
-  Route::post('test/image', [TestController::class, 'uploadImage']);
+  Route::post('test', [TestController::class, 'test']);
 });
 
 // 2. Catalog
