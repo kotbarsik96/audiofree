@@ -6,9 +6,10 @@ use App\Models\Product\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchid\Attachment\Models\Attachment;
 use Illuminate\Support\Facades\DB;
+use ElForastero\Transliterate\Facade as Transliterate;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BaseModel>
  */
 class ProductVariationFactory extends Factory
 {
@@ -35,11 +36,12 @@ class ProductVariationFactory extends Factory
       ->get()->pluck('id');
 
     return [
-      'price' => rand(1000, 99999),
+      'price' => rand(1000, max: 99999),
       'discount' => rand(0, 75),
       'quantity' => rand(1, 100),
       'image_id' => fake()->randomElement($images),
       'name' => fake()->randomElement(self::$names),
+      'slug' => 'slug', // слаги генерируются в ProductFactory, т.к. дубликаты вариаций удаляются только после создания товаров
       'created_by' => 1,
       'updated_by' => 1,
     ];

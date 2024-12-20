@@ -26,7 +26,8 @@ class ProductVariationRequest extends FormRequest
 
   public function rules(): array
   {
-    $ignoreId = request('id');
+    $variationId = request('id');
+    $productId = request('product_id');
 
     return [
       'product_id' => ProductValidation::productId(),
@@ -35,9 +36,14 @@ class ProductVariationRequest extends FormRequest
       'quantity' => ProductValidation::quantity(),
       'name' => [
         Rule::unique('product_variations', 'name')
-          ->where(fn($query) => $query->where('product_id', $ignoreId))
-          ->ignore($ignoreId),
+          ->where(fn($query) => $query->where('product_id', $productId))
+          ->ignore($variationId),
         'min:2'
+      ],
+      'slug' => [
+        Rule::unique('product_variations', 'slug')
+          ->where(fn($query) => $query->where('product_id', $productId))
+          ->ignore($variationId)
       ],
       'image_id' => ProductValidation::imageId()
     ];

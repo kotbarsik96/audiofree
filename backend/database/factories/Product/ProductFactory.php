@@ -78,7 +78,7 @@ class ProductFactory extends Factory
 
     return [
       'name' => fake()->unique()->randomElement($names),
-      'slug' => fake()->unique()->randomElement($names),
+      'slug' => fake()->unique()->name(),
       'description' => fake()->randomElement($descriptions),
       'image_id' => fake()->randomElement($images),
       'status_id' => $statusId,
@@ -94,18 +94,26 @@ class ProductFactory extends Factory
   {
     $variations = $product->variations()->get();
 
+    // пройтись по каждой вариации товара
     foreach ($variations as $variation) {
+      // получить вариации этого товара с таким же названием
       $withSameName = $variations->filter(fn($v) => $v->name === $variation->name);
+      // если есть дубликаты:
       if ($withSameName->count() > 1) {
+        // занятые названия
         $takenNames = $product->variations()->get()->pluck('name')->toArray();
 
+        // оставить одну вариацию с этим названием, а для остальных вариаций:
         foreach ($withSameName->slice(1) as $dupVariation) {
+          // найти новые названия, не повторяющие уже занятые
           $elementsWithoutDuplicates = collect(ProductVariationFactory::$names)
             ->filter(fn($name) => !array_search($name, $takenNames));
 
           $newName = fake()->randomElement($elementsWithoutDuplicates);
+          // записать новые названия в занятые
           array_push($takenNames, $newName);
 
+          // обновить запись в бд
           $dupVariation->update([
             'name' => $newName
           ]);
@@ -118,12 +126,18 @@ class ProductFactory extends Factory
   {
     $info = $product->info()->get();
 
+    // пройтись по каждой характ-ке товара
     foreach ($info as $item) {
+      // получить характ-ки этого товара с одинаковыми названиями
       $withSameName = $info->filter(fn($i) => $i->name === $item->name);
+      // если есть дубликаты:
       if ($withSameName->count() > 1) {
+        // занятые названия
         $takenNames = $info->pluck('name')->toArray();
 
+        // оставить первую характ-ку, а остальным:
         foreach ($withSameName->slice(1) as $dupInfo) {
+          // найти новые характ-ки, откидывая уже занятые
           $elementsWithoutDuplicates = collect(ProductInfoFactory::$namesAndValues)
             ->filter(
               fn($nameAndValue) => array_search($nameAndValue['name'], $takenNames) === false
@@ -131,6 +145,7 @@ class ProductFactory extends Factory
 
           $newName = fake()->randomElement($elementsWithoutDuplicates)['name'];
 
+          // обновить запись в бд
           $dupInfo->update([
             'name' => $newName,
             'value' => ProductInfoFactory::getRandomValue($newName)
@@ -142,9 +157,17 @@ class ProductFactory extends Factory
 
   public function createSlugFromName(Product $product)
   {
+    // создать slug для товара
     $product->update([
       'slug' => Transliterate::slugify($product->name)
     ]);
+
+    // создать slug для каждой вариации товара
+    $variations = $product->variations()->get()->each(function ($var) {
+      $var->update([
+        'slug' => Transliterate::slugify($var->name)
+      ]);
+    });
   }
 
   public function configure()

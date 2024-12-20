@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
     for ($i = 0; $i < $productCount; $i++) {
       Product::factory()
         ->has(ProductInfo::factory()->count(rand(15, 20)), 'info')
-        ->has(ProductVariation::factory()->count(rand(1, 3)), 'variations')
+        ->has(ProductVariation::factory()->count(rand(2, 4)), 'variations')
         ->has(ProductRating::factory()->count(rand(1, 20)), 'rating')
         ->create();
     }
