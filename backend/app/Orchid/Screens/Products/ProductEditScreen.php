@@ -182,9 +182,7 @@ class ProductEditScreen extends Screen
 
   public function create(ProductRequest $request)
   {
-    $slug = InputModifier::getSlugFromRequest($request);
     $request->merge([
-      'slug' => $slug,
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,
     ]);
@@ -200,9 +198,7 @@ class ProductEditScreen extends Screen
 
   public function update(ProductRequest $request)
   {
-    $slug = InputModifier::getSlugFromRequest($request);
     $request->merge([
-      'slug' => $slug,
       'updated_by' => auth()->user()->id,
     ]);
     $validated = $request->validated();

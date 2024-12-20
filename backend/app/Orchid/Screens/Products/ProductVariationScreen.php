@@ -116,9 +116,7 @@ class ProductVariationScreen extends Screen
 
   public function create(ProductVariationRequest $request)
   {
-    $slug = InputModifier::getSlugFromRequest($request);
     $request->merge([
-      'slug' => $slug,
       'created_by' => auth()->user()->id,
       'updated_by' => auth()->user()->id,
     ]);
@@ -136,9 +134,7 @@ class ProductVariationScreen extends Screen
 
   public function update(ProductVariationRequest $request)
   {
-    $slug = InputModifier::getSlugFromRequest($request);
     $request->merge([
-      'slug' => $slug,
       'updated_by' => auth()->user()->id,
     ]);
     $validated = $request->validated();

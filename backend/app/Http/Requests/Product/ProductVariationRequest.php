@@ -21,6 +21,7 @@ class ProductVariationRequest extends FormRequest
       'product_id' => $this->product_id,
       'price' => InputModifier::stringToNumber($this->price),
       'discount' => InputModifier::stringToNumber($this->discount),
+      'slug' => InputModifier::getSlugFromRequest($this)
     ]);
   }
 
