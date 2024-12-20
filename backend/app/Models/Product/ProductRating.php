@@ -36,7 +36,8 @@ class ProductRating extends BaseModel
       ->where('user_id', $userId)
       ->first();
 
-    if (!$rating) abort(404, __('abortions.userDidNotSetProductRating'));
+    if (!$rating)
+      abort(404, __('abortions.userDidNotSetProductRating'));
 
     return $rating;
   }
@@ -68,9 +69,11 @@ class ProductRating extends BaseModel
     return $this->belongsTo(User::class, 'user_id', 'id');
   }
 
-  public function scopeForProduct(Builder $query, int $productId)
+  public function scopeForProduct(Builder $query, string $productSlug)
   {
-    return $query->where('product_id', $productId)
+    $product = Product::where('slug', $productSlug)->firstOrFail();
+
+    return $query->where('product_id', $product->id)
       ->with('user:id,name');
   }
 }

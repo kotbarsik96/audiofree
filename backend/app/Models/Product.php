@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Requests\Product\ProductRequest;
-use App\Services\InputModifier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
@@ -182,7 +180,10 @@ class Product extends BaseModel
   public static function itemOrFail($productId)
   {
     $product = self::find($productId);
-    throw_if(!$product, new NotFoundHttpException(__('abortions.productNotFound')));
+    throw_if(
+      !$product,
+      new NotFoundHttpException(__('abortions.productNotFound'))
+    );
 
     return $product;
   }

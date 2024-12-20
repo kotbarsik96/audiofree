@@ -65,6 +65,7 @@ class CartController extends Controller
           return $query->select(
             'id',
             'product_id',
+            'slug',
             'name',
             'image_id',
             'price',
@@ -73,7 +74,7 @@ class CartController extends Controller
             DB::raw(ProductVariation::currentPriceSelectFormula())
           );
         },
-        'variation.product:id,name',
+        'variation.product:id,name,slug',
         'variation.image:id,name,extension,path,disk'
       ])
       ->get();
