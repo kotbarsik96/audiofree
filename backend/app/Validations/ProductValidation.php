@@ -76,7 +76,7 @@ class ProductValidation
 
   public static function slug(int|string $ignoreId = null)
   {
-    return ['string', "unique:products,slug,$ignoreId"];
+    return ['string', 'nullable', "unique:products,slug,$ignoreId"];
   }
 
   public static function messages()

@@ -169,6 +169,7 @@ return [
   'rating_value.min' => 'Значение рейтинга должно быть от :min',
   'rating_value.max' => 'Значение рейтинга должно быть до :max',
   'productName.unique' => 'Название товара занято',
+  'productSlug.unique' => 'Slug товара занят',
   'address.min' => 'Недействительный адрес',
   'address.required' => 'Необходимо указать адрес',
   'emailAlreadyVerified' => 'Почта уже подтверждена',
