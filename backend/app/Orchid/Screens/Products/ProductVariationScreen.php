@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
-use App\Services\InputModifier;
+use ElForastero\Transliterate\Facade as Transliterate;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -138,6 +138,10 @@ class ProductVariationScreen extends Screen
       'updated_by' => auth()->user()->id,
     ]);
     $validated = $request->validated();
+
+    // обновит slug, если он остался старым, а название товара поменялось. Если при этом сам slug был изменён, он не будет затронут
+    if ($request->name !== $this->variation->name && $this->variation->slug === $request->slug)
+      $validated['slug'] = Transliterate::slugify($request->name);
 
     $this->variation->update($validated);
 
