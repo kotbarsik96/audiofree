@@ -46,12 +46,14 @@ class FavoritesController extends Controller
     $productFields = [
       Product::tableName() . '.id as product_id',
       Product::tableName() . '.name as product_name',
+      Product::tableName() . '.slug as product_slug',
       Product::tableName() . '.status_id as product_status_id',
     ];
     $variationFields = [
       ProductVariation::tableName() . '.id as variation_id',
       ProductVariation::tableName() . '.image_id as image_id',
       ProductVariation::tableName() . '.name as variation_name',
+      ProductVariation::tableName() . '.slug as variation_slug',
       ProductVariation::tableName() . '.price',
       ProductVariation::tableName() . '.discount',
       ProductVariation::tableName() . '.quantity',

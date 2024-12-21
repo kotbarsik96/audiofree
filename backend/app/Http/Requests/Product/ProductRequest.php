@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Services\InputModifier;
 use App\Validations\ProductValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -19,13 +20,15 @@ class ProductRequest extends FormRequest
      */
     $infoNames = collect($this->infoName)->reverse();
     $infoValues = collect($this->infoValue)->reverse();
+    $slug = InputModifier::getSlugFromRequest($this);
 
     $this->merge([
       'info' => $infoNames
         ->combine($infoValues->toArray())
         ->map(fn($value, $name) => ['name' => $name, 'value' => $value])
         ->unique('name')
-        ->toArray()
+        ->toArray(),
+      'slug' => $slug
     ]);
   }
 
@@ -42,6 +45,7 @@ class ProductRequest extends FormRequest
 
     return [
       'name' => ProductValidation::name($isUpdate, $id),
+      'slug' => ProductValidation::slug($id),
       'image_id' => ProductValidation::imageId(),
       'status_id' => $taxonomyValidation,
       'type_id' => $taxonomyValidation,

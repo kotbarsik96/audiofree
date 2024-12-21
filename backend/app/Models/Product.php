@@ -26,6 +26,7 @@ class Product extends BaseModel
 
   protected $fillable = [
     'name',
+    'slug',
     'image_id',
     'description',
     'status_id',
@@ -179,7 +180,10 @@ class Product extends BaseModel
   public static function itemOrFail($productId)
   {
     $product = self::find($productId);
-    throw_if(!$product, new NotFoundHttpException(__('abortions.productNotFound')));
+    throw_if(
+      !$product,
+      new NotFoundHttpException(__('abortions.productNotFound'))
+    );
 
     return $product;
   }

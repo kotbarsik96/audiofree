@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Orchid\Layouts\Products\Variations\VariationFormLayout;
 use App\Orchid\Layouts\Products\Variations\VariationsListLayout;
+use App\Services\InputModifier;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
@@ -125,7 +126,10 @@ class ProductVariationScreen extends Screen
 
     Alert::info(__('orchid.success'));
 
-    return redirect()->route('platform.product.variation.edit', [$this->product->id, $variation->id]);
+    return redirect()->route(
+      'platform.product.variation.edit',
+      [$this->product->id, $variation->id]
+    );
   }
 
   public function update(ProductVariationRequest $request)

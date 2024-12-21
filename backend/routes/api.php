@@ -11,7 +11,7 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 // 1. User
-Route::post('signup', [AuthController::class, 'signup']); // 1.1
+Route::post('signup', action: [AuthController::class, 'signup']); // 1.1
 Route::post('login', [AuthController::class, 'login']); // 1.2
 Route::post('profile/reset-password/request', [AuthController::class, 'requestResetPassword']); // 1.6.1
 Route::post(
@@ -63,8 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
   // Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
 
   // 99. Test
-  Route::post('test/image', [TestController::class, 'uploadImage']);
+  Route::post('test', [TestController::class, 'test']);
 });
 
 // 2. Catalog
-Route::get('product/{productId}/{variationId}', [ProductsController::class, 'productPage']); // 2.2
+Route::get('product/{productSlug}/{variationSlug}', [ProductsController::class, 'productPage']); // 2.2

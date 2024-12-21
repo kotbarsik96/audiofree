@@ -15,7 +15,7 @@ class ProductsController extends Controller
 {
   public function setRating(ProductRatingRequest $request)
   {
-    $product = Product::findOrFail($request->product_id);
+    $product = Product::where('slug', $request->product_slug)->firstOrFail();
     $value = $request->rating_value;
     $description = $request->description;
     $pros = $request->pros;
@@ -36,7 +36,7 @@ class ProductsController extends Controller
 
   public function removeRating()
   {
-    $product = Product::findOrFail(request('product_id'));
+    $product = Product::where('slug', request('product_slug'))->firstOrFail();
 
     ProductRating::removeRating($product);
 
@@ -51,9 +51,10 @@ class ProductsController extends Controller
     $sortData = SortService::getSortsFromQuery(Taxonomy::catalogSorts());
 
     $products = Product::select([
-      'products.id',
-      'products.name',
-      'products.image_id',
+      Product::tableName() . '.id',
+      Product::tableName() . '.name',
+      Product::tableName() . '.slug',
+      Product::tableName() . '.image_id',
       'status_id',
       'brand_id'
     ])
@@ -62,8 +63,8 @@ class ProductsController extends Controller
       ->activeStatus()
       ->with([
         'image:id,name,extension,path,alt,disk',
-        'firstVariation:id,product_id',
-        'variations:id,product_id',
+        'firstVariation:id,product_id,slug',
+        'variations:id,product_id,slug',
         'status:id,value,value_slug',
         'brand:id,value,value_slug',
       ])
@@ -80,40 +81,42 @@ class ProductsController extends Controller
     return $products;
   }
 
-  public function productPage($productId, $variationId)
+  public function productPage($productSlug, $variationSlug)
   {
     $product = Product::select(
-      'products.id',
-      'products.name',
-      'products.description',
-      'products.image_id',
-      'products.status_id',
-      'products.brand_id',
-      'products.category_id',
-      'products.type_id',
+      Product::tableName() . '.id',
+      Product::tableName() . '.slug',
+      Product::tableName() . '.name',
+      Product::tableName() . '.description',
+      Product::tableName() . '.image_id',
+      Product::tableName() . '.status_id',
+      Product::tableName() . '.brand_id',
+      Product::tableName() . '.category_id',
+      Product::tableName() . '.type_id',
     )
-      ->where('products.id', $productId)
+      ->where('products.slug', $productSlug)
       ->with([
         'status:id,slug,value,value_slug',
         'brand:id,slug,value,value_slug',
         'category:id,slug,value,value_slug',
         'type:id,slug,value,value_slug',
         'info:id,product_id,name,value',
-        'variations:id,product_id,name',
+        'variations:id,product_id,name,slug',
       ])
       ->withAvg('rating as rating_value', 'value')
       ->firstOrFail();
 
     $variation = ProductVariation::select(
-      'product_variations.id',
-      'product_variations.price',
-      'product_variations.discount',
-      'product_variations.name',
-      'product_variations.quantity',
+      ProductVariation::tableName() . '.id',
+      ProductVariation::tableName() . '.slug',
+      ProductVariation::tableName() . '.price',
+      ProductVariation::tableName() . '.discount',
+      ProductVariation::tableName() . '.name',
+      ProductVariation::tableName() . '.quantity',
       DB::raw(Product::priceWithDiscountFormula() . ' as current_price'),
     )
-      ->where('id', $variationId)
-      ->where('product_id', $productId)
+      ->where(ProductVariation::tableName() . '.slug', $variationSlug)
+      ->where('product_id', $product->id)
       ->with(['gallery:id,name,extension,path,alt,disk'])
       ->firstOrFail();
 
@@ -126,11 +129,11 @@ class ProductsController extends Controller
     ]);
   }
 
-  public function reviews($productId)
+  public function reviews($productSlug)
   {
     $defaultPerPage = config('constants.product.rating.reviews_per_page');
 
-    $reviews = ProductRating::forProduct($productId)
+    $reviews = ProductRating::forProduct($productSlug)
       ->paginate(request('per_page') ?? $defaultPerPage);
 
     return response([
@@ -139,12 +142,12 @@ class ProductsController extends Controller
     ]);
   }
 
-  public function userReview($productId)
+  public function userReview($productSlug)
   {
     return [
       'ok' => true,
       'data' => ProductRating::where('user_id', auth()->user()->id)
-        ->forProduct($productId)
+        ->forProduct($productSlug)
         ->first()
     ];
   }
