@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Services\MessagesToUser\Mailable;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class ResetPassword extends Mailable
+class ResetPasswordMailable extends Mailable
 {
   use Queueable, SerializesModels;
 

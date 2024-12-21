@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 use App\Models\User;
-
 use Illuminate\Http\Request;
 use App\Validations\AuthValidation;
 use App\Http\Requests\SignupRequest;
-use App\Mail\ResetPassword;
+use App\Services\MessagesToUser\Mailable\ResetPasswordMailable;
 use App\Models\EmailConfirmation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use App\Mail\VerifyEmail;
 
 class AuthController extends Controller
 {
@@ -25,7 +24,8 @@ class AuthController extends Controller
 
   public function login($credentials = null)
   {
-    if (!$credentials) $credentials = request(['email', 'password']);
+    if (!$credentials)
+      $credentials = request(['email', 'password']);
     $user = User::where('email', $credentials['email'])->first();
 
     if ($user && Hash::check($credentials['password'], $user->password)) {
@@ -67,7 +67,7 @@ class AuthController extends Controller
     if (!$user)
       abort(404, __('abortions.userNotFound'));
 
-    EmailConfirmation::sendEmail($purpose, $email, ResetPassword::class);
+    EmailConfirmation::sendEmail($purpose, $email, ResetPasswordMailable::class);
 
     return response([
       'ok' => true,
@@ -116,7 +116,7 @@ class AuthController extends Controller
 
     $email = $user->email;
 
-    EmailConfirmation::sendEmail($purpose, $email, VerifyEmail::class);
+    EmailConfirmation::sendEmail($purpose, $email, VerifyEmailMailable::class);
 
     return response([
       'ok' => true,
