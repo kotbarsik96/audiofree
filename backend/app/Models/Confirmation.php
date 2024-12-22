@@ -10,6 +10,7 @@ use \Carbon\Carbon;
 use App\Services\CodePhrase;
 use Exception;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Confirmation extends BaseModel
 {
@@ -47,25 +48,25 @@ class Confirmation extends BaseModel
   }
 
   /**
-   * Создаёт и отсылает код по указанной цели пользователю в предпочтительный канал связи (telegram, email)
+   * Создаёт код по указанной цели пользователю
    * @param string $purpose - цель. Должна быть зарегистрирована в App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
    * @param \App\Models\User $user - пользователь
-   * @param array $args - данные, передаваемые в Mailable/Telegramable
    */
-  public function createAndSend(string $purpose, User $user, ...$args)
+  public function createCode(string $purpose, User $user): static
   {
     $code = CodePhrase::generateNumeric(self::getCodeLength($purpose));
     $hashedCode = Hash::make($code);
     $ttl = self::getTtl($purpose);
 
-    self::create([
+    $codeData = self::create([
       'user_id' => $user->id,
       'code' => $hashedCode,
       'purpose' => $purpose,
-      'expires' => self::getExpirationTime($ttl)
+      'expires' => self::getExpirationTime($ttl),
+      'sent_to' => []
     ]);
 
-    // далее отправка через App\Services\MessagesToUser\... c $args
+    return $codeData;
   }
 
   /**
@@ -86,28 +87,30 @@ class Confirmation extends BaseModel
     $userId
   ): string|false {
     $data = self::purposeUser($purpose, $userId)->first();
-    if ($data)
-      return __('general.codeAlreadySentIn', ['sentTo' => $data->sent_to]);
+    if ($data) {
+      return __(
+        'general.codeAlreadySentTo',
+        ['sentTo' => implode(', ', $data->sent_to)]
+      );
 
+    }
     return false;
   }
 
   /**
    * Проверит код пользователя, сравнив его с захэшированной версией в бд
    */
-  public static function validateCode($purpose, $userId, $code)
+  public static function validateCode(string $purpose, int $userId, string $code)
   {
+    $hashedCode = self::where('purpose', $purpose)
+      ->where('user_id', $userId)
+      ->first() ?? '1';
 
+    return Hash::check($code, $hashedCode);
   }
 
   public function scopePurposeUser(Builder $query, $purpose, $userId)
   {
     $query->where('purpose', $purpose)->where('user_id', $userId);
-  }
-
-  public function scopeForPurpose(Builder $query, $code, $purpose)
-  {
-    $query->where('purpose', $purpose)
-      ->where('code', $code);
   }
 }

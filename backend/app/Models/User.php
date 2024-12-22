@@ -8,13 +8,14 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\EmailConfirmation;
+use App\Models\Confirmation;
 use App\Traits\CanUseTableNameStatically;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class User extends Authenticatable
 {
@@ -56,9 +57,9 @@ class User extends Authenticatable
    * @var array
    */
   protected $casts = [
-    'permissions'          => 'array',
-    'password'             => 'hashed',
-    'email_verified_at'    => 'datetime',
+    'permissions' => 'array',
+    'password' => 'hashed',
+    'email_verified_at' => 'datetime',
   ];
 
   /**
@@ -67,9 +68,9 @@ class User extends Authenticatable
    * @var array
    */
   protected $allowedFilters = [
-    'id'         => Where::class,
-    'name'       => Like::class,
-    'email'      => Like::class,
+    'id' => Where::class,
+    'name' => Like::class,
+    'email' => Like::class,
     'updated_at' => WhereDateStartEnd::class,
     'created_at' => WhereDateStartEnd::class,
   ];
@@ -91,7 +92,7 @@ class User extends Authenticatable
 
   protected function confirmations(): Attribute
   {
-    $verifyEmail = !!EmailConfirmation::select('purpose')->where('purpose', 'verify_email')->first();
+    $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id);
 
     return new Attribute(get: fn() => [
       'verify_email' => $verifyEmail || false
@@ -103,46 +104,25 @@ class User extends Authenticatable
     return UserFactory::new();
   }
 
-  /** 
-   * Проверяет, авторизован ли пользователь
-   */
-  public static function authUser()
-  {
-    $user = auth()->user();
-
-    if (!$user)
-      abort(401, __('abortions.unauthorized'));
-
-    return $user;
-  }
-
-  /** 
-   * Проверяет, авторизован ли пользователь и возвращает его объект
-   */
-  public static function current(): self
-  {
-    /** @var App\Models\User */
-    return auth()->user();
-  }
-
   /**
    * Смена пароля при сбросе
    */
   public static function resetPassword($email, $hashedCode, $password)
   {
-    $purpose = 'reset_password';
+    $purpose = 'prp_reset_password';
+    $user = self::where('email', $email)->first();
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
 
-    EmailConfirmation::verifyLink($purpose, $email, $hashedCode);
-
-    $user = self::getByEmail($email);
-    if (!$user)
-      abort(404, __('abortions.userNotFound'));
+    Confirmation::validateCode($purpose, $user->id, $hashedCode);
 
     $user->update([
       'password' => $password
     ]);
 
-    EmailConfirmation::deleteForPurpose($user, $purpose);
+    Confirmation::deleteForPurpose($user, $purpose);
 
     return true;
   }
@@ -152,7 +132,7 @@ class User extends Authenticatable
    */
   public static function changeEmail($newEmail)
   {
-    $user = self::current();
+    $user = auth()->user();
     if (!$user)
       abort(404, __('abortions.userNotFound'));
 
@@ -170,7 +150,7 @@ class User extends Authenticatable
    */
   public static function changePassword($newPassword)
   {
-    $user = self::current();
+    $user = auth()->user();
     if (!$user)
       abort(404, __('abortions.userNotFound'));
 

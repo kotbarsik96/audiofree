@@ -13,7 +13,7 @@ return new class extends Migration {
     Schema::create('confirmations', function (Blueprint $table) {
       $table->id();
       $table->string('code');
-      $table->string('sent_to');
+      $table->json('sent_to');
       $table->foreignId('user_id')->constrained(table: 'users');
       $table->string('purpose');
       $table->timestamp('expires');

@@ -2,8 +2,6 @@
 
 namespace App\DTO\Confirmation;
 
-
-
 class ConfirmationPurposeDTO
 {
   private function __construct(

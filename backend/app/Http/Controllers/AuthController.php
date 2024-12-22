@@ -4,16 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 use App\Models\User;
+use App\Services\MessagesToUser\MTUController;
+use Exception;
 use Illuminate\Http\Request;
 use App\Validations\AuthValidation;
 use App\Http\Requests\SignupRequest;
 use App\Services\MessagesToUser\Mailable\ResetPasswordMailable;
-use App\Models\EmailConfirmation;
+use App\Models\Confirmation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AuthController extends Controller
 {
+  public function __construct(protected $mtu = new MTUController())
+  {
+  }
+
   public function signup(SignupRequest $request)
   {
     $validated = $request->validated();
@@ -60,28 +68,50 @@ class AuthController extends Controller
 
   public function requestResetPassword()
   {
-    $purpose = 'reset_password';
+    $purpose = 'prp_reset_password';
     $email = request('email');
 
     $user = User::getByEmail($email);
-    if (!$user)
-      abort(404, __('abortions.userNotFound'));
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
 
-    EmailConfirmation::sendEmail($purpose, $email, ResetPasswordMailable::class);
+    $codeData = Confirmation::createCode($purpose, $email);
+    $sentTo = $this->mtu->send(
+      new ResetPasswordMailable($codeData->code, $user),
+      // добавить Telegramable
+    );
+    $codeData->update([
+      'sent_to' => $sentTo
+    ]);
 
     return response([
       'ok' => true,
-      'message' => __('general.emailSent')
+      'message' => __(
+        'general.codeSentTo',
+        ['sentTo' => implode(', ', $sentTo)]
+      )
     ]);
   }
 
   public function verifyResetPasswordLink()
   {
-    $purpose = 'reset_password';
+    $purpose = 'prp_reset_password';
     $email = request('email');
     $code = request('code');
 
-    EmailConfirmation::verifyLink($purpose, $email, $code);
+    $user = User::where('email', $email)->first();
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
+
+    $codeValid = Confirmation::validateCode($purpose, $user->id, $code);
+    throw_if(
+      !$codeValid,
+      new Exception(__('validation.incorrectCode'))
+    );
 
     return response([
       'ok' => true,
@@ -106,17 +136,19 @@ class AuthController extends Controller
 
   public function requestVerifyEmail()
   {
-    $purpose = 'verify_email';
-    $user = auth()->user();
-    if (!$user)
-      abort(404, __('abortions.userNotFound'));
+    $purpose = 'prp_verify_email';
+    $user = User::find(auth()->user()->id);
 
-    if ($user->email_verified_at)
-      abort(401, __('abortions.emailAlreadyVerified'));
+    throw_if(
+      $user->email_verified_at,
+      new BadRequestHttpException(__('abortions.emailAlreadyVerified'))
+    );
 
-    $email = $user->email;
-
-    EmailConfirmation::sendEmail($purpose, $email, VerifyEmailMailable::class);
+    $codeData = Confirmation::createCode($purpose, $user);
+    $sentTo = $this->mtu->send(new VerifyEmailMailable($codeData->code));
+    $codeData->update([
+      'sent_to' => $sentTo
+    ]);
 
     return response([
       'ok' => true,
@@ -126,22 +158,20 @@ class AuthController extends Controller
 
   public function verifyEmail()
   {
-    $purpose = 'verify_email';
+    $purpose = 'prp_verify_email';
     $code = request('code');
 
     $user = auth()->user();
-    if (!$user)
-      abort(404, __('abortions.userNotFound'));
+    throw_if(
+      !Confirmation::validateCode($purpose, $user->id, $code),
+      new Exception(__('validation.incorrectLink'), 401)
+    );
 
-    $email = $user->email;
-
-    EmailConfirmation::verifyLink($purpose, $email, $code);
-
-    $user = User::getByEmail($email);
+    $user = User::getByEmail($user->email);
     $user->update([
       'email_verified_at' => Carbon::now()
     ]);
-    EmailConfirmation::deleteForPurpose($user, $purpose);
+    Confirmation::deleteForPurpose($user, $purpose);
 
     return response([
       'ok' => true,

@@ -14,7 +14,7 @@ MessagesToUserDTOCollection::register(
 
 MessagesToUserDTOCollection::register(
   'Email',
-  new MessagesToUserDTO('Telegram', Mailable::class)
+  new MessagesToUserDTO('Email', Mailable::class)
 );
 
 /**

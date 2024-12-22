@@ -31,5 +31,6 @@ return [
   'users' => 'Пользователи',
   'roles' => 'Роли',
   'removedProductFromFavorites' => 'Товар :product удален из корзины',
-  'codeAlreadySentIn' => 'Код уже был выслан: :sentTo'
+  'codeAlreadySentTo' => 'Код уже был выслан: :sentTo',
+  'codeSentTo' => 'Код выслан: :sentTo'
 ];

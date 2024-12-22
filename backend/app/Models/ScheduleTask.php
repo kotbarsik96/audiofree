@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmailConfirmation;
+use App\Models\Confirmation;
 // use App\Models\Product\ProductVariation;
 use Carbon\Carbon;
 
@@ -12,10 +12,10 @@ class ScheduleTask extends Model
 {
   use HasFactory;
 
-  public static function clearExpiredEmailConfirmations()
+  public static function clearExpiredConfirmations()
   {
     $now = Carbon::now();
-    EmailConfirmation::whereDate('expires', '<=', $now)
+    Confirmation::whereDate('expires', '<=', $now)
       ->whereTime('expires', '<', $now)
       ->delete();
   }

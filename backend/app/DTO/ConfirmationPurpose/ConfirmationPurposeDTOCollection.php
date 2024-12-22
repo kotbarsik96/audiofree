@@ -6,12 +6,12 @@ use App\DTO\Confirmation\ConfirmationPurposeDTO;
 use App\DTO\DTOCollection;
 
 ConfirmationPurposeDTOCollection::register(
-  'verify_email',
+  'prp_verify_email',
   new ConfirmationPurposeDTO(6, 600)
 );
 
 ConfirmationPurposeDTOCollection::register(
-  'reset_password',
+  'prp_reset_password',
   new ConfirmationPurposeDTO(6, 600)
 );
 

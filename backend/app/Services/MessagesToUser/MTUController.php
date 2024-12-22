@@ -2,8 +2,10 @@
 
 namespace App\Services\MessagesToUser;
 
+use App\DTO\MessagesToUser\MessagesToUserDTOCollection;
 use App\Models\User;
 use Illuminate\Mail\Mailable;
+use Mail;
 
 class MTUController
 {
@@ -19,7 +21,7 @@ class MTUController
 
   public function defineUserDesiredChannels(): array
   {
-    return ['email']; // в дальнейшем делать проверку на наличие поля 'email' или 'telegram' или обоих сразу
+    return ['Email']; // в дальнейшем делать проверку на наличие поля 'Email' или 'Telegram' или обоих сразу
   }
 
   public function isDesired(string $key): bool
@@ -28,35 +30,23 @@ class MTUController
   }
 
   /**
-   * На основе предпочтений пользователя, отправляет сообщение в удобный канал связи/несколько каналов связи
-   * @param string $ableName - первая часть названия Mailable/Telegramable
-   * @param array $args - параметры, передаваемые в Mailable/Telegramable
+   * Определяет предпочтительные пользователю каналы связи и отправляет по ним сообщения
+   * @param $ables - экземпляры Mailable/Telegramable
+   * @return array<string> - каналы связи, куда было отправлено собщение (например, ['Telegram', 'Email'])
    */
-  public function send(string $ableName, ...$args)
+  public function send(...$ables): array
   {
-    if ($this->isDesired('email')) {
+    $sentToArr = [];
 
+    foreach ($ables as $able) {
+      if ($able instanceof Mailable && $this->isDesired('Email')) {
+        Mail::to(auth()->user())->send($able);
+      }
+      if ($able instanceof Telegramable && $this->isDesired('Telegram')) {
+        // 
+      }
     }
-    if ($this->isDesired('telegram')) {
 
-    }
-  }
-
-  /**
-   * Для того, чтобы отослать именно Mailable
-   * @param string $ableName - первая часть названия Mailable
-   */
-  public function sendMailable(string $ableName)
-  {
-    
-  }
-
-  /**
-   * Для того, чтобы отослать именно Telegramable
-   * @param string $ableName - первая часть названия Telegramable
-   */
-  public function sendTelegramable(string $ableName)
-  {
-    
+    return $sentToArr;
   }
 }
