@@ -7,8 +7,9 @@
 
 На проекте используется взаимодействие с пользователем посредством телеграм-бота и почты. Данные способы связи являются идентичными; то, какой канал будет использован (телеграм, почта или оба сразу) зависит от настроек пользователя
 
-В стандартном Laravel для создания писем используются Mailable.
-В данном проекте для создания используется команда php artisan make:message-to-user {entity-name}. 
-Она создаёт Mailable в папке App/Services/MesagesToUser/Email/{entity-name}Mailable и "Telegramable" в папке App/Services/MessagesToUser/Telegram/{entity-name}Telegramable.
+В стандартном Laravel для создания писем используются Mailable. 
+В данном проекте вместе с Mailable используется Telegramable: 
+  App/Services/MesagesToUser/Email/{entity-name}Mailable 
+  и App/Services/MessagesToUser/Telegram/{entity-name}Telegramable.
 
 App/Services/Controller.php принимает аргументы и entity-name для Mailable и Telegramable. Он смотрит на единственый существующий, либо предпочтительный канал связи с пользователем, формирует {entity-name}Mailable(...$args) или {entity-name}Telegramable(...$args) или оба сразу и отправляет пользователю.
