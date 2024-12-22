@@ -9,13 +9,10 @@ use Mail;
 
 class MTUController
 {
-  public User $user;
+  public array $channels = [];
 
-  public array $channels;
-
-  public function __construct()
+  public function __construct(public User $user)
   {
-    $this->user = User::find(auth()->user()->id);
     $this->channels = $this->defineUserDesiredChannels();
   }
 
@@ -40,7 +37,7 @@ class MTUController
 
     foreach ($ables as $able) {
       if ($able instanceof Mailable && $this->isDesired('Email')) {
-        Mail::to(auth()->user())->send($able);
+        Mail::to($this->user)->send($able);
       }
       if ($able instanceof Telegramable && $this->isDesired('Telegram')) {
         // 

@@ -2,8 +2,15 @@
 
 namespace App\DTO\ConfirmationPurpose;
 
-use App\DTO\Confirmation\ConfirmationPurposeDTO;
+use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTO;
 use App\DTO\DTOCollection;
+
+/**
+ * @extends DTOCollection<ConfirmationPurposeDTO>
+ */
+class ConfirmationPurposeDTOCollection extends DTOCollection
+{
+}
 
 ConfirmationPurposeDTOCollection::register(
   'prp_verify_email',
@@ -14,10 +21,3 @@ ConfirmationPurposeDTOCollection::register(
   'prp_reset_password',
   new ConfirmationPurposeDTO(6, 600)
 );
-
-/**
- * @extends DTOCollection<ConfirmationPurposeDTO>
- */
-class ConfirmationPurposeDTOCollection extends DTOCollection
-{
-}

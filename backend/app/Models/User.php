@@ -92,6 +92,9 @@ class User extends Authenticatable
 
   protected function confirmations(): Attribute
   {
+    if (!$this)
+      return new Attribute(get: fn() => []);
+    
     $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id);
 
     return new Attribute(get: fn() => [

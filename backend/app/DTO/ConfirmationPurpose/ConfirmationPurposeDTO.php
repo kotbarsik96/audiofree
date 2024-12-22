@@ -1,10 +1,10 @@
 <?php
 
-namespace App\DTO\Confirmation;
+namespace App\DTO\ConfirmationPurpose;
 
 class ConfirmationPurposeDTO
 {
-  private function __construct(
+  public function __construct(
     public int $ttl,
     public int $codeLength,
   ) {

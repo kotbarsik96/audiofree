@@ -18,10 +18,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AuthController extends Controller
 {
-  public function __construct(protected $mtu = new MTUController())
-  {
-  }
-
   public function signup(SignupRequest $request)
   {
     $validated = $request->validated();
@@ -77,8 +73,9 @@ class AuthController extends Controller
       new NotFoundHttpException(__('abortions.userNotFound'))
     );
 
-    $codeData = Confirmation::createCode($purpose, $email);
-    $sentTo = $this->mtu->send(
+    $codeData = Confirmation::createCode($purpose, $user);
+    $mtu = new MTUController($user);
+    $sentTo = $mtu->send(
       new ResetPasswordMailable($codeData->code, $user),
       // добавить Telegramable
     );
@@ -145,7 +142,8 @@ class AuthController extends Controller
     );
 
     $codeData = Confirmation::createCode($purpose, $user);
-    $sentTo = $this->mtu->send(new VerifyEmailMailable($codeData->code));
+    $mtu = new MTUController($user);
+    $sentTo = $mtu->send(new VerifyEmailMailable($codeData->code));
     $codeData->update([
       'sent_to' => $sentTo
     ]);

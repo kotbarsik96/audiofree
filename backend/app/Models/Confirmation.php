@@ -8,9 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use \Carbon\Carbon;
 use App\Services\CodePhrase;
-use Exception;
-use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Confirmation extends BaseModel
 {
@@ -52,7 +49,7 @@ class Confirmation extends BaseModel
    * @param string $purpose - цель. Должна быть зарегистрирована в App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
    * @param \App\Models\User $user - пользователь
    */
-  public function createCode(string $purpose, User $user): static
+  public static function createCode(string $purpose, User $user): static
   {
     $code = CodePhrase::generateNumeric(self::getCodeLength($purpose));
     $hashedCode = Hash::make($code);
@@ -63,7 +60,7 @@ class Confirmation extends BaseModel
       'code' => $hashedCode,
       'purpose' => $purpose,
       'expires' => self::getExpirationTime($ttl),
-      'sent_to' => []
+      'sent_to' => '[]'
     ]);
 
     return $codeData;

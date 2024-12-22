@@ -43,7 +43,7 @@ class CodePhrase
 
     $phrase = '';
     for ($i = 0; $i < $length; $i++) {
-      $char = $charsSplit[random_int(0, $charsCount)];
+      $char = $charsSplit[random_int(0, $charsCount - 1)];
       $phrase .= $char;
     }
 
