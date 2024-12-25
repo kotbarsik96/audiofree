@@ -160,28 +160,19 @@ class User extends Authenticatable
   }
 
   /**
-   * Получить пользователя по полю + значению
+   * Получить пользователя по полю + значению, либо выдать 404 ошибку, если пользователь не найден
    * 
    * @param $byRow = поле в бд, по которому будет осуществляться поиск
    * @param $value = значение поля
    */
-  public static function getBy($byRow, $value)
+  public static function getBy($byRow, $value): static
   {
     $user = self::where($byRow, $value)->first();
-    if (!$user) {
-      abort(401, 'Пользователь не найден');
-    }
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
 
     return $user;
-  }
-
-  /** 
-   * Найти пользователя по полю 'email'
-   * 
-   * @param $email = email пользователя
-   */
-  public static function getByEmail($email)
-  {
-    return self::getBy('email', $email);
   }
 }

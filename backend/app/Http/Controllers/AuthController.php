@@ -67,11 +67,7 @@ class AuthController extends Controller
     $purpose = 'prp_reset_password';
     $email = request('email');
 
-    $user = User::getByEmail($email);
-    throw_if(
-      !$user,
-      new NotFoundHttpException(__('abortions.userNotFound'))
-    );
+    $user = User::getBy('email', $email);
 
     Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
 
@@ -129,7 +125,7 @@ class AuthController extends Controller
     $purpose = 'prp_reset_password';
     $this->throwErrorIfResetPasswordCodeInvalid();
 
-    $user = User::getByEmail(request('email'));
+    $user = User::getBy('email', request('email'));
 
     $validated = $request->validate([
       'password' => AuthValidation::password()
@@ -180,7 +176,7 @@ class AuthController extends Controller
       new UnauthorizedHttpException('', __('validation.incorrectLink'))
     );
 
-    $user = User::getByEmail($user->email);
+    $user = User::getBy('email', $user->email);
     $user->update([
       'email_verified_at' => Carbon::now()
     ]);

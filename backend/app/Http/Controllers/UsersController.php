@@ -25,7 +25,6 @@ class UsersController extends Controller
       'house' => AuthValidation::userField()
     ]);
 
-
     if (!$user = auth()->user()) {
       return response([
         'message' => __('general.authFailed')
