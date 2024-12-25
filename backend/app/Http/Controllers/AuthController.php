@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 use App\Models\User;
 use App\Services\MessagesToUser\MTUController;
-use Exception;
 use Illuminate\Http\Request;
 use App\Validations\AuthValidation;
 use App\Http\Requests\SignupRequest;
@@ -15,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthController extends Controller
 {
@@ -73,10 +73,12 @@ class AuthController extends Controller
       new NotFoundHttpException(__('abortions.userNotFound'))
     );
 
+    Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
+
     $codeData = Confirmation::createCode($purpose, $user);
     $mtu = new MTUController($user);
     $sentTo = $mtu->send(
-      new ResetPasswordMailable($codeData->code, $user),
+      new ResetPasswordMailable($codeData->unhashedCode, $user),
       // добавить Telegramable
     );
     $codeData->update([
@@ -92,7 +94,7 @@ class AuthController extends Controller
     ]);
   }
 
-  public function verifyResetPasswordLink()
+  public function throwErrorIfResetPasswordCodeInvalid(): bool
   {
     $purpose = 'prp_reset_password';
     $email = request('email');
@@ -101,14 +103,21 @@ class AuthController extends Controller
     $user = User::where('email', $email)->first();
     throw_if(
       !$user,
-      new NotFoundHttpException(__('abortions.userNotFound'))
+      new UnauthorizedHttpException('', __('abortions.userNotFound'))
     );
 
     $codeValid = Confirmation::validateCode($purpose, $user->id, $code);
     throw_if(
       !$codeValid,
-      new Exception(__('validation.incorrectCode'))
+      new UnauthorizedHttpException('', __('validation.incorrectCode'))
     );
+
+    return true;
+  }
+
+  public function verifyResetPasswordLink()
+  {
+    $this->throwErrorIfResetPasswordCodeInvalid();
 
     return response([
       'ok' => true,
@@ -117,18 +126,22 @@ class AuthController extends Controller
 
   public function resetPassword(Request $request)
   {
-    $email = request('email');
-    $code = request('code');
+    $purpose = 'prp_reset_password';
+    $this->throwErrorIfResetPasswordCodeInvalid();
+
+    $user = User::getByEmail(request('email'));
+
     $validated = $request->validate([
       'password' => AuthValidation::password()
     ]);
 
-    User::resetPassword($email, $code, $validated['password']);
+    $user->updatePassword($validated['password']);
+    Confirmation::deleteForPurpose($user, $purpose);
 
-    return [
+    return response([
       'ok' => true,
       'message' => __('general.passwordChanged')
-    ];
+    ]);
   }
 
   public function requestVerifyEmail()
@@ -141,9 +154,11 @@ class AuthController extends Controller
       new BadRequestHttpException(__('abortions.emailAlreadyVerified'))
     );
 
+    Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
+
     $codeData = Confirmation::createCode($purpose, $user);
     $mtu = new MTUController($user);
-    $sentTo = $mtu->send(new VerifyEmailMailable($codeData->code));
+    $sentTo = $mtu->send(new VerifyEmailMailable($codeData->unhashedCode));
     $codeData->update([
       'sent_to' => $sentTo
     ]);
@@ -162,7 +177,7 @@ class AuthController extends Controller
     $user = auth()->user();
     throw_if(
       !Confirmation::validateCode($purpose, $user->id, $code),
-      new Exception(__('validation.incorrectLink'), 401)
+      new UnauthorizedHttpException('', __('validation.incorrectLink'))
     );
 
     $user = User::getByEmail($user->email);

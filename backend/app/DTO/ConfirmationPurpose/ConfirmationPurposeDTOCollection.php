@@ -14,10 +14,10 @@ class ConfirmationPurposeDTOCollection extends DTOCollection
 
 ConfirmationPurposeDTOCollection::register(
   'prp_verify_email',
-  new ConfirmationPurposeDTO(6, 600)
+  new ConfirmationPurposeDTO(600, 6)
 );
 
 ConfirmationPurposeDTOCollection::register(
   'prp_reset_password',
-  new ConfirmationPurposeDTO(6, 600)
+  new ConfirmationPurposeDTO(600, 6)
 );

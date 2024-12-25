@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class User extends Authenticatable
 {
@@ -94,7 +95,7 @@ class User extends Authenticatable
   {
     if (!$this)
       return new Attribute(get: fn() => []);
-    
+
     $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id);
 
     return new Attribute(get: fn() => [
@@ -108,24 +109,15 @@ class User extends Authenticatable
   }
 
   /**
-   * Смена пароля при сбросе
+   * Смена пароля. 
+   * 
+   * Должен вызываться уже после проверки кода, если пользователь сам запросил сброс пароля
    */
-  public static function resetPassword($email, $hashedCode, $password)
+  public function updatePassword($password)
   {
-    $purpose = 'prp_reset_password';
-    $user = self::where('email', $email)->first();
-    throw_if(
-      !$user,
-      new NotFoundHttpException(__('abortions.userNotFound'))
-    );
-
-    Confirmation::validateCode($purpose, $user->id, $hashedCode);
-
-    $user->update([
+    $this->update([
       'password' => $password
     ]);
-
-    Confirmation::deleteForPurpose($user, $purpose);
 
     return true;
   }

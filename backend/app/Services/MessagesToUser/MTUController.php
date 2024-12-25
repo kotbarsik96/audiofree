@@ -38,9 +38,10 @@ class MTUController
     foreach ($ables as $able) {
       if ($able instanceof Mailable && $this->isDesired('Email')) {
         Mail::to($this->user)->send($able);
+        $sentToArr[] = 'Email';
       }
       if ($able instanceof Telegramable && $this->isDesired('Telegram')) {
-        // 
+        $sentToArr[] = 'Telegram';
       }
     }
 

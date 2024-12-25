@@ -11,9 +11,9 @@ class CodePhrase
 
   protected static $numericChars = '0123456789';
 
-  public static function getRandomLength()
+  public static function getRandomLength(int $min = 5, int $max = 10)
   {
-    return random_int(15, 20);
+    return random_int($min, $max);
   }
 
   public static function generatePhrase($length = null)
@@ -46,7 +46,7 @@ class CodePhrase
       $char = $charsSplit[random_int(0, $charsCount - 1)];
       $phrase .= $char;
     }
-
+    
     return $phrase;
   }
 }
