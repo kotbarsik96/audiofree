@@ -41,7 +41,7 @@ class Order extends BaseModel
 
   public function scopeForUser(Builder $query, $userId, $orderId = null)
   {
-    $user = User::authUser();
+    $user = auth()->user();
     if (!Role::isAdmin($user)) {
       if ($user->id !== $userId)
         abort(401, __('abortions.unauthorized'));
