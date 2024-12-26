@@ -25,7 +25,7 @@ class SignupRequest extends FormRequest
   {
     return [
       'email' => AuthValidation::emailRequiredWithout(),
-      'telegram' => AuthValidation::telegramRequiredWithout(),
+      // 'telegram' => AuthValidation::telegramRequiredWithout(),
       'name' => AuthValidation::name(),
       'password' => AuthValidation::passwordNullable(),
     ];

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DTO\Auth\AuthDTOCollection;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -31,7 +32,7 @@ class User extends Authenticatable
     'surname',
     'patronymic',
     'email',
-    'telegram',
+    // 'telegram',
     'password',
     'phone_number',
     'location',
@@ -172,6 +173,29 @@ class User extends Authenticatable
   public static function getBy($byRow, $value): static
   {
     $user = self::where($byRow, $value)->first();
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
+
+    return $user;
+  }
+
+  /**
+   * Получить пользователя по логину (возможные логины зарегистрированы в AuthDTOCollection)
+   * 
+   * если пользователь не найден - выдать ошибку
+   */
+  public static function getByLogin(string $login): static
+  {
+    $user = null;
+    foreach (AuthDTOCollection::getAllDTOs() as $dto) {
+      if ($user)
+        break;
+
+      $columnName = $dto->columnName;
+      $user = User::where($columnName, $login)->first();
+    }
     throw_if(
       !$user,
       new NotFoundHttpException(__('abortions.userNotFound'))

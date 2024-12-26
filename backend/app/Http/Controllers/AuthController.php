@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Auth\AuthDTOCollection;
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
-use App\Services\MessagesToUser\Mailable\LoginMailable;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 use App\Models\User;
 use App\Services\MessagesToUser\MTUController;
@@ -26,26 +26,26 @@ class AuthController extends Controller
 
     $user = User::create($validated);
 
-    $codeSentTo = [];
+    $codeSentTo = null;
     // пользователь, указавший пароль, логинится сразу
     if ($validated['password']) {
-      return $this->login($validated);
+      return $this->successfullLogin($user);
     }
     // пользователь, указавший только логин, получит код авторизации
     else {
-      if ($validated['email']) {
-        $codeSentTo[] = $this->sendLoginCode(
-          'prp_login_email',
-          $user,
-          LoginMailable::class
-        );
-      }
-      if ($validated['telegram']) {
-        // $codeSentTo[] = $this->sendLoginCode(
-        //   'prp_login_telegram',
-        //   $user,
-        //   LoginTelegramable::class
-        // );
+      // найти один из указанных ресурсов в логине и выслать код туда
+      foreach (AuthDTOCollection::getAllDTOs() as $dto) {
+        // если код уже был выслан - выйти из цикла
+        if ($codeSentTo)
+          break;
+
+        // выслать код авторизации на один из указанных пользователем ресурсов
+        if ($validated[$dto->columnName]) {
+          $codeSentTo = $this->sendLoginCode(
+            $user,
+            $dto->loginAble
+          );
+        }
       }
     }
 
@@ -58,23 +58,23 @@ class AuthController extends Controller
     ]);
   }
 
-  public function login($credentials = null)
+  /**
+   * Находит пользователя и пытается залогинить его по паролю или коду авторизации
+   */
+  public function login(Request $request)
   {
-    if (!$credentials)
-      $credentials = request(['email', 'password']);
-    $user = User::getBy('email', $credentials['email']);
+    $response = null;
 
-    if (Hash::check($credentials['password'], $user->password)) {
-      return [
-        'ok' => true,
-        'message' => __('general.helloUser', ['username' => $user->name]),
-        'data' => [
-          'token' => $user->createToken(time())->plainTextToken,
-        ],
-      ];
+    // получить пользователя или выдать ошибку
+    $user = User::getByLogin($request->login);
+
+    if ($request->password) {
+      $response = $this->attemptLoginByPassword($user, $request->password);
+    } else if ($request->code) {
+      $response = $this->attemptLoginByCode($user, $request->code, $request->login);
     }
 
-    return response(
+    return $response ?? response(
       [
         'ok' => false,
         'message' => __('validation.incorrectLoginOrPassword')
@@ -84,17 +84,104 @@ class AuthController extends Controller
   }
 
   /**
-   * Высылает код подтверждения на запрошенный ресурс
-   * @param string $purpose prp_login_email, ...
+   * Пытается залогинить пользователя по паролю
+   */
+  public function attemptLoginByPassword(User $user, string $password)
+  {
+    if (Hash::check($password, $user->password)) {
+      return $this->successfullLogin($user);
+    }
+    return false;
+  }
+
+  /**
+   * Пытается залогинить пользователя по коду
+   * 
+   * Если логин по коду успешно прошёл - поставить <columnName>_verified_at
+   */
+  public function attemptLoginByCode(User $user, string $code, string $login)
+  {
+    $codeValid = Confirmation::validateCode('prp_login', $user->id, $code);
+    if ($codeValid) {
+      // выставить подтверждение логина
+      foreach (AuthDTOCollection::getAllDTOs() as $dto) {
+        $columnName = $dto->columnName;
+        if ($user->$columnName === $login) {
+          $user->update([
+            $dto->verifiedColumName => Carbon::now()
+          ]);
+        }
+      }
+      return $this->successfullLogin($user);
+    }
+    return false;
+  }
+
+  /**
+   * Логинит пользователя и генерирует ответ с токеном. Не занимается проверкой данных, сразу делает логин
+   */
+  public function successfullLogin(User $user)
+  {
+    return response([
+      'ok' => true,
+      'message' => __('general.helloUser', ['username' => $user->name]),
+      'data' => [
+        'token' => $user->createToken(time())->plainTextToken,
+      ],
+    ]);
+  }
+
+  /**
+   * Пользователь вводит логин и, если есть пароль - отправляет ответ об этом
+   * 
+   * Если пароля нет, либо в request есть поле code_required, вышлет код по логину
+   */
+  public function requestLoginCode(Request $request)
+  {
+    $user = User::getByLogin($request->login);
+
+    $response = null;
+    if ($user->password) {
+      $response = response([
+        'ok' => true,
+        'message' => __('general.enterPassword'),
+        'data' => [
+          'has_password' => true
+        ]
+      ]);
+    } else {
+      // $sentTo = $this->sendLoginCode($user, )
+      // $response = response([
+      //   'ok' => true,
+      //   'message' => __('general.codeSentTo', ['sentTo' => $]),
+      //   'data' => [
+      //     'has_code' => true
+      //   ]
+      // ]);
+    }
+
+    return $response;
+  }
+
+  /**
+   * Высылает код авторизации на запрошенный ресурс
    * @param \App\Models\User $user пользователь
    * @param string $able LoginMailable или подобный, принимающий код в конструктор
    * @return $sentTo ресурс, на который выслан код
    */
-  public function sendLoginCode(string $purpose, User $user, string $able): string
+  public function sendLoginCode(User $user, string $able): string
   {
     $mtu = new MTUController($user);
 
+    $purpose = 'prp_login';
     $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
+
+    Confirmation::checkIfValidCodeExists(
+      $purpose,
+      $user->id,
+      true
+    );
+
     $codeData = Confirmation::createCode($purpose, $user, $dto->codeLength);
     $sentTo = $mtu->send(new $able($codeData->unhashedCode));
     $codeData->update(['sent_to' => $sentTo]);
