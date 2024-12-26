@@ -4,6 +4,7 @@ namespace App\DTO\Auth;
 
 use App\DTO\Auth\AuthDTO;
 use App\DTO\DTOCollection;
+use App\Models\User;
 use App\Services\MessagesToUser\Mailable\LoginMailable;
 
 /**
@@ -12,7 +13,7 @@ use App\Services\MessagesToUser\Mailable\LoginMailable;
 class AuthDTOCollection extends DTOCollection
 {
   /**
-   * Возвращает возможные массив возможных вариантов авторизации
+   * Возвращает массив возможных вариантов авторизации
    * @return array<int, string>
    */
   public static function getPossibleAuths()
@@ -44,6 +45,22 @@ class AuthDTOCollection extends DTOCollection
       $auths = implode(',', $auths);
 
     return $auths;
+  }
+
+  /**
+   * Получить DTO по логину пользователя
+   */
+  public static function getDTOByLogin(User $user, string $login): AuthDTO|null
+  {
+    $searchedDto = null;
+    foreach (self::getAllDTOs() as $dto) {
+      $columnName = $dto->columnName;
+      if ($user->$columnName === $login) {
+        $searchedDto = $dto;
+        break;
+      }
+    }
+    return $searchedDto;
   }
 }
 

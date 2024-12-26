@@ -104,14 +104,10 @@ class AuthController extends Controller
     $codeValid = Confirmation::validateCode('prp_login', $user->id, $code);
     if ($codeValid) {
       // выставить подтверждение логина
-      foreach (AuthDTOCollection::getAllDTOs() as $dto) {
-        $columnName = $dto->columnName;
-        if ($user->$columnName === $login) {
-          $user->update([
-            $dto->verifiedColumName => Carbon::now()
-          ]);
-        }
-      }
+      $dto = AuthDTOCollection::getDTOByLogin($user, $login);
+      $user->update([
+        $dto->verifiedColumName => Carbon::now()
+      ]);
       return $this->successfullLogin($user);
     }
     return false;
@@ -132,7 +128,7 @@ class AuthController extends Controller
   }
 
   /**
-   * Пользователь вводит логин и, если есть пароль - отправляет ответ об этом
+   * Пользователь вводит логин и, если есть пароль - отправляется ответ об этом
    * 
    * Если пароля нет, либо в request есть поле code_required, вышлет код по логину
    */
@@ -150,14 +146,15 @@ class AuthController extends Controller
         ]
       ]);
     } else {
-      // $sentTo = $this->sendLoginCode($user, )
-      // $response = response([
-      //   'ok' => true,
-      //   'message' => __('general.codeSentTo', ['sentTo' => $]),
-      //   'data' => [
-      //     'has_code' => true
-      //   ]
-      // ]);
+      $dto = AuthDTOCollection::getDTOByLogin($user, $request->login);
+      $sentTo = $this->sendLoginCode($user, $dto->loginAble);
+      $response = response([
+        'ok' => true,
+        'message' => __('general.codeSentTo', ['sentTo' => $sentTo]),
+        'data' => [
+          'has_code' => true
+        ]
+      ]);
     }
 
     return $response;

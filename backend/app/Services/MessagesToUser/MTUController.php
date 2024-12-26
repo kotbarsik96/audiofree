@@ -9,38 +9,42 @@ use Mail;
 
 class MTUController
 {
-  public array $channels = [];
+  public array $possibleChannels = [];
 
   public function __construct(public User $user)
   {
-    $this->channels = $this->defineUserDesiredChannels();
+    $this->definePossibleChannels();
   }
 
-  public function defineUserDesiredChannels(): array
+  public function definePossibleChannels()
   {
-    return ['Email']; // в дальнейшем делать проверку на наличие поля 'Email' или 'Telegram' или обоих сразу
+    if ($this->user->email)
+      $this->possibleChannels[] = 'Email';
+
+    if ($this->user->telegram)
+      $this->possibleChannels[] = 'Telegram';
   }
 
-  public function isDesired(string $key): bool
+  public function isPossible(string $key): bool
   {
-    return in_array($key, $this->channels);
+    return in_array($key, $this->possibleChannels);
   }
 
   /**
-   * Определяет предпочтительные пользователю каналы связи и отправляет по ним сообщения
+   * Определяет возможные каналы связи с пользователем и отправляет туда сообщение
    * @param $ables - экземпляры Mailable/Telegramable
-   * @return array<string> - каналы связи, куда было отправлено собщение (например, ['Telegram', 'Email'])
+   * @return array<string> - каналы связи, куда было отправлено собщение (например: ['Telegram', 'Email'])
    */
   public function send(...$ables): array
   {
     $sentToArr = [];
 
     foreach ($ables as $able) {
-      if ($able instanceof Mailable && $this->isDesired('Email')) {
+      if ($able instanceof Mailable && $this->isPossible('Email')) {
         Mail::to($this->user)->send($able);
         $sentToArr[] = 'Email';
       }
-      if ($able instanceof Telegramable && $this->isDesired('Telegram')) {
+      if ($able instanceof Telegramable && $this->isPossible('Telegram')) {
         $sentToArr[] = 'Telegram';
       }
     }
