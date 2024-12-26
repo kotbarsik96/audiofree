@@ -24,9 +24,10 @@ class SignupRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'email' => AuthValidation::email(),
+      'email' => AuthValidation::emailRequiredWithout(),
+      'telegram' => AuthValidation::telegramRequiredWithout(),
       'name' => AuthValidation::name(),
-      'password' => AuthValidation::password()
+      'password' => AuthValidation::passwordNullable(),
     ];
   }
 

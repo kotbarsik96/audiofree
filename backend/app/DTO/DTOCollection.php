@@ -33,4 +33,12 @@ class DTOCollection
   {
     return self::getInstance()->instances[$dtoName];
   }
+
+  /**
+   * @return array<string, T>
+   */
+  public static function getAllDTOs(): array
+  {
+    return self::getInstance()->instances;
+  }
 }

@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class User extends Authenticatable
 {
@@ -32,13 +31,15 @@ class User extends Authenticatable
     'surname',
     'patronymic',
     'email',
+    'telegram',
     'password',
     'phone_number',
     'location',
     'street',
     'house',
     'role',
-    'email_verified_at'
+    'email_verified_at',
+    'telegram_verified_at',
   ];
 
   /**
@@ -61,6 +62,7 @@ class User extends Authenticatable
     'permissions' => 'array',
     'password' => 'hashed',
     'email_verified_at' => 'datetime',
+    'telegram_verified_at' => 'datetime',
   ];
 
   /**
@@ -72,6 +74,7 @@ class User extends Authenticatable
     'id' => Where::class,
     'name' => Like::class,
     'email' => Like::class,
+    'telegram' => Like::class,
     'updated_at' => WhereDateStartEnd::class,
     'created_at' => WhereDateStartEnd::class,
   ];
@@ -85,6 +88,7 @@ class User extends Authenticatable
     'id',
     'name',
     'email',
+    'telegram',
     'updated_at',
     'created_at',
   ];

@@ -21,3 +21,13 @@ ConfirmationPurposeDTOCollection::register(
   'prp_reset_password',
   new ConfirmationPurposeDTO(600, 6)
 );
+
+ConfirmationPurposeDTOCollection::register(
+  'prp_login_email',
+  new ConfirmationPurposeDTO(300, 6)
+);
+
+ConfirmationPurposeDTOCollection::register(
+  'prp_login_telegram',
+  new ConfirmationPurposeDTO(300, 6)
+);

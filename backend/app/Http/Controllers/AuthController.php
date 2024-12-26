@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+use App\Services\MessagesToUser\Mailable\LoginMailable;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 use App\Models\User;
 use App\Services\MessagesToUser\MTUController;
@@ -22,17 +24,47 @@ class AuthController extends Controller
   {
     $validated = $request->validated();
 
-    User::create($validated);
-    return $this->login($validated);
+    $user = User::create($validated);
+
+    $codeSentTo = [];
+    // пользователь, указавший пароль, логинится сразу
+    if ($validated['password']) {
+      return $this->login($validated);
+    }
+    // пользователь, указавший только логин, получит код авторизации
+    else {
+      if ($validated['email']) {
+        $codeSentTo[] = $this->sendLoginCode(
+          'prp_login_email',
+          $user,
+          LoginMailable::class
+        );
+      }
+      if ($validated['telegram']) {
+        // $codeSentTo[] = $this->sendLoginCode(
+        //   'prp_login_telegram',
+        //   $user,
+        //   LoginTelegramable::class
+        // );
+      }
+    }
+
+    return response([
+      'ok' => true,
+      'message' => __(
+        'general.registeredAndCodeSentTo',
+        ['sentTo' => $codeSentTo]
+      )
+    ]);
   }
 
   public function login($credentials = null)
   {
     if (!$credentials)
       $credentials = request(['email', 'password']);
-    $user = User::where('email', $credentials['email'])->first();
+    $user = User::getBy('email', $credentials['email']);
 
-    if ($user && Hash::check($credentials['password'], $user->password)) {
+    if (Hash::check($credentials['password'], $user->password)) {
       return [
         'ok' => true,
         'message' => __('general.helloUser', ['username' => $user->name]),
@@ -42,7 +74,32 @@ class AuthController extends Controller
       ];
     }
 
-    return response(['ok' => false, 'message' => __('validation.incorrectLoginOrPassword')], 401);
+    return response(
+      [
+        'ok' => false,
+        'message' => __('validation.incorrectLoginOrPassword')
+      ],
+      401
+    );
+  }
+
+  /**
+   * Высылает код подтверждения на запрошенный ресурс
+   * @param string $purpose prp_login_email, ...
+   * @param \App\Models\User $user пользователь
+   * @param string $able LoginMailable или подобный, принимающий код в конструктор
+   * @return $sentTo ресурс, на который выслан код
+   */
+  public function sendLoginCode(string $purpose, User $user, string $able): string
+  {
+    $mtu = new MTUController($user);
+
+    $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
+    $codeData = Confirmation::createCode($purpose, $user, $dto->codeLength);
+    $sentTo = $mtu->send(new $able($codeData->unhashedCode));
+    $codeData->update(['sent_to' => $sentTo]);
+
+    return $sentTo[0];
   }
 
   public function user()

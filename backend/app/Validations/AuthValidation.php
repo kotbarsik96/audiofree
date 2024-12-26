@@ -9,15 +9,43 @@ class AuthValidation
   public static function password()
   {
     return [
-      'required',
       'confirmed',
       Password::min(6)->mixedCase()->numbers()
     ];
   }
 
-  public static  function email()
+  public static function passwordNullable()
   {
-    return 'required|email:rfc,dns|unique:users|max:255';
+    return array_merge(
+      self::password(),
+      ['nullable']
+    );
+  }
+
+  public static function email()
+  {
+    return ['email:rfc,dns', 'unique:users', 'max:255'];
+  }
+
+  public static function emailRequiredWithout()
+  {
+    return array_merge(
+      self::email(),
+      ['required_without:telegram']
+    );
+  }
+
+  public static function telegram()
+  {
+    return ['regex:/@[a-zA-Z0-9_]/', 'unique:users'];
+  }
+
+  public static function telegramRequiredWithout()
+  {
+    array_merge(
+      self::telegram(),
+      ['required_without:email']
+    );
   }
 
   public static function name()

@@ -32,5 +32,6 @@ return [
   'roles' => 'Роли',
   'removedProductFromFavorites' => 'Товар :product удален из корзины',
   'codeAlreadySentTo' => 'Код уже был выслан: :sentTo',
-  'codeSentTo' => 'Код выслан: :sentTo'
+  'codeSentTo' => 'Код выслан по: :sentTo',
+  'registeredAndCodeSentTo' => 'Вы успешно зарегистрировались. Код авторизации выслан по: :sentTo'
 ];
