@@ -83,11 +83,10 @@ class AuthController extends Controller
       $response = $this->attemptLoginByPassword($user, $request->password);
     } else if ($request->code) {
       $response = $this->attemptLoginByCode($user, $request->code, $request->login);
-      return $response;
     }
 
 
-    return $response ?? response(
+    return $response ?: response(
       [
         'ok' => false,
         'message' => __('validation.incorrectLoginOrPassword')
@@ -114,13 +113,16 @@ class AuthController extends Controller
    */
   public function attemptLoginByCode(User $user, string $code, string $login)
   {
-    $codeValid = Confirmation::validateCode('prp_login', $user->id, $code);
+    $purpose = 'prp_login';
+
+    $codeValid = Confirmation::validateCode($purpose, $user->id, $code);
     if ($codeValid) {
       // выставить подтверждение логина
       $dto = AuthDTOCollection::getDTOByLogin($user, $login);
       $user->update([
         $dto->verifiedColumName => Carbon::now()
       ]);
+      Confirmation::deleteForPurpose($user, $purpose);
       return $this->successfullLogin($user);
     }
     return false;
