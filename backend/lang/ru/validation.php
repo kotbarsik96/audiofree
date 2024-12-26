@@ -111,6 +111,7 @@ return [
     'numbers' => 'Поле :attribute должно содержать хотя бы одну цифру.',
     'symbols' => 'Поле :attribute должно содержать хотя бы один символ.',
     'uncompromised' => 'Указанное значение :attribute появилось в утечке данных. Пожалуйста, выберите другое значение :attribute.',
+    'confirmed' => 'Пароль не совпадает с подтверждением',
   ],
   'present' => 'Поле :attribute должно присутствовать.',
   'present_if' => 'Поле :attribute должно присутствовать, когда :other равно :value.',
@@ -176,7 +177,7 @@ return [
   'incorrectCode' => 'Недействительный код',
   'incorrectLink' => 'Недействительная ссылка',
   'login' => [
-    'required' => 'Необходимо ввести логин',
+    'required' => 'Необходимо ввести логин (Telegram-ник или email-адрес)',
   ],
   'telegram' => [
     'regex' => 'Формат ника telegram: @login',

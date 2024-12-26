@@ -28,7 +28,7 @@ class AuthController extends Controller
 
     $codeSentTo = null;
     // пользователь, указавший пароль, логинится сразу
-    if ($validated['password']) {
+    if (array_key_exists('password', $validated) && $validated['password']) {
       $response = $this->successfullLogin($user);
     }
     // пользователь, указавший только логин, получит код авторизации
@@ -40,7 +40,11 @@ class AuthController extends Controller
           break;
 
         // выслать код авторизации на один из указанных пользователем ресурсов
-        if ($validated[$dto->columnName]) {
+        $hasLogin = array_key_exists(
+          $dto->columnName,
+          $validated
+        ) && $validated[$dto->columnName];
+        if ($hasLogin) {
           $codeSentTo = $this->sendLoginCode(
             $user,
             $dto->loginAble
@@ -48,16 +52,21 @@ class AuthController extends Controller
         }
       }
 
-      $response = response([
-        'ok' => true,
-        'message' => __(
-          'general.registeredAndCodeSentTo',
-          ['sentTo' => $codeSentTo]
-        )
-      ]);
+      if ($codeSentTo) {
+        $response = response([
+          'ok' => true,
+          'message' => __(
+            'general.registeredAndCodeSentTo',
+            ['sentTo' => $codeSentTo]
+          )
+        ]);
+      }
     }
 
-    return $response;
+    return $response ?? response([
+      'ok' => false,
+      'message' => __('validation.login.required')
+    ], 422);
   }
 
   /**
@@ -74,7 +83,9 @@ class AuthController extends Controller
       $response = $this->attemptLoginByPassword($user, $request->password);
     } else if ($request->code) {
       $response = $this->attemptLoginByCode($user, $request->code, $request->login);
+      return $response;
     }
+
 
     return $response ?? response(
       [
@@ -182,7 +193,7 @@ class AuthController extends Controller
     );
 
     $codeData = Confirmation::createCode($purpose, $user, $dto->codeLength);
-    $sentTo = $mtu->send(new $able($codeData->unhashedCode));
+    $sentTo = $mtu->send(new $able($codeData->unhashedCode, $user));
     $codeData->update(['sent_to' => $sentTo]);
 
     return $sentTo[0];

@@ -30,7 +30,7 @@ class AuthValidation
 
   public static function emailRequiredWithout()
   {
-    $requiredWithout = 'reuqired_without:'
+    $requiredWithout = 'required_without:'
       . AuthDTOCollection::getPossibleAuthsWithout('email', true);
 
     return array_merge(
@@ -46,7 +46,7 @@ class AuthValidation
 
   public static function telegramRequiredWithout()
   {
-    $requiredWithout = 'reuqired_without:'
+    $requiredWithout = 'required_without:'
       . AuthDTOCollection::getPossibleAuthsWithout('telegram', true);
     array_merge(
       self::telegram(),
@@ -76,6 +76,7 @@ class AuthValidation
       'password.min' => __('validation.password.min'),
       'password.mixed' => __('validation.password.mixed'),
       'password.numbers' => __('validation.password.numbers'),
+      'password.confirmed' => __('validation.password.confirmed'),
       'email.required' => __('validation.email.required'),
       'email.required_without' => __('validation.login.required'),
       'email.email' => __('validation.email.email'),

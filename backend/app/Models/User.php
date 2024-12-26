@@ -101,7 +101,7 @@ class User extends Authenticatable
     if (!$this)
       return new Attribute(get: fn() => []);
 
-    $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id);
+    $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id)->first();
 
     return new Attribute(get: fn() => [
       'verify_email' => $verifyEmail || false

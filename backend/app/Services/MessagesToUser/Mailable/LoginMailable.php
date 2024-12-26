@@ -7,6 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class LoginMailable extends Mailable
 {
@@ -17,7 +18,7 @@ class LoginMailable extends Mailable
   /**
    * Create a new message instance.
    */
-  public function __construct(protected string $code)
+  public function __construct(protected string $code, protected User $user)
   {
   }
 
@@ -46,10 +47,10 @@ class LoginMailable extends Mailable
     return new Content(
       view: 'email.GeneralTemplate',
       with: [
-        'user' => auth()->user(),
+        'user' => $this->user,
         'gt_title' => 'AUDIOFREE — Код авторизации',
         'gt_contents' => [
-          ['content' => 'Для авторизации на сайте' . $this->getLink()],
+          ['content' => 'Для авторизации на сайте ' . $this->getLink()],
           ['content' => "вы можете использовать код $this->code"],
         ]
       ]
