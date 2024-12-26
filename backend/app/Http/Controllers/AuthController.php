@@ -15,13 +15,13 @@ use App\Models\Confirmation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthController extends Controller
 {
   public function signup(SignupRequest $request)
   {
+    $response = null;
     $validated = $request->validated();
 
     $user = User::create($validated);
@@ -29,7 +29,7 @@ class AuthController extends Controller
     $codeSentTo = null;
     // пользователь, указавший пароль, логинится сразу
     if ($validated['password']) {
-      return $this->successfullLogin($user);
+      $response = $this->successfullLogin($user);
     }
     // пользователь, указавший только логин, получит код авторизации
     else {
@@ -47,15 +47,17 @@ class AuthController extends Controller
           );
         }
       }
+
+      $response = response([
+        'ok' => true,
+        'message' => __(
+          'general.registeredAndCodeSentTo',
+          ['sentTo' => $codeSentTo]
+        )
+      ]);
     }
 
-    return response([
-      'ok' => true,
-      'message' => __(
-        'general.registeredAndCodeSentTo',
-        ['sentTo' => $codeSentTo]
-      )
-    ]);
+    return $response;
   }
 
   /**
@@ -132,12 +134,12 @@ class AuthController extends Controller
    * 
    * Если пароля нет, либо в request есть поле code_required, вышлет код по логину
    */
-  public function requestLoginCode(Request $request)
+  public function requestLogin(Request $request)
   {
     $user = User::getByLogin($request->login);
 
     $response = null;
-    if ($user->password) {
+    if ($user->password && !$request->code_required) {
       $response = response([
         'ok' => true,
         'message' => __('general.enterPassword'),

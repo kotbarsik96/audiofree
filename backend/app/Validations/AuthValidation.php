@@ -77,8 +77,11 @@ class AuthValidation
       'password.mixed' => __('validation.password.mixed'),
       'password.numbers' => __('validation.password.numbers'),
       'email.required' => __('validation.email.required'),
+      'email.required_without' => __('validation.login.required'),
       'email.email' => __('validation.email.email'),
       'email.unique' => __('validation.email.unique'),
+      'telegram.required_without' => __('validation.login.required'),
+      'telegram.regex' => __('validation.telegram.regex'),
       'name.required' => __('validation.username.required'),
       'name.min' => __('validation.name.min'),
       'phone_number' => __('validation.phone_number.regex')

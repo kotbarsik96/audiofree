@@ -13,12 +13,22 @@ use Illuminate\Support\Facades\Route;
 // 1. User
 Route::post('signup', action: [AuthController::class, 'signup']); // 1.1
 Route::post('login', [AuthController::class, 'login']); // 1.2
-Route::post('profile/reset-password/request', [AuthController::class, 'requestResetPassword']); // 1.6.1
+Route::post(
+  'profile/reset-password/request',
+  [AuthController::class, 'requestResetPassword']
+); // 1.6.1
 Route::post(
   'profile/reset-password/verify-link',
   [AuthController::class, 'verifyResetPasswordLink']
 ); // 1.6.2
-Route::post('profile/reset-password/new-password', [AuthController::class, 'resetPassword']); // 1.6.3
+Route::post(
+  'profile/reset-password/new-password',
+  [AuthController::class, 'resetPassword']
+); // 1.6.3
+Route::post(
+  'profile/request-login',
+  [AuthController::class, 'requestLogin']
+); // 1.11
 
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1

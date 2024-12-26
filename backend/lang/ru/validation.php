@@ -175,6 +175,12 @@ return [
   'emailAlreadyVerified' => 'Почта уже подтверждена',
   'incorrectCode' => 'Недействительный код',
   'incorrectLink' => 'Недействительная ссылка',
+  'login' => [
+    'required' => 'Необходимо ввести логин',
+  ],
+  'telegram' => [
+    'regex' => 'Формат ника telegram: @login',
+  ],
 
   'product' => [
     'attachmentDoesntExist' => 'Вложение не существует',
