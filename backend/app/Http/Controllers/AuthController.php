@@ -81,10 +81,10 @@ class AuthController extends Controller
 
     if ($request->password) {
       $response = $this->attemptLoginByPassword($user, $request->password);
-    } else if ($request->code) {
+    }
+    if (!$response && $request->code) {
       $response = $this->attemptLoginByCode($user, $request->code, $request->login);
     }
-
 
     return $response ?: response(
       [
@@ -100,7 +100,7 @@ class AuthController extends Controller
    */
   public function attemptLoginByPassword(User $user, string $password)
   {
-    if (Hash::check($password, $user->password)) {
+    if ($user->password && Hash::check($password, $user->password)) {
       return $this->successfullLogin($user);
     }
     return false;
@@ -161,6 +161,8 @@ class AuthController extends Controller
         ]
       ]);
     } else {
+      Confirmation::checkIfValidCodeExists('prp_login', $user->id, true);
+
       $dto = AuthDTOCollection::getDTOByLogin($user, $request->login);
       $sentTo = $this->sendLoginCode($user, $dto->loginAble);
       $response = response([
