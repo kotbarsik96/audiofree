@@ -21,4 +21,6 @@ return [
   'emailAlreadyVerified' => 'Email уже подтверждён',
   'cartItemNotFound' => 'Товара нет в корзине',
   'wrongQuantity' => 'Неверное количество',
+  'noVerificationEntity' => 'Запрошенный ресурс не существует',
+  'verificationEntityVerified' => 'Запрошеный ресурс уже подтвержден'
 ];

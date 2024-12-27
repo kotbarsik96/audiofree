@@ -6,6 +6,7 @@ use App\DTO\Auth\AuthDTO;
 use App\DTO\DTOCollection;
 use App\Models\User;
 use App\Services\MessagesToUser\Mailable\LoginMailable;
+use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 
 /**
  * @extends DTOCollection<AuthDTO>
@@ -76,7 +77,8 @@ AuthDTOCollection::register(
   new AuthDTO(
     'email',
     LoginMailable::class,
-    'email_verified_at'
+    'email_verified_at',
+    VerifyEmailMailable::class
   )
 );
 

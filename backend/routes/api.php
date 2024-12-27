@@ -42,8 +42,14 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('logout', [AuthController::class, 'logout']); // 1.3
   Route::get('profile/user', [AuthController::class, 'user']); // 1.4
   Route::post('profile/edit', [UsersController::class, 'edit']); // 1.5
-  Route::post('profile/verify-email/request', [AuthController::class, 'requestVerifyEmail']); // 1.7.1
-  Route::post('profile/verify-email', [AuthController::class, 'verifyEmail']); // 1.7.2
+  Route::post(
+    'profile/verification/request',
+    [AuthController::class, 'requestVerification']
+  ); // 1.7.1
+  Route::post(
+    'profile/verification/confirm',
+    [AuthController::class, 'confirmVerification']
+  ); // 1.7.2
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
   Route::get('profile/products/collections', [UsersController::class, 'getProductsCollections']); // 1.10

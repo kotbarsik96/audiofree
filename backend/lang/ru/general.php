@@ -35,4 +35,5 @@ return [
   'codeSentTo' => 'Код выслан на: :sentTo',
   'registeredAndCodeSentTo' => 'Вы успешно зарегистрировались. Код авторизации выслан на: :sentTo',
   'enterPassword' => 'Введите пароль',
+  'verificationEntityVerified' => 'Вы подтвердили :entity',
 ];

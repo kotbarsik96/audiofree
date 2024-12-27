@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Auth\AuthDTO;
 use App\DTO\Auth\AuthDTOCollection;
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class AuthController extends Controller
 {
@@ -298,35 +300,60 @@ class AuthController extends Controller
     ]);
   }
 
-  public function requestVerifyEmail()
+  public function getAuthDTO($entity): AuthDTO
   {
-    $purpose = 'prp_verify_email';
+    $dto = AuthDTOCollection::getDTO($entity);
+    throw_if(
+      !$dto,
+      new UnprocessableEntityHttpException(__('abortions.noVerificationEntity'))
+    );
+
+    return $dto;
+  }
+
+  /**
+   * Запросить подтверждение ресурса, зарегистрированного в AuthDTOCollection
+   */
+  public function requestVerification(Request $request)
+  {
+    $dto = $this->getAuthDTO($request->entity);
+
+    $purpose = "prp_verify_$request->entity";
+    $verifiedColumnName = $dto->verifiedColumName;
     $user = User::find(auth()->user()->id);
 
+    /** выбросить ошибку, если у пользователя уже подтверждено поле */
     throw_if(
-      $user->email_verified_at,
-      new BadRequestHttpException(__('abortions.emailAlreadyVerified'))
+      $user->$verifiedColumnName,
+      new BadRequestHttpException(__('abortions.verificationEntityVerified'))
     );
 
     Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
 
     $codeData = Confirmation::createCode($purpose, $user);
     $mtu = new MTUController($user);
-    $sentTo = $mtu->send(new VerifyEmailMailable($codeData->unhashedCode));
+    $sentTo = $mtu->send(new $dto->verifyAble($codeData->unhashedCode));
     $codeData->update([
       'sent_to' => $sentTo
     ]);
 
     return response([
       'ok' => true,
-      'message' => __('general.emailSent')
+      'message' => __(
+        'general.codeSentTo', 
+        ['sentTo' => implode(', ', $sentTo)])
     ]);
   }
 
-  public function verifyEmail()
+  /**
+   * Проверить код и подтвердить ресурс, зарегистрированный в AuthDTOCollection
+   */
+  public function confirmVerification(Request $request)
   {
-    $purpose = 'prp_verify_email';
-    $code = request('code');
+    $entityName = $request->entity;
+    $dto = $this->getAuthDTO($entityName);
+    $purpose = "prp_verify_$entityName";
+    $code = $request->code;
 
     $user = auth()->user();
     throw_if(
@@ -334,15 +361,15 @@ class AuthController extends Controller
       new UnauthorizedHttpException('', __('validation.incorrectLink'))
     );
 
-    $user = User::getBy('email', $user->email);
+    $user = User::getBy($entityName, $user->$entityName);
     $user->update([
-      'email_verified_at' => Carbon::now()
+      $dto->verifiedColumName => Carbon::now()
     ]);
     Confirmation::deleteForPurpose($user, $purpose);
 
     return response([
       'ok' => true,
-      'message' => __('general.emailVerified')
+      'message' => __('general.verificationEntityVerified', ['entity' => $entityName])
     ]);
   }
 
