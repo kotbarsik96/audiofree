@@ -372,7 +372,6 @@ class AuthController extends Controller
       'message' => __('general.verificationEntityVerified', ['entity' => $entityName])
     ]);
   }
-
   public function changeEmail(Request $request)
   {
     $validated = $request->validate([
