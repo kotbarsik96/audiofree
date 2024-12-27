@@ -2,6 +2,7 @@
 
 namespace App\Validations;
 
+use App\DTO\Auth\AuthDTOCollection;
 use Illuminate\Validation\Rules\Password;
 
 class AuthValidation
@@ -9,15 +10,48 @@ class AuthValidation
   public static function password()
   {
     return [
-      'required',
       'confirmed',
       Password::min(6)->mixedCase()->numbers()
     ];
   }
 
-  public static  function email()
+  public static function passwordNullable()
   {
-    return 'required|email:rfc,dns|unique:users|max:255';
+    return array_merge(
+      self::password(),
+      ['nullable']
+    );
+  }
+
+  public static function email()
+  {
+    return ['email:rfc,dns', 'unique:users', 'max:255'];
+  }
+
+  public static function emailRequiredWithout()
+  {
+    $requiredWithout = 'required_without:'
+      . AuthDTOCollection::getPossibleAuthsWithout('email', true);
+
+    return array_merge(
+      self::email(),
+      [$requiredWithout]
+    );
+  }
+
+  public static function telegram()
+  {
+    return ['regex:/@[a-zA-Z0-9_]/', 'unique:users'];
+  }
+
+  public static function telegramRequiredWithout()
+  {
+    $requiredWithout = 'required_without:'
+      . AuthDTOCollection::getPossibleAuthsWithout('telegram', true);
+    array_merge(
+      self::telegram(),
+      [$requiredWithout]
+    );
   }
 
   public static function name()
@@ -42,9 +76,13 @@ class AuthValidation
       'password.min' => __('validation.password.min'),
       'password.mixed' => __('validation.password.mixed'),
       'password.numbers' => __('validation.password.numbers'),
+      'password.confirmed' => __('validation.password.confirmed'),
       'email.required' => __('validation.email.required'),
+      'email.required_without' => __('validation.login.required'),
       'email.email' => __('validation.email.email'),
       'email.unique' => __('validation.email.unique'),
+      'telegram.required_without' => __('validation.login.required'),
+      'telegram.regex' => __('validation.telegram.regex'),
       'name.required' => __('validation.username.required'),
       'name.min' => __('validation.name.min'),
       'phone_number' => __('validation.phone_number.regex')

@@ -14,6 +14,9 @@ class MessagesToUserDTOCollection extends DTOCollection
 {
 }
 
+/** При добавлении новых DTO не забывать:
+ * обновлять MTUController->send
+ */
 MessagesToUserDTOCollection::register(
   'Telegram',
   new MessagesToUserDTO('Telegram', Telegramable::class)

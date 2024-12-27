@@ -13,12 +13,22 @@ use Illuminate\Support\Facades\Route;
 // 1. User
 Route::post('signup', action: [AuthController::class, 'signup']); // 1.1
 Route::post('login', [AuthController::class, 'login']); // 1.2
-Route::post('profile/reset-password/request', [AuthController::class, 'requestResetPassword']); // 1.6.1
+Route::post(
+  'profile/reset-password/request',
+  [AuthController::class, 'requestResetPassword']
+); // 1.6.1
 Route::post(
   'profile/reset-password/verify-link',
   [AuthController::class, 'verifyResetPasswordLink']
 ); // 1.6.2
-Route::post('profile/reset-password/new-password', [AuthController::class, 'resetPassword']); // 1.6.3
+Route::post(
+  'profile/reset-password/new-password',
+  [AuthController::class, 'resetPassword']
+); // 1.6.3
+Route::post(
+  'profile/request-login',
+  [AuthController::class, 'requestLogin']
+); // 1.11
 
 // 2. Catalog
 Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
@@ -32,8 +42,14 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('logout', [AuthController::class, 'logout']); // 1.3
   Route::get('profile/user', [AuthController::class, 'user']); // 1.4
   Route::post('profile/edit', [UsersController::class, 'edit']); // 1.5
-  Route::post('profile/verify-email/request', [AuthController::class, 'requestVerifyEmail']); // 1.7.1
-  Route::post('profile/verify-email', [AuthController::class, 'verifyEmail']); // 1.7.2
+  Route::post(
+    'profile/verification/request',
+    [AuthController::class, 'requestVerification']
+  ); // 1.7.1
+  Route::post(
+    'profile/verification/confirm',
+    [AuthController::class, 'confirmVerification']
+  ); // 1.7.2
   Route::post('profile/change-email', [AuthController::class, 'changeEmail']); // 1.8
   Route::post('profile/change-password', [AuthController::class, 'changePassword']); // 1.9
   Route::get('profile/products/collections', [UsersController::class, 'getProductsCollections']); // 1.10

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DTO\Auth\AuthDTOCollection;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -16,7 +17,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class User extends Authenticatable
 {
@@ -32,13 +32,15 @@ class User extends Authenticatable
     'surname',
     'patronymic',
     'email',
+    // 'telegram',
     'password',
     'phone_number',
     'location',
     'street',
     'house',
     'role',
-    'email_verified_at'
+    'email_verified_at',
+    'telegram_verified_at',
   ];
 
   /**
@@ -61,6 +63,7 @@ class User extends Authenticatable
     'permissions' => 'array',
     'password' => 'hashed',
     'email_verified_at' => 'datetime',
+    'telegram_verified_at' => 'datetime',
   ];
 
   /**
@@ -72,6 +75,7 @@ class User extends Authenticatable
     'id' => Where::class,
     'name' => Like::class,
     'email' => Like::class,
+    'telegram' => Like::class,
     'updated_at' => WhereDateStartEnd::class,
     'created_at' => WhereDateStartEnd::class,
   ];
@@ -85,6 +89,7 @@ class User extends Authenticatable
     'id',
     'name',
     'email',
+    'telegram',
     'updated_at',
     'created_at',
   ];
@@ -96,7 +101,7 @@ class User extends Authenticatable
     if (!$this)
       return new Attribute(get: fn() => []);
 
-    $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id);
+    $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id)->first();
 
     return new Attribute(get: fn() => [
       'verify_email' => $verifyEmail || false
@@ -160,28 +165,42 @@ class User extends Authenticatable
   }
 
   /**
-   * Получить пользователя по полю + значению
+   * Получить пользователя по полю + значению, либо выдать 404 ошибку, если пользователь не найден
    * 
    * @param $byRow = поле в бд, по которому будет осуществляться поиск
    * @param $value = значение поля
    */
-  public static function getBy($byRow, $value)
+  public static function getBy($byRow, $value): static
   {
     $user = self::where($byRow, $value)->first();
-    if (!$user) {
-      abort(401, 'Пользователь не найден');
-    }
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
 
     return $user;
   }
 
-  /** 
-   * Найти пользователя по полю 'email'
+  /**
+   * Получить пользователя по логину (возможные логины зарегистрированы в AuthDTOCollection)
    * 
-   * @param $email = email пользователя
+   * если пользователь не найден - выдать ошибку
    */
-  public static function getByEmail($email)
+  public static function getByLogin(string $login): static
   {
-    return self::getBy('email', $email);
+    $user = null;
+    foreach (AuthDTOCollection::getAllDTOs() as $dto) {
+      if ($user)
+        break;
+
+      $columnName = $dto->columnName;
+      $user = User::where($columnName, $login)->first();
+    }
+    throw_if(
+      !$user,
+      new NotFoundHttpException(__('abortions.userNotFound'))
+    );
+
+    return $user;
   }
 }
