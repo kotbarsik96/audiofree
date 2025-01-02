@@ -7,6 +7,7 @@ use App\DTO\DTOCollection;
 use App\Models\User;
 use App\Services\MessagesToUser\Mailable\LoginMailable;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
+use App\Services\MessagesToUser\Telegramable\LoginTelegramable;
 
 /**
  * @extends DTOCollection<AuthDTO>
@@ -82,10 +83,12 @@ AuthDTOCollection::register(
   )
 );
 
-// AuthDTOCollection::register(
-//   'telegram',
-//   new AuthDTO(
-//     'telegram',
-//     LoginMailable::class
-//   )
-// );
+AuthDTOCollection::register(
+  'telegram',
+  new AuthDTO(
+    'telegram',
+    LoginTelegramable::class,
+    false,
+    false,
+  )
+);

@@ -32,15 +32,15 @@ class User extends Authenticatable
     'surname',
     'patronymic',
     'email',
-    // 'telegram',
+    'email_verified_at',
+    'telegram',
+    'telegram_chat_id',
     'password',
     'phone_number',
     'location',
     'street',
     'house',
     'role',
-    'email_verified_at',
-    'telegram_verified_at',
   ];
 
   /**

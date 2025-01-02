@@ -2,7 +2,6 @@
 
 namespace App\Services\MessagesToUser;
 
-use App\DTO\MessagesToUser\MessagesToUserDTOCollection;
 use App\Models\User;
 use Illuminate\Mail\Mailable;
 use Mail;
