@@ -9,6 +9,8 @@ return [
     'register' => 'Зарегистрироваться',
   ],
   'exceptions' => [
-    'unknownCommand' => 'Неизвестная команда'
+    'unknownCommand' => 'Неизвестная команда',
+    'failure' => 'Произошла ошибка',
+    'alreadyRegistered' => 'Вы уже зарегистрированы'
   ]
 ];

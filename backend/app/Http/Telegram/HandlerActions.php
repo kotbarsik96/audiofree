@@ -2,12 +2,9 @@
 
 namespace App\Http\Telegram;
 
-use DefStudio\Telegraph\Facades\Telegraph;
 use DefStudio\Telegraph\Models\TelegraphChat;
 use App\Models\User;
 use DefStudio\Telegraph\DTO\Message;
-use Illuminate\Support\Stringable;
-use DefStudio\Telegraph\Keyboard\Button;
 use DefStudio\Telegraph\Keyboard\Keyboard;
 
 /** используется для вспомогательных действий, чтобы не захламлять Handler.php */

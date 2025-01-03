@@ -18,8 +18,11 @@ class Handler extends WebhookHandler
     if (
       $throwable instanceof NotFoundHttpException
       || $throwable instanceof UnprocessableEntityHttpException
+      || env('DEV_MODE', false)
     ) {
       $this->chat->message($throwable->getMessage())->send();
+    } else {
+      $this->chat->message(__('telegram.exceptions.failure'))->send();
     }
   }
 
@@ -35,8 +38,8 @@ class Handler extends WebhookHandler
 
   public function register()
   {
-    $firstname = $this->data->get('firstname');
-    $username = $this->data->get('username');
+    $firstname = $this->data->get('firstname') ?? $this->message->from()->firstName();
+    $username = $this->data->get('username') ?? $this->message->from()->username();
 
     throw_if(
       !$firstname || !$username,
@@ -46,13 +49,13 @@ class Handler extends WebhookHandler
     $user = User::where('telegram', $username)->first();
     throw_if(
       $user,
-      new UnprocessableEntityHttpException(__('abortions.userExists'))
+      new UnprocessableEntityHttpException(__('telegram.exceptions.alreadyRegistered'))
     );
 
     $user = User::create([
       'name' => $firstname,
       'telegram' => $username,
-      'telegram_chat_id' => $this->chat->id
+      'telegram_chat_id' => $this->chat->chat_id
     ]);
 
     $siteUrl = env('APP_FRONTEND_LINK');
