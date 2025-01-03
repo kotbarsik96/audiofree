@@ -22,5 +22,7 @@ return [
   'cartItemNotFound' => 'Товара нет в корзине',
   'wrongQuantity' => 'Неверное количество',
   'noVerificationEntity' => 'Запрошенный ресурс не существует',
-  'verificationEntityVerified' => 'Запрошеный ресурс уже подтвержден'
+  'verificationEntityVerified' => 'Запрошеный ресурс уже подтвержден',
+  'verificationIsUnavailable' => 'Верификация ресурса недоступна',
+  'userExists' => 'Пользователь уже зарегистрирован',
 ];

@@ -317,6 +317,10 @@ class AuthController extends Controller
   public function requestVerification(Request $request)
   {
     $dto = $this->getAuthDTO($request->entity);
+    throw_if(
+      !$dto->verifiedColumName,
+      new BadRequestHttpException(__('abortions.verificationIsUnavailable'))
+    );
 
     $purpose = "prp_verify_$request->entity";
     $verifiedColumnName = $dto->verifiedColumName;
@@ -340,8 +344,9 @@ class AuthController extends Controller
     return response([
       'ok' => true,
       'message' => __(
-        'general.codeSentTo', 
-        ['sentTo' => implode(', ', $sentTo)])
+        'general.codeSentTo',
+        ['sentTo' => implode(', ', $sentTo)]
+      )
     ]);
   }
 
