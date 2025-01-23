@@ -67,7 +67,9 @@ class AuthController extends Controller
 
     return $response ?? response([
       'ok' => false,
-      'message' => __('validation.login.required')
+      'message' => __('validation.login.required', [
+        'possibleLogins' => AuthDTOCollection::getPossibleAuths('/')
+      ])
     ], 422);
   }
 

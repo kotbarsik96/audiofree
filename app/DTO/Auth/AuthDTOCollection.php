@@ -15,16 +15,20 @@ use App\Services\MessagesToUser\Telegramable\LoginTelegramable;
 class AuthDTOCollection extends DTOCollection
 {
   /**
-   * Возвращает массив возможных вариантов авторизации
-   * @return array<int, string>
+   * Возвращает массив возможных вариантов авторизации, если не указан $separator
+   * 
+   * Если указан $separator, возвращает строку вариантов, разделённых по $separator
+   * @return array<int, string>|string
    */
-  public static function getPossibleAuths()
+  public static function getPossibleAuths(string|null $separator = null)
   {
     $dtos = self::getAllDTOs();
     $arr = [];
     foreach ($dtos as $dto) {
       $arr[] = $dto->columnName;
     }
+    if ($separator)
+      $arr = implode($separator, $arr);
     return $arr;
   }
 

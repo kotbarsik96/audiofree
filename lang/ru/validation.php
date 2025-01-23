@@ -177,7 +177,7 @@ return [
   'incorrectCode' => 'Недействительный код',
   'incorrectLink' => 'Недействительная ссылка',
   'login' => [
-    'required' => 'Необходимо ввести логин (Telegram-ник или email-адрес)',
+    'required' => 'Необходимо ввести логин (:possibleLogins)',
   ],
   'telegram' => [
     'regex' => 'Формат ника telegram: @login',
