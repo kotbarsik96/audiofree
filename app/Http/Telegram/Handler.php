@@ -2,12 +2,16 @@
 
 namespace App\Http\Telegram;
 
+use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+use App\Models\Confirmation;
 use \DefStudio\Telegraph\Handlers\WebhookHandler;
 use Illuminate\Support\Stringable;
 use App\Models\User;
 use DefStudio\Telegraph\DTO\User as TelegraphUser;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use DefStudio\Telegraph\Keyboard\Button;
+use DefStudio\Telegraph\Keyboard\Keyboard;
 
 class Handler extends WebhookHandler
 {
@@ -59,11 +63,21 @@ class Handler extends WebhookHandler
     ]);
 
     $siteUrl = env('APP_FRONTEND_LINK');
-    $token = $user->createToken(time())->plainTextToken;
-    $this->chat->html(__('telegram.welcome.user', [
-      'name' => $firstname,
-      'link' => "<a href=\"$siteUrl?token=$token\">ссылке</a>",
-      'site' => "<a href=\"$siteUrl\">$siteUrl</a>"
-    ]))->send();
+    $purpose = 'prp_login';
+    $codeData = Confirmation::createCode(
+      $purpose,
+      $user,
+      ConfirmationPurposeDTOCollection::getDTO($purpose)->codeLength
+    );
+    $codeData->update(['sent_to' => ['Telegram']]);
+    $this->chat->message(__('telegram.welcome.user', [
+      'name' => $user->name
+    ]))
+      ->keyboard(Keyboard::make()
+        ->buttons([
+          Button::make(__('telegram.button.goToSite'))
+            ->url("$siteUrl?code=$codeData->unhashedCode")
+        ]))
+      ->send();
   }
 }

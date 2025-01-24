@@ -203,7 +203,7 @@ class AuthController extends Controller
     $codeData = Confirmation::createCode($purpose, $user, $dto->codeLength);
     $sentTo = $mtu->send(new $able($codeData->unhashedCode, $user));
     $codeData->update(['sent_to' => $sentTo]);
-
+    
     return $sentTo[0];
   }
 

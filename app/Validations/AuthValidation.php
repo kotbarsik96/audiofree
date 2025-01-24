@@ -41,14 +41,14 @@ class AuthValidation
 
   public static function telegram()
   {
-    return ['regex:/@[a-zA-Z0-9_]/', 'unique:users'];
+    return ['unique:users'];
   }
 
   public static function telegramRequiredWithout()
   {
     $requiredWithout = 'required_without:'
       . AuthDTOCollection::getPossibleAuthsWithout('telegram', true);
-    array_merge(
+    return array_merge(
       self::telegram(),
       [$requiredWithout]
     );
