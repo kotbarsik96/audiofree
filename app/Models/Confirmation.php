@@ -102,7 +102,7 @@ class Confirmation extends BaseModel
       );
 
       if ($throwError) {
-        abort(403, $msgOrFalse);
+        abort(400, $msgOrFalse);
       }
     }
 
