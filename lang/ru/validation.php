@@ -178,6 +178,7 @@ return [
   'incorrectLink' => 'Недействительная ссылка',
   'login' => [
     'required' => 'Необходимо ввести логин (:possibleLogins)',
+    'wrongCredentials' => 'Неверные данные авторизации (логин, пароль или код)'
   ],
   'telegram' => [
     'regex' => 'Формат ника telegram: @login',

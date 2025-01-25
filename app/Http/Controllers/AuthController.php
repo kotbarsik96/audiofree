@@ -93,7 +93,7 @@ class AuthController extends Controller
     return $response ?: response(
       [
         'ok' => false,
-        'message' => __('validation.incorrectLoginOrPassword')
+        'message' => __('validation.login.wrongCredentials')
       ],
       401
     );
