@@ -156,6 +156,7 @@ class AuthController extends Controller
     $user = User::getByLogin($request->login);
 
     $response = null;
+    // ответить, что у упользователя есть пароль
     if ($user->password && !$request->code_required) {
       $response = response([
         'ok' => true,
@@ -164,18 +165,34 @@ class AuthController extends Controller
           'has_password' => true
         ]
       ]);
-    } else {
-      Confirmation::checkIfValidCodeExists('prp_login', $user->id, true);
+    }
+    // ответить, что пользователь может войти по коду
+    else {
+      $codeExistsMessage = Confirmation::checkIfValidCodeExists(
+        'prp_login',
+        $user->id,
+        false
+      );
 
-      $dto = AuthDTOCollection::getDTOByLogin($user, $request->login);
-      $sentTo = $this->sendLoginCode($user, $dto->loginAble);
-      $response = response([
-        'ok' => true,
-        'message' => __('general.codeSentTo', ['sentTo' => $sentTo]),
-        'data' => [
-          'has_code' => true
-        ]
-      ]);
+      if (!!$codeExistsMessage) {
+        $response = response([
+          'ok' => false,
+          'message' => $codeExistsMessage,
+          'data' => [
+            'has_code' => true,
+          ]
+        ], 400);
+      } else {
+        $dto = AuthDTOCollection::getDTOByLogin($user, $request->login);
+        $sentTo = $this->sendLoginCode($user, $dto->loginAble);
+        $response = response([
+          'ok' => true,
+          'message' => __('general.codeSentTo', ['sentTo' => $sentTo]),
+          'data' => [
+            'has_code' => true
+          ]
+        ]);
+      }
     }
 
     return $response;
@@ -203,7 +220,7 @@ class AuthController extends Controller
     $codeData = Confirmation::createCode($purpose, $user, $dto->codeLength);
     $sentTo = $mtu->send(new $able($codeData->unhashedCode, $user));
     $codeData->update(['sent_to' => $sentTo]);
-    
+
     return $sentTo[0];
   }
 
