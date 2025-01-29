@@ -96,9 +96,10 @@ class Confirmation extends BaseModel
 
     $data = self::purposeUser($purpose, $userId)->first();
     if ($data) {
+      $sentTo = is_array($data->sent_to) ? $data->sent_to : [];
       $msgOrFalse = __(
         'general.codeAlreadySentTo',
-        ['sentTo' => implode(', ', $data->sent_to)]
+        ['sentTo' => implode(', ', $sentTo)]
       );
 
       if ($throwError) {

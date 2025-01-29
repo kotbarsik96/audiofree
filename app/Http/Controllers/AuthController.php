@@ -7,6 +7,7 @@ use App\DTO\Auth\AuthDTOCollection;
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Models\User;
 use App\Services\MessagesToUser\MTUController;
+use App\Services\MessagesToUser\Telegramable\ResetPasswordTelegramable;
 use Illuminate\Http\Request;
 use App\Validations\AuthValidation;
 use App\Http\Requests\SignupRequest;
@@ -252,13 +253,18 @@ class AuthController extends Controller
 
     $user = User::getByLogin($login);
 
+    throw_if(
+      !$user->password,
+      new UnprocessableEntityHttpException(__('abortions.cannotResetPassword'))
+    );
+
     Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
 
     $codeData = Confirmation::createCode($purpose, $user);
     $mtu = new MTUController($user);
     $sentTo = $mtu->send(
       new ResetPasswordMailable($codeData->unhashedCode, $user),
-      // добавить Telegramable
+      new ResetPasswordTelegramable($codeData->unhashedCode)
     );
     $codeData->update([
       'sent_to' => $sentTo
@@ -276,14 +282,10 @@ class AuthController extends Controller
   public function throwErrorIfResetPasswordCodeInvalid(): bool
   {
     $purpose = 'prp_reset_password';
-    $email = request('email');
+    $login = request('login');
     $code = request('code');
 
-    $user = User::where('email', $email)->first();
-    throw_if(
-      !$user,
-      new UnauthorizedHttpException('', __('abortions.userNotFound'))
-    );
+    $user = User::getByLogin($login);
 
     $codeValid = Confirmation::validateCode($purpose, $user->id, $code);
     throw_if(
@@ -308,7 +310,7 @@ class AuthController extends Controller
     $purpose = 'prp_reset_password';
     $this->throwErrorIfResetPasswordCodeInvalid();
 
-    $user = User::getBy('email', request('email'));
+    $user = User::getByLogin(request('login'));
 
     $validated = $request->validate([
       'password' => AuthValidation::password()

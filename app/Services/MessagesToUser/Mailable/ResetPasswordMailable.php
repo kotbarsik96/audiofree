@@ -2,6 +2,7 @@
 
 namespace App\Services\MessagesToUser\Mailable;
 
+use App\Services\StringsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -22,9 +23,11 @@ class ResetPasswordMailable extends Mailable
    */
   public function __construct(string $code, User $user)
   {
-    $frontUrl = env("APP_FRONTEND_LINK", "") . "/confirmation/reset-password?code=" . $code . "&email=" . $user->email;
-    $this->link = '<a href="' . $frontUrl . '">Сбросить пароль</a>';
-    $this->user = $user;
+    if ($user->email) {
+      $frontUrl = StringsService::resetLink($code, $user->email);
+      $this->link = "<a href=\"$frontUrl\">Сбросить пароль</a>";
+      $this->user = $user;
+    }
   }
 
   /**
