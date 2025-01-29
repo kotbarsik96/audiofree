@@ -25,4 +25,5 @@ return [
   'verificationEntityVerified' => 'Запрошеный ресурс уже подтвержден',
   'verificationIsUnavailable' => 'Верификация ресурса недоступна',
   'userExists' => 'Пользователь уже зарегистрирован',
+  'messageNotSend' => 'Не удалось отправить сообщение',
 ];

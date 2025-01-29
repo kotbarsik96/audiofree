@@ -3,6 +3,7 @@
 namespace App\Services\MessagesToUser;
 
 use App\Models\User;
+use App\Services\MessagesToUser\Telegramable\Telegramable;
 use Illuminate\Mail\Mailable;
 use Mail;
 
@@ -44,6 +45,7 @@ class MTUController
         $sentToArr[] = 'Email';
       }
       if ($able instanceof Telegramable && $this->isPossible('Telegram')) {
+        $able->send($this->user);
         $sentToArr[] = 'Telegram';
       }
     }

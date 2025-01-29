@@ -2,10 +2,10 @@
 
 namespace App\Services\MessagesToUser\Telegramable;
 
-use App\Services\Interfaces\TelegramableInterface;
 use App\Models\User;
+use DefStudio\Telegraph\Facades\Telegraph;
 
-class LoginTelegramable implements TelegramableInterface
+class LoginTelegramable extends Telegramable
 {
   public function __construct(public string $code)
   {
@@ -13,6 +13,8 @@ class LoginTelegramable implements TelegramableInterface
 
   public function send(User $user)
   {
-    
+    Telegraph::chat($user->telegram_chat_id)
+      ->message(__('telegram.auth.code', ['code' => $this->code]))
+      ->send();
   }
 }

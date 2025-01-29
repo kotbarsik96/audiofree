@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\DTO\Auth\AuthDTO;
 use App\DTO\Auth\AuthDTOCollection;
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
-use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
 use App\Models\User;
 use App\Services\MessagesToUser\MTUController;
 use Illuminate\Http\Request;
@@ -221,6 +220,11 @@ class AuthController extends Controller
     $sentTo = $mtu->send(new $able($codeData->unhashedCode, $user));
     $codeData->update(['sent_to' => $sentTo]);
 
+    throw_if(
+      count($sentTo) < 1,
+      new UnprocessableEntityHttpException(__('abortions.messageNotSend'))
+    );
+
     return $sentTo[0];
   }
 
@@ -244,9 +248,9 @@ class AuthController extends Controller
   public function requestResetPassword()
   {
     $purpose = 'prp_reset_password';
-    $email = request('email');
+    $login = request('login');
 
-    $user = User::getBy('email', $email);
+    $user = User::getByLogin($login);
 
     Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
 
