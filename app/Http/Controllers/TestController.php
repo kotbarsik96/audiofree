@@ -12,6 +12,6 @@ class TestController extends Controller
 {
   public function test(Request $request)
   {
-    Telegraph::chat('')->message('test')->send();
+    Telegraph::chat('')->html(__('telegram.auth.code', ['code' => '432432']))->send();
   }
 }
