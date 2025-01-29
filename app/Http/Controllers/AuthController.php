@@ -181,7 +181,7 @@ class AuthController extends Controller
           'data' => [
             'has_code' => true,
           ]
-        ], 400);
+        ]);
       } else {
         $dto = AuthDTOCollection::getDTOByLogin($user, $request->login);
         $sentTo = $this->sendLoginCode($user, $dto->loginAble);
