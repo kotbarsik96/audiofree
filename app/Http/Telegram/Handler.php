@@ -76,7 +76,7 @@ class Handler extends WebhookHandler
       ->keyboard(Keyboard::make()
         ->buttons([
           Button::make(__('telegram.button.goToSite'))
-            ->url("$siteUrl?code=$codeData->unhashedCode")
+            ->url("$siteUrl?code=$codeData->unhashedCode&login=$user->telegram")
         ]))
       ->send();
   }
