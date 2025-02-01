@@ -14,6 +14,7 @@ return new class () extends Migration {
       $table->foreignId('user_id')->nullable()
         ->constrained('users')->cascadeOnDelete();
       $table->string('state')->nullable();
+      $table->json('data')->nullable();
 
       $table->foreignId('telegraph_bot_id')
         ->constrained('telegraph_bots')->cascadeOnDelete();

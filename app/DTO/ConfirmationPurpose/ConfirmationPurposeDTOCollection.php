@@ -26,3 +26,8 @@ ConfirmationPurposeDTOCollection::register(
   'prp_login',
   new ConfirmationPurposeDTO(300, 6)
 );
+
+ConfirmationPurposeDTOCollection::register(
+  'prp_connect_telegram',
+  new ConfirmationPurposeDTO(300, 6)
+);

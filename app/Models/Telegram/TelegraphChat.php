@@ -12,6 +12,11 @@ class TelegraphChat extends BaseModel
     'name',
     'user_id',
     'state',
+    'data',
+  ];
+
+  protected $casts = [
+    'data' => 'json'
   ];
 
   protected $table = 'telegraph_chats';

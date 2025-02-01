@@ -15,6 +15,17 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 
 class Handler extends WebhookHandler
 {
+  /** для доступа использовать getStateHandler */
+  protected StateHandler|null $stateHandler = null;
+
+  public function getStateHandler()
+  {
+    if(!$this->stateHandler) {
+      $this->stateHandler = new StateHandler($this->chat, $this->message);
+    }
+    return $this->stateHandler;
+  }
+
   protected function onFailure(\Throwable $throwable): void
   {
     report($throwable);
@@ -32,12 +43,19 @@ class Handler extends WebhookHandler
 
   protected function handleChatMessage(Stringable $text): void
   {
-    HandlerActions::onMessageOrStartCommand($this->chat, $this->message);
+    $state = $this->chat->state;
+
+    // если в StateHandler есть метод, название которого совпадает с названием $state - вызвать его
+    if (is_callable([$this->getStateHandler(), $state]))
+      $this->getStateHandler()->$state($text);
+    // иначе обработать как обычное сообщение
+    else
+      $this->getStateHandler()->onMessageOrStartCommand();
   }
 
   public function start()
   {
-    HandlerActions::onMessageOrStartCommand($this->chat, $this->message);
+    $this->getStateHandler()->onMessageOrStartCommand();
   }
 
   public function register()
@@ -86,6 +104,7 @@ class Handler extends WebhookHandler
 
   public function connectProfile()
   {
-
+    $this->chat->setState('connectProfile');
+    $this->chat->message(__('telegram.connectProfile.instructions'))->send();
   }
 }
