@@ -12,7 +12,8 @@ return [
   'auth' => [
     'code' => 'Используйте код <code>:code</code> для авторизации на сайте (нажмите на него, чтобы скопировать)',
     'resetPasswordRequested' => 'Вы запросили сброс пароля:',
-    'resetPassword' => 'Сбросить пароль'
+    'resetPassword' => 'Сбросить пароль',
+    'connectProfile' => 'Связать профиль'
   ],
   'exceptions' => [
     'unknownCommand' => 'Неизвестная команда',

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTO\Auth\AuthDTOCollection;
+use App\Models\Telegram\TelegraphChat;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -34,7 +35,6 @@ class User extends Authenticatable
     'email',
     'email_verified_at',
     'telegram',
-    'telegram_chat_id',
     'password',
     'phone_number',
     'location',
@@ -202,5 +202,10 @@ class User extends Authenticatable
     );
 
     return $user;
+  }
+
+  public function telegramChat()
+  {
+    return $this->hasOne(TelegraphChat::class, 'user_id');
   }
 }

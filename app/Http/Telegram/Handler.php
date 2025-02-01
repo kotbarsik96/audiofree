@@ -4,10 +4,10 @@ namespace App\Http\Telegram;
 
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Models\Confirmation;
+use App\Models\Telegram\TelegraphBot;
 use \DefStudio\Telegraph\Handlers\WebhookHandler;
 use Illuminate\Support\Stringable;
 use App\Models\User;
-use DefStudio\Telegraph\DTO\User as TelegraphUser;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use DefStudio\Telegraph\Keyboard\Button;
@@ -59,7 +59,10 @@ class Handler extends WebhookHandler
     $user = User::create([
       'name' => $firstname,
       'telegram' => $username,
-      'telegram_chat_id' => $this->chat->chat_id
+    ]);
+    TelegraphBot::createChat([
+      'chat_id' => $this->chat->chat_id,
+      'user_id' => $user->id,
     ]);
 
     $siteUrl = env('APP_FRONTEND_LINK');
@@ -79,5 +82,10 @@ class Handler extends WebhookHandler
             ->url("$siteUrl?auth_login=$user->telegram&auth_code=$codeData->unhashedCode")
         ]))
       ->send();
+  }
+
+  public function connectProfile()
+  {
+
   }
 }

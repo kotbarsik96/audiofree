@@ -19,6 +19,12 @@ class HandlerActions
         ->when(
           !$user,
           fn(Keyboard $keyboard) =>
+          $keyboard->button(__('telegram.auth.connectProfile'))
+            ->action('connectProfile')
+        )
+        ->when(
+          !$user,
+          fn(Keyboard $keyboard) =>
           $keyboard->button(__('telegram.button.register'))->action('register')
             ->param('firstname', $message->from()->firstName())
             ->param('username', $message->from()->username())
