@@ -20,7 +20,7 @@ class Handler extends WebhookHandler
 
   public function getStateHandler()
   {
-    if(!$this->stateHandler) {
+    if (!$this->stateHandler) {
       $this->stateHandler = new StateHandler($this->chat, $this->message);
     }
     return $this->stateHandler;
@@ -63,6 +63,7 @@ class Handler extends WebhookHandler
     $firstname = $this->data->get('firstname') ?? $this->message->from()->firstName();
     $username = $this->data->get('username') ?? $this->message->from()->username();
 
+    $this->chat->removeState();
     throw_if(
       !$firstname || !$username,
       new UnprocessableEntityHttpException(__('telegram.exceptions.unknownCommand'))

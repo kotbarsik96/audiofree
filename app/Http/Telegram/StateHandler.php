@@ -4,6 +4,7 @@ namespace App\Http\Telegram;
 
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Models\Confirmation;
+use App\Models\Telegram\TelegraphBot;
 use App\Models\Telegram\TelegraphChat;
 use App\Services\MessagesToUser\Mailable\ConnectToTelegramMailable;
 use App\Services\MessagesToUser\MTUController;
@@ -47,6 +48,7 @@ class StateHandler
       ))
     ]);
 
+    $this->chat->setData(['user_id' => $user->id]);
     $this->chat->setState('connectProfileEnterCode');
     $this->chat->message(
       __(
@@ -59,10 +61,11 @@ class StateHandler
 
   public function connectProfileEnterCode(string $code)
   {
-    $user = $this->chat->user;
+    $userId = $this->chat->getDataItem('user_id');
+
     $isCodeValid = Confirmation::validateCode(
       'prp_connect_telegram',
-      $user,
+      $userId,
       $code
     );
 
@@ -74,11 +77,13 @@ class StateHandler
     );
 
     $telegramLogin = $this->message->from()->username();
+    $user = User::findOrFail($userId);
     $user->update([
       'telegram' => $telegramLogin
     ]);
 
     $this->chat->removeState();
+    $this->chat->removeData();
     $this->chat
       ->message(__(
         'telegram.connectProfile.profileConnected',
@@ -91,8 +96,10 @@ class StateHandler
   {
     $user = User::where('telegram', $this->message->from()->username())->first();
 
-    $chatId = $this->chat->id;
-    TelegraphChat::firstOrCreate(['chat_id' => $chatId]);
+    TelegraphChat::firstOrCreate([
+      'chat_id' => $this->chat->chat_id,
+      'telegraph_bot_id' => TelegraphBot::first()->id
+    ]);
 
     $this->chat->message(__('telegram.welcome.general'))
       ->keyboard(Keyboard::make()

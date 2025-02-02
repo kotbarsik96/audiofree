@@ -13,6 +13,7 @@ class TelegraphChat extends BaseModel
     'user_id',
     'state',
     'data',
+    'telegraph_bot_id',
   ];
 
   protected $casts = [
@@ -28,9 +29,7 @@ class TelegraphChat extends BaseModel
 
   public function setState(string|null $state = null): static
   {
-    $this->update([
-      'state' => $state
-    ]);
+    $this->update(['state' => $state]);
 
     return $this;
   }
@@ -38,5 +37,25 @@ class TelegraphChat extends BaseModel
   public function removeState(): static
   {
     return $this->setState(null);
+  }
+
+  public function setData($data): static
+  {
+    $this->update(['data' => $data]);
+    return $this;
+  }
+
+  public function removeData(): static
+  {
+    return $this->setData(null);
+  }
+
+  public function getDataItem(string $key)
+  {
+    $data = $this->data;
+    if (!$data)
+      return null;
+
+    return array_key_exists($key, $data) ? $data[$key] : null;
   }
 }

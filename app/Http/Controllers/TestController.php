@@ -9,6 +9,6 @@ class TestController extends Controller
 {
   public function test(Request $request)
   {
-    return User::where('telegram', 'kotbarsik96')->first()->telegramChat;
+    $chat = User::where('', '')->first()->telegramChat;
   }
 }
