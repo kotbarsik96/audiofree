@@ -102,20 +102,9 @@ class StateHandler
     ]);
 
     $this->chat->message(__('telegram.welcome.general'))
-      ->keyboard(Keyboard::make()
-        ->when(
-          !$user,
-          fn(Keyboard $keyboard) =>
-          $keyboard->button(__('telegram.connectProfile.title'))
-            ->action('connectProfile')
-        )
-        ->when(
-          !$user,
-          fn(Keyboard $keyboard) =>
-          $keyboard->button(__('telegram.button.register'))->action('register')
-            ->param('firstname', $this->message->from()->firstName())
-            ->param('username', $this->message->from()->username())
-        ))
+      ->keyboard(
+        TelegraphKeyboard::onMessage($this->message, $user)
+      )
       ->send();
   }
 }
