@@ -13,7 +13,7 @@ class LoginTelegramable extends Telegramable
 
   public function send(User $user)
   {
-    Telegraph::chat($user->telegram_chat_id)
+    $user->telegramChat
       ->html(__('telegram.auth.code', ['code' => $this->code]))
       ->send();
   }

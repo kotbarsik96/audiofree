@@ -4,10 +4,10 @@ namespace App\Http\Telegram;
 
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Models\Confirmation;
+use App\Models\Telegram\TelegraphBot;
 use \DefStudio\Telegraph\Handlers\WebhookHandler;
 use Illuminate\Support\Stringable;
 use App\Models\User;
-use DefStudio\Telegraph\DTO\User as TelegraphUser;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use DefStudio\Telegraph\Keyboard\Button;
@@ -15,6 +15,26 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 
 class Handler extends WebhookHandler
 {
+  /** для доступа использовать getStateHandler */
+  protected StateHandler|null $stateHandler = null;
+  protected CancelStateHandler|null $cancelStateHandler = null;
+
+  public function getStateHandler()
+  {
+    if (!$this->stateHandler) {
+      $this->stateHandler = new StateHandler($this->chat, $this->message);
+    }
+    return $this->stateHandler;
+  }
+
+  public function getCancelStateHandler()
+  {
+    if (!$this->stateHandler) {
+      $this->cancelStateHandler = new CancelStateHandler($this->chat);
+    }
+    return $this->cancelStateHandler;
+  }
+
   protected function onFailure(\Throwable $throwable): void
   {
     report($throwable);
@@ -32,12 +52,19 @@ class Handler extends WebhookHandler
 
   protected function handleChatMessage(Stringable $text): void
   {
-    HandlerActions::onMessageOrStartCommand($this->chat, $this->message);
+    $state = $this->chat->state;
+
+    // если в StateHandler есть метод, название которого совпадает с названием $state - вызвать его
+    if (is_callable([$this->getStateHandler(), $state]))
+      $this->getStateHandler()->$state($text);
+    // иначе обработать как обычное сообщение
+    else
+      $this->getStateHandler()->onMessageOrStartCommand();
   }
 
   public function start()
   {
-    HandlerActions::onMessageOrStartCommand($this->chat, $this->message);
+    $this->getStateHandler()->onMessageOrStartCommand();
   }
 
   public function register()
@@ -45,6 +72,7 @@ class Handler extends WebhookHandler
     $firstname = $this->data->get('firstname') ?? $this->message->from()->firstName();
     $username = $this->data->get('username') ?? $this->message->from()->username();
 
+    $this->chat->removeState();
     throw_if(
       !$firstname || !$username,
       new UnprocessableEntityHttpException(__('telegram.exceptions.unknownCommand'))
@@ -59,7 +87,10 @@ class Handler extends WebhookHandler
     $user = User::create([
       'name' => $firstname,
       'telegram' => $username,
-      'telegram_chat_id' => $this->chat->chat_id
+    ]);
+    TelegraphBot::createChat([
+      'chat_id' => $this->chat->chat_id,
+      'user_id' => $user->id,
     ]);
 
     $siteUrl = env('APP_FRONTEND_LINK');
@@ -78,6 +109,28 @@ class Handler extends WebhookHandler
           Button::make(__('telegram.button.goToSite'))
             ->url("$siteUrl?auth_login=$user->telegram&auth_code=$codeData->unhashedCode")
         ]))
+      ->send();
+  }
+
+  public function connectProfile()
+  {
+    $this->chat->setState('connectProfile');
+    $this->chat->message(__('telegram.connectProfile.instructions'))
+      ->keyboard(TelegraphKeyboard::cancelState())
+      ->send();
+  }
+
+  public function cancelState()
+  {
+    $state = $this->chat->state;
+    // если также нужно реализовать логику, которая выполнится до обнуления state, нужно объявить метод в CancelStateHandler, название которого будет совпадать с $this->chat->state
+    if (is_callable([$this->getCancelStateHandler(), $state])) {
+      $this->getCancelStateHandler()->$state();
+    }
+
+    $this->chat->removeData();
+    $this->chat->removeState();
+    $this->chat->html(__('telegram.notify.stateCancelled'))
       ->send();
   }
 }

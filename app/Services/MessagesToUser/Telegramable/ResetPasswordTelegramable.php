@@ -18,7 +18,7 @@ class ResetPasswordTelegramable extends Telegramable
   {
     $link = StringsService::resetLink($this->code, $user->telegram);
 
-    Telegraph::chat($user->telegram_chat_id)
+    $user->telegramChat
       ->html(__('telegram.auth.resetPasswordRequested'))
       ->keyboard(Keyboard::make()->buttons([
         Button::make(__('telegram.auth.resetPassword'))->url($link)

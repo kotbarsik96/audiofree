@@ -14,7 +14,7 @@ return new class extends Migration {
       $table->id();
       $table->string('code');
       $table->json('sent_to');
-      $table->foreignId('user_id')->constrained(table: 'users');
+      $table->foreignId('user_id')->constrained(table: 'users')->cascadeOnDelete();
       $table->string('purpose');
       $table->timestamp('expires');
       $table->timestamps();

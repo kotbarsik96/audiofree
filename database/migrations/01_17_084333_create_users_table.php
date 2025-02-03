@@ -16,7 +16,6 @@ return new class extends Migration
       $table->string('email')->unique()->nullable();
       $table->timestamp('email_verified_at')->nullable();
       $table->string('telegram')->unique()->nullable();
-      $table->string('telegram_chat_id')->unique()->nullable();
       $table->string('password')->nullable();
       $table->string('name');
       $table->string('phone_number')->nullable();
