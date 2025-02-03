@@ -4,6 +4,7 @@ namespace App\DTO\Auth;
 
 use App\DTO\Auth\AuthDTO;
 use App\DTO\DTOCollection;
+use App\Enums\AuthEnum;
 use App\Models\User;
 use App\Services\MessagesToUser\Mailable\LoginMailable;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
@@ -14,6 +15,32 @@ use App\Services\MessagesToUser\Telegramable\LoginTelegramable;
  */
 class AuthDTOCollection extends DTOCollection
 {
+  public static $enum = AuthEnum::class;
+  
+  /** При добавлении новых AuthDTO, помнить, что нужно указывать ключи в:
+   * в виде колонки в таблице users (<key>, <key>_verified_at)
+   * в виде строки массива User::fillable
+   * в AuthValidation
+   * в SignupRequest
+   */
+  public static function getDTO($key): AuthDTO
+  {
+    return match ($key) {
+      AuthEnum::EMAIL => new AuthDTO(
+        'email',
+        LoginMailable::class,
+        'email_verified_at',
+        VerifyEmailMailable::class
+      ),
+      AuthEnum::TELEGRAM => new AuthDTO(
+        'telegram',
+        LoginTelegramable::class,
+        false,
+        false,
+      )
+    };
+  }
+
   /**
    * Возвращает массив возможных вариантов авторизации, если не указан $separator
    * 
@@ -69,30 +96,3 @@ class AuthDTOCollection extends DTOCollection
     return $searchedDto;
   }
 }
-
-/** При добавлении новых AuthDTO, помнить, что нужно указывать ключи в:
- * в виде колонки в таблице users (<key>, <key>_verified_at)
- * в виде строки массива User::fillable
- * в AuthValidation
- * в SignupRequest
- */
-
-AuthDTOCollection::register(
-  'email',
-  new AuthDTO(
-    'email',
-    LoginMailable::class,
-    'email_verified_at',
-    VerifyEmailMailable::class
-  )
-);
-
-AuthDTOCollection::register(
-  'telegram',
-  new AuthDTO(
-    'telegram',
-    LoginTelegramable::class,
-    false,
-    false,
-  )
-);

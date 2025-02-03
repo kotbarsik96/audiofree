@@ -2,6 +2,7 @@
 
 namespace App\Http\Telegram;
 
+use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphChat;
 use DefStudio\Telegraph\DTO\Message;
@@ -21,7 +22,7 @@ class CancelStateHandler
 
   public function connectProfile()
   {
-    $purpose = 'prp_connect_telegram';
+    $purpose = ConfirmationPurposeEnum::CONNECT_TELEGRAM;
     $data = $this->chat->data ?? [];
     $userId = array_key_exists('user_id', $data) ? $data['user_id'] : null;
     if ($userId) {

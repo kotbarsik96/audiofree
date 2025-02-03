@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTO\Auth\AuthDTOCollection;
+use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Telegram\TelegraphChat;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -101,7 +102,10 @@ class User extends Authenticatable
     if (!$this)
       return new Attribute(get: fn() => []);
 
-    $verifyEmail = !!Confirmation::purposeUser('prp_verify_email', $this->id)->first();
+    $verifyEmail = !!Confirmation::purposeUser(
+      ConfirmationPurposeEnum::VERIFY_EMAIL,
+      $this->id
+    )->first();
 
     return new Attribute(get: fn() => [
       'verify_email' => $verifyEmail || false

@@ -3,6 +3,7 @@
 namespace App\Http\Telegram;
 
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphBot;
 use App\Models\Telegram\TelegraphChat;
@@ -35,7 +36,7 @@ class StateHandler
     );
 
     $mtu = new MTUController($user);
-    $purpose = 'prp_connect_telegram';
+    $purpose = ConfirmationPurposeEnum::CONNECT_TELEGRAM;
     $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
 
     Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
@@ -70,7 +71,7 @@ class StateHandler
     $userId = $this->chat->getDataItem('user_id');
 
     $isCodeValid = Confirmation::validateCode(
-      'prp_connect_telegram',
+      ConfirmationPurposeEnum::CONNECT_TELEGRAM,
       $userId,
       $code
     );

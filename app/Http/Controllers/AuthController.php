@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\DTO\Auth\AuthDTO;
 use App\DTO\Auth\AuthDTOCollection;
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+use App\Enums\AuthEnum;
+use App\Enums\ConfirmationPurposeEnum;
+use App\Enums\MessagesToUserEnum;
 use App\Models\User;
 use App\Services\MessagesToUser\MTUController;
 use App\Services\MessagesToUser\Telegramable\ResetPasswordTelegramable;
@@ -117,7 +120,7 @@ class AuthController extends Controller
    */
   public function attemptLoginByCode(User $user, string $code, string $login)
   {
-    $purpose = 'prp_login';
+    $purpose = ConfirmationPurposeEnum::LOGIN;
 
     $codeValid = Confirmation::validateCode($purpose, $user->id, $code);
     if ($codeValid) {
@@ -169,7 +172,7 @@ class AuthController extends Controller
     // ответить, что пользователь может войти по коду
     else {
       $codeExistsMessage = Confirmation::checkIfValidCodeExists(
-        'prp_login',
+        ConfirmationPurposeEnum::LOGIN,
         $user->id,
         false
       );
@@ -202,13 +205,13 @@ class AuthController extends Controller
    * Высылает код авторизации на запрошенный ресурс
    * @param \App\Models\User $user пользователь
    * @param string $able LoginMailable или подобный, принимающий код в конструктор
-   * @return $sentTo ресурс, на который выслан код
+   * @return array<MessagesToUserEnum> $sentTo ресурс, на который выслан код
    */
-  public function sendLoginCode(User $user, string $able): string
+  public function sendLoginCode(User $user, string $able): MessagesToUserEnum
   {
     $mtu = new MTUController($user);
 
-    $purpose = 'prp_login';
+    $purpose = ConfirmationPurposeEnum::LOGIN;
     $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
 
     Confirmation::checkIfValidCodeExists(
@@ -248,7 +251,7 @@ class AuthController extends Controller
 
   public function requestResetPassword()
   {
-    $purpose = 'prp_reset_password';
+    $purpose = ConfirmationPurposeEnum::RESET_PASSWORD;
     $login = request('login');
 
     $user = User::getByLogin($login);
@@ -281,7 +284,7 @@ class AuthController extends Controller
 
   public function throwErrorIfResetPasswordCodeInvalid(): bool
   {
-    $purpose = 'prp_reset_password';
+    $purpose = ConfirmationPurposeEnum::RESET_PASSWORD;
     $login = request('login');
     $code = request('code');
 
@@ -307,7 +310,7 @@ class AuthController extends Controller
 
   public function resetPassword(Request $request)
   {
-    $purpose = 'prp_reset_password';
+    $purpose = ConfirmationPurposeEnum::RESET_PASSWORD;
     $this->throwErrorIfResetPasswordCodeInvalid();
 
     $user = User::getByLogin(request('login'));
@@ -325,7 +328,7 @@ class AuthController extends Controller
     ]);
   }
 
-  public function getAuthDTO($entity): AuthDTO
+  public function getAuthDTO(AuthEnum $entity): AuthDTO
   {
     $dto = AuthDTOCollection::getDTO($entity);
     throw_if(
