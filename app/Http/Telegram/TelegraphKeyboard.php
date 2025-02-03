@@ -2,6 +2,7 @@
 
 namespace App\Http\Telegram;
 
+use App\Models\Telegram\TelegraphChat;
 use DefStudio\Telegraph\DTO\Message;
 use DefStudio\Telegraph\Keyboard\Keyboard;
 use App\Models\User;
@@ -28,6 +29,8 @@ class TelegraphKeyboard
 
   public static function cancelState()
   {
-
+    return Keyboard::make()
+      ->button(__('telegram.button.cancelState'))
+      ->action('cancelState');
   }
 }

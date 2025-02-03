@@ -10,9 +10,11 @@ use App\Services\MessagesToUser\Mailable\ConnectToTelegramMailable;
 use App\Services\MessagesToUser\MTUController;
 use DefStudio\Telegraph\DTO\Message;
 use App\Models\User;
-use DefStudio\Telegraph\Keyboard\Keyboard;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
+/**
+ * Методы класса используются для обработки TelegraphChat::state (т.е. вызываются из Handler::handleChatMessage)
+ */
 class StateHandler
 {
   public function __construct(
@@ -35,6 +37,9 @@ class StateHandler
     $mtu = new MTUController($user);
     $purpose = 'prp_connect_telegram';
     $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
+
+    Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
+
     $codeData = Confirmation::createCode(
       $purpose,
       $user,
@@ -56,6 +61,7 @@ class StateHandler
         ['sent_to' => implode(', ', $codeData->sent_to)]
       )
     )
+      ->keyboard(TelegraphKeyboard::cancelState())
       ->send();
   }
 
@@ -89,6 +95,7 @@ class StateHandler
         'telegram.connectProfile.profileConnected',
         ['login' => $telegramLogin]
       ))
+      ->keyboard(TelegraphKeyboard::cancelState())
       ->send();
   }
 

@@ -17,6 +17,7 @@ class Handler extends WebhookHandler
 {
   /** для доступа использовать getStateHandler */
   protected StateHandler|null $stateHandler = null;
+  protected CancelStateHandler|null $cancelStateHandler = null;
 
   public function getStateHandler()
   {
@@ -24,6 +25,14 @@ class Handler extends WebhookHandler
       $this->stateHandler = new StateHandler($this->chat, $this->message);
     }
     return $this->stateHandler;
+  }
+
+  public function getCancelStateHandler()
+  {
+    if (!$this->stateHandler) {
+      $this->cancelStateHandler = new CancelStateHandler($this->chat);
+    }
+    return $this->cancelStateHandler;
   }
 
   protected function onFailure(\Throwable $throwable): void
@@ -106,6 +115,22 @@ class Handler extends WebhookHandler
   public function connectProfile()
   {
     $this->chat->setState('connectProfile');
-    $this->chat->message(__('telegram.connectProfile.instructions'))->send();
+    $this->chat->message(__('telegram.connectProfile.instructions'))
+      ->keyboard(TelegraphKeyboard::cancelState())
+      ->send();
+  }
+
+  public function cancelState()
+  {
+    $state = $this->chat->state;
+    // если также нужно реализовать логику, которая выполнится до обнуления state, нужно объявить метод в CancelStateHandler, название которого будет совпадать с $this->chat->state
+    if (is_callable([$this->getCancelStateHandler(), $state])) {
+      $this->getCancelStateHandler()->$state();
+    }
+
+    $this->chat->removeData();
+    $this->chat->removeState();
+    $this->chat->html(__('telegram.notify.stateCancelled'))
+      ->send();
   }
 }
