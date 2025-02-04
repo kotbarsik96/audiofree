@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTO\Auth\AuthDTOCollection;
+use App\Enums\AuthEnum;
 use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Telegram\TelegraphChat;
 use Orchid\Filters\Types\Like;
@@ -193,7 +194,7 @@ class User extends Authenticatable
   public static function getByLogin(string $login): static
   {
     $user = null;
-    foreach (AuthDTOCollection::getAllDTOs() as $dto) {
+    foreach (AuthDTOCollection::getAllDTOs(AuthEnum::cases()) as $dto) {
       if ($user)
         break;
 

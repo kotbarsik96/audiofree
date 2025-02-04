@@ -5,6 +5,8 @@ namespace App\DTO\Auth;
 use App\DTO\Auth\AuthDTO;
 use App\DTO\DTOCollection;
 use App\Enums\AuthEnum;
+use App\Enums\ConfirmationPurposeEnum;
+use App\Interfaces\IDTOCollection;
 use App\Models\User;
 use App\Services\MessagesToUser\Mailable\LoginMailable;
 use App\Services\MessagesToUser\Mailable\VerifyEmailMailable;
@@ -13,10 +15,8 @@ use App\Services\MessagesToUser\Telegramable\LoginTelegramable;
 /**
  * @extends DTOCollection<AuthDTO>
  */
-class AuthDTOCollection extends DTOCollection
-{
-  public static $enum = AuthEnum::class;
-  
+class AuthDTOCollection extends DTOCollection implements IDTOCollection
+{ 
   /** При добавлении новых AuthDTO, помнить, что нужно указывать ключи в:
    * в виде колонки в таблице users (<key>, <key>_verified_at)
    * в виде строки массива User::fillable
@@ -49,7 +49,7 @@ class AuthDTOCollection extends DTOCollection
    */
   public static function getPossibleAuths(string|null $separator = null)
   {
-    $dtos = self::getAllDTOs();
+    $dtos = AuthDTOCollection::getAllDTOs(AuthEnum::cases());
     $arr = [];
     foreach ($dtos as $dto) {
       $arr[] = $dto->columnName;
@@ -86,7 +86,7 @@ class AuthDTOCollection extends DTOCollection
   public static function getDTOByLogin(User $user, string $login): AuthDTO|null
   {
     $searchedDto = null;
-    foreach (self::getAllDTOs() as $dto) {
+    foreach (self::getAllDTOs(AuthEnum::cases()) as $dto) {
       $columnName = $dto->columnName;
       if ($user->$columnName === $login) {
         $searchedDto = $dto;
@@ -94,5 +94,19 @@ class AuthDTOCollection extends DTOCollection
       }
     }
     return $searchedDto;
+  }
+
+  public static function entityToVerificationEnum(string $entity): AuthEnum
+  {
+    return match ($entity) {
+      'email' => AuthEnum::EMAIL,
+    };
+  }
+
+  public static function entityToPurpose(AuthEnum $entity): ConfirmationPurposeEnum
+  {
+    return match($entity) {
+      AuthEnum::EMAIL => ConfirmationPurposeEnum::VERIFY_EMAIL
+    };
   }
 }

@@ -39,7 +39,7 @@ class AuthController extends Controller
     // пользователь, указавший только логин, получит код авторизации
     else {
       // найти один из указанных ресурсов в логине и выслать код туда
-      foreach (AuthDTOCollection::getAllDTOs() as $dto) {
+      foreach (AuthDTOCollection::getAllDTOs(AuthEnum::cases()) as $dto) {
         // если код уже был выслан - выйти из цикла
         if ($codeSentTo)
           break;
@@ -205,9 +205,9 @@ class AuthController extends Controller
    * Высылает код авторизации на запрошенный ресурс
    * @param \App\Models\User $user пользователь
    * @param string $able LoginMailable или подобный, принимающий код в конструктор
-   * @return array<MessagesToUserEnum> $sentTo ресурс, на который выслан код
+   * @return string $sentTo ресурс, на который выслан код
    */
-  public function sendLoginCode(User $user, string $able): MessagesToUserEnum
+  public function sendLoginCode(User $user, string $able)
   {
     $mtu = new MTUController($user);
 
@@ -229,7 +229,7 @@ class AuthController extends Controller
       new UnprocessableEntityHttpException(__('abortions.messageNotSend'))
     );
 
-    return $sentTo[0];
+    return (string) $sentTo[0];
   }
 
   public function user()
@@ -328,7 +328,7 @@ class AuthController extends Controller
     ]);
   }
 
-  public function getAuthDTO(AuthEnum $entity): AuthDTO
+  public function getAuthDTO(AuthEnum|string $entity): AuthDTO
   {
     $dto = AuthDTOCollection::getDTO($entity);
     throw_if(
@@ -344,13 +344,14 @@ class AuthController extends Controller
    */
   public function requestVerification(Request $request)
   {
-    $dto = $this->getAuthDTO($request->entity);
+    $entity = AuthDTOCollection::entityToVerificationEnum($request->entity);
+    $dto = $this->getAuthDTO($entity);
     throw_if(
       !$dto->verifiedColumName,
       new BadRequestHttpException(__('abortions.verificationIsUnavailable'))
     );
 
-    $purpose = "prp_verify_$request->entity";
+    $purpose = AuthDTOCollection::entityToPurpose($entity);
     $verifiedColumnName = $dto->verifiedColumName;
     $user = User::find(auth()->user()->id);
 
@@ -383,9 +384,10 @@ class AuthController extends Controller
    */
   public function confirmVerification(Request $request)
   {
-    $entityName = $request->entity;
-    $dto = $this->getAuthDTO($entityName);
-    $purpose = "prp_verify_$entityName";
+    $entity = AuthDTOCollection::entityToVerificationEnum($request->entity);
+    $entityStr = $entity->value;
+    $dto = $this->getAuthDTO($entity);
+    $purpose = AuthDTOCollection::entityToPurpose($entity);
     $code = $request->code;
 
     $user = auth()->user();
@@ -394,7 +396,7 @@ class AuthController extends Controller
       new UnauthorizedHttpException('', __('validation.incorrectLink'))
     );
 
-    $user = User::getBy($entityName, $user->$entityName);
+    $user = User::getBy($entityStr, $user->$entityStr);
     $user->update([
       $dto->verifiedColumName => Carbon::now()
     ]);
@@ -402,7 +404,7 @@ class AuthController extends Controller
 
     return response([
       'ok' => true,
-      'message' => __('general.verificationEntityVerified', ['entity' => $entityName])
+      'message' => __('general.verificationEntityVerified', ['entity' => $entityStr])
     ]);
   }
   public function changeEmail(Request $request)
@@ -412,8 +414,10 @@ class AuthController extends Controller
     ]);
 
     $changed = User::changeEmail($validated['email']);
-    if ($changed['wasVerified'])
-      $this->requestVerifyEmail();
+    if ($changed['wasVerified']) {
+      $request->entity = AuthEnum::EMAIL->value;
+      $this->requestVerification($request);
+    }
 
     return response([
       'message' => $changed['wasVerified']

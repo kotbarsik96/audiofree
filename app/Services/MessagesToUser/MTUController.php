@@ -46,11 +46,11 @@ class MTUController
     foreach ($ables as $able) {
       if ($able instanceof Mailable && $this->isPossible(MessagesToUserEnum::EMAIL)) {
         Mail::to($this->user)->send($able);
-        $sentToArr[] = MessagesToUserEnum::EMAIL;
+        $sentToArr[] = (string) MessagesToUserEnum::EMAIL->value;
       }
       if ($able instanceof Telegramable && $this->isPossible(MessagesToUserEnum::TELEGRAM)) {
         $able->send($this->user);
-        $sentToArr[] = MessagesToUserEnum::TELEGRAM;
+        $sentToArr[] = (string) MessagesToUserEnum::TELEGRAM->value;
       }
     }
 

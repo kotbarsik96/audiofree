@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\DTO\Auth\AuthDTO;
+use App\Enums\AuthEnum;
 
 /**
  * @template T
@@ -16,16 +16,9 @@ class DTOCollection
   {
     return match ($key) {};
   }
-
-  /**
-   * @return array<string, T>
-   */
-  public static function getAllDTOs($enum): array
+  
+  public static function getAllDTOs($keys)
   {
-    $arr = [];
-    foreach ($enum::cases() as $key) {
-      array_push($arr, self::getDTO($key));
-    }
-    return $arr;
+    return array_map(fn($key) => static::getDTO($key), $keys);
   }
 }
