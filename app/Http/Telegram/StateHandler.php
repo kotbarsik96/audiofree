@@ -89,6 +89,7 @@ class StateHandler
       'telegram' => $telegramLogin
     ]);
 
+    Confirmation::deleteForPurpose($user, ConfirmationPurposeEnum::CONNECT_TELEGRAM);
     $this->chat->removeState();
     $this->chat->removeData();
     $this->chat
@@ -96,7 +97,6 @@ class StateHandler
         'telegram.connectProfile.profileConnected',
         ['login' => $telegramLogin]
       ))
-      ->keyboard(TelegraphKeyboard::cancelState())
       ->send();
   }
 
