@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ConfirmationPurposeEnum;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -9,6 +10,6 @@ class TestController extends Controller
 {
   public function test(Request $request)
   {
-    $chat = User::where('', '')->first()->telegramChat;
+
   }
 }

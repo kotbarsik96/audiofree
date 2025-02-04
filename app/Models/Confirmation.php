@@ -55,7 +55,7 @@ class Confirmation extends BaseModel
    * @param string $purpose - цель. Должна быть зарегистрирована в App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
    * @param \App\Models\User $user - пользователь
    */
-  public static function createCode(string $purpose, User $user, int $length = 6): static
+  public static function createCode($purpose, User $user, int $length = 6): static
   {
     $code = CodePhrase::generateNumeric(self::getCodeLength($purpose));
     $hashedCode = Hash::make($code);
@@ -113,7 +113,7 @@ class Confirmation extends BaseModel
   /**
    * Проверит код пользователя, сравнив его с захэшированной версией в бд
    */
-  public static function validateCode(string $purpose, int $userId, string $code)
+  public static function validateCode($purpose, int $userId, string $code)
   {
     $hashedCodeData = self::select('code')
       ->purposeUser($purpose, $userId)

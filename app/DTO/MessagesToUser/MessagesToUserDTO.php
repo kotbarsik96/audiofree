@@ -2,10 +2,12 @@
 
 namespace App\DTO\MessagesToUser;
 
+use App\Enums\MessagesToUserEnum;
+
 class MessagesToUserDTO
 {
   public function __construct(
-    public string $sendTo, // 'Email', 'Telegram', ...
+    public MessagesToUserEnum $sendTo, // 'Email', 'Telegram', ...
     public $ableClass, // Mailable, Telegramable, ...
   ) {
   }

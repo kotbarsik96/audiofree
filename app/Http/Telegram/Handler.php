@@ -3,6 +3,7 @@
 namespace App\Http\Telegram;
 
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphBot;
 use \DefStudio\Telegraph\Handlers\WebhookHandler;
@@ -94,7 +95,7 @@ class Handler extends WebhookHandler
     ]);
 
     $siteUrl = env('APP_FRONTEND_LINK');
-    $purpose = 'prp_login';
+    $purpose = ConfirmationPurposeEnum::LOGIN;
     $codeData = Confirmation::createCode(
       $purpose,
       $user,
