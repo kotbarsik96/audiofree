@@ -9,24 +9,29 @@ class ProductFilter extends QueryFilter
 {
   public function name($value)
   {
-    if (!$value) return;
+    if (!$value)
+      return;
 
     $this->builder->where('name', 'LIKE', '%' . $value . '%');
   }
 
   public function search($value)
   {
-    if (!$value) return;
+    if (!$value)
+      return;
 
     $this->builder->having('full_name', 'LIKE', '%' . $value . '%');
   }
 
   public function taxonomy($taxonomies, string $slug)
   {
-    if (!$taxonomies) return;
+    if (!$taxonomies)
+      return;
 
-    if (is_string($taxonomies)) $taxonomies = $this->paramToArray($taxonomies);
-    if (count($taxonomies) < 1) return;
+    if (is_string($taxonomies))
+      $taxonomies = $this->paramToArray($taxonomies);
+    if (count($taxonomies) < 1)
+      return;
 
     $taxonomyValues = TaxonomyValue::where('slug', $slug)
       ->whereIn('value_slug', $taxonomies)
@@ -55,7 +60,7 @@ class ProductFilter extends QueryFilter
     $this->taxonomy($values, 'status');
   }
 
-  public function has_discount(bool | null $hasDiscount = null)
+  public function has_discount(bool|null $hasDiscount = null)
   {
     if ($hasDiscount === null)
       return;
@@ -65,13 +70,17 @@ class ProductFilter extends QueryFilter
       $this->builder->where('discount', 0)->orWhereNull('discount');
   }
 
-  public function price($range)
+  public function min_price($value)
   {
-    if (!$range) return;
+    if (is_string($value))
+      $value = (int) $value;
+    $this->builder->having('min_price', '>=', $value);
+  }
 
-    if (is_string($range)) $range = $this->paramToArray($range);
-
-    $this->builder->having('min_price', '>=', $range[0])
-      ->having('max_price', '<=', $range[1]);
+  public function max_price($value)
+  {
+    if (is_string($value))
+      $value = (int) $value;
+    $this->builder->having('max_price', '<=', $value);
   }
 }
