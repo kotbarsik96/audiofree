@@ -79,11 +79,11 @@ class Taxonomy extends BaseModel
 
     $prices = Product::select([
       'min_price' => Product::minPrice()
-        ->filter($filter->excludeQueries(['price']))
+        ->filter($filter->excludeQueries(['min_price', 'max_price']))
         ->orderBy('min_price')
         ->limit(1),
       'max_price' => Product::maxPrice()
-        ->filter($filter->excludeQueries(['price']))
+        ->filter($filter->excludeQueries(['min_price', 'max_price']))
         ->orderByDesc('max_price')
         ->limit(1),
     ])
