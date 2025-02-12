@@ -94,9 +94,7 @@ class Taxonomy extends BaseModel
       'slug' => 'price',
       'name' => 'Цена',
       'min' => $prices->min_price,
-      'max' => $prices->max_price,
-      /** флаг, нужный для корректного обновления фильтров на фронте */
-      'is_dependant' => true
+      'max' => $prices->max_price
     ];
   }
 
