@@ -7,8 +7,20 @@ use DefStudio\Telegraph\Facades\Telegraph;
 
 class Telegramable
 {
-  public function send(User $user)
+  protected ?string $code = null;
+
+  public function __construct(
+    public User $user
+  ) {
+  }
+
+  public function setCode(string $code)
   {
-    $user->telegramChat->message('')->send();
+    $this->code = $code;
+  }
+
+  public function send()
+  {
+    $this->user->telegramChat->message('')->send();
   }
 }

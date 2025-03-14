@@ -2,8 +2,8 @@
 
 namespace App\Http\Telegram;
 
-use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Enums\ConfirmationPurposeEnum;
+use App\Enums\MessagesToUserEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphBot;
 use \DefStudio\Telegraph\Handlers\WebhookHandler;
@@ -95,13 +95,11 @@ class Handler extends WebhookHandler
     ]);
 
     $siteUrl = env('APP_FRONTEND_LINK');
-    $purpose = ConfirmationPurposeEnum::LOGIN;
     $codeData = Confirmation::createCode(
-      $purpose,
-      $user,
-      ConfirmationPurposeDTOCollection::getDTO($purpose)->codeLength
+      ConfirmationPurposeEnum::LOGIN,
+      $user
     );
-    $codeData->update(['sent_to' => ['Telegram']]);
+    $codeData->update(['sent_to' => [MessagesToUserEnum::TELEGRAM->value]]);
     $this->chat->message(__('telegram.welcome.user', [
       'name' => $user->name
     ]))

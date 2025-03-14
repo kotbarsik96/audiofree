@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+use App\Enums\ConfirmationPurposeEnum;
+use App\Services\MessagesToUser\MTUController;
 use Hash;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use \Carbon\Carbon;
 use App\Services\CodePhrase;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class Confirmation extends BaseModel
 {
@@ -51,22 +54,40 @@ class Confirmation extends BaseModel
   }
 
   /**
-   * Создаёт код по указанной цели пользователю
+   * Создаёт код по указанной цели пользователю. 
+   * 
+   * Если передан $mtu - отправит код автоматически. Но, в этом случае, если некуда отправить код - выбросит ошибку
    * @param string $purpose - цель. Должна быть зарегистрирована в App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
    * @param \App\Models\User $user - пользователь
    */
-  public static function createCode($purpose, User $user, int $length = 6): static
-  {
+  public static function createCode(
+    ConfirmationPurposeEnum $purpose,
+    User $user,
+    ?MTUController $mtu = null
+  ): static {
     $code = CodePhrase::generateNumeric(self::getCodeLength($purpose));
     $hashedCode = Hash::make($code);
     $ttl = self::getTtl($purpose);
+
+    /** Если передан экземпляр MessagesToUserController'а, осуществить проверки и записать код */
+    if (!!$mtu) {
+      /** Если код не может быть никуда отправлен - выбросить ошибку */
+      throw_if(
+        count($mtu->willBeSentTo) < 1,
+        new UnprocessableEntityHttpException(__('abortions.messageNotSend'))
+      );
+
+      foreach ($mtu->ables as $able) {
+        $able->setCode($code);
+      }
+    }
 
     $codeData = self::create([
       'user_id' => $user->id,
       'code' => $hashedCode,
       'purpose' => $purpose,
       'expires' => self::getExpirationTime($ttl),
-      'sent_to' => '[]'
+      'sent_to' => $mtu?->willBeSentTo ?? '[]'
     ]);
     $codeData->unhashedCode = $code;
 

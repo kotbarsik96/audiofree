@@ -2,10 +2,12 @@
 
 namespace App\Services\MessagesToUser;
 
+use App\Enums\ConfirmationPurposeEnum;
 use App\Enums\MessagesToUserEnum;
+use App\Models\Confirmation;
 use App\Models\User;
+use App\Services\MessagesToUser\Mailable\MailableCustom;
 use App\Services\MessagesToUser\Telegramable\Telegramable;
-use Illuminate\Mail\Mailable;
 use Mail;
 
 class MTUController
@@ -15,9 +17,39 @@ class MTUController
    */
   public array $possibleChannels = [];
 
-  public function __construct(public User $user)
+  /**
+   * Список каналов, в которые будет отправлено сообщение
+   * @var array
+   */
+  public array $willBeSentTo = [];
+
+  /**
+   * Начать подготовку отправки сообщения
+   * @param \App\Models\User $user - пользователь, которому будет отправлено сообщение
+   * @param array $ables - список экземпляров классов, производных от Telegramable/Mailable
+   */
+  public function __construct(public User $user, public array $ables = [])
   {
     $this->definePossibleChannels();
+
+    foreach ($ables as $able) {
+      if ($this->canSendMail($able)) {
+        $this->willBeSentTo[] = (string) MessagesToUserEnum::EMAIL->value;
+      }
+      if ($this->canSendTelegram($able)) {
+        $this->willBeSentTo[] = (string) MessagesToUserEnum::TELEGRAM->value;
+      }
+    }
+  }
+
+  protected function canSendMail($able)
+  {
+    return $able instanceof MailableCustom && $this->isPossible(MessagesToUserEnum::EMAIL);
+  }
+
+  protected function canSendTelegram($able)
+  {
+    return $able instanceof Telegramable && $this->isPossible(MessagesToUserEnum::TELEGRAM);
   }
 
   public function definePossibleChannels()
@@ -39,21 +71,38 @@ class MTUController
    * @param $ables - экземпляры Mailable/Telegramable
    * @return array<MessagesToUserEnum> - каналы связи, куда было отправлено собщение (например: ['Telegram', 'Email'])
    */
-  public function send(...$ables): array
+  public function send(): array
   {
     $sentToArr = [];
 
-    foreach ($ables as $able) {
-      if ($able instanceof Mailable && $this->isPossible(MessagesToUserEnum::EMAIL)) {
+    foreach ($this->ables as $able) {
+      if ($this->canSendMail($able)) {
         Mail::to($this->user)->send($able);
-        $sentToArr[] = (string) MessagesToUserEnum::EMAIL->value;
       }
-      if ($able instanceof Telegramable && $this->isPossible(MessagesToUserEnum::TELEGRAM)) {
-        $able->send($this->user);
-        $sentToArr[] = (string) MessagesToUserEnum::TELEGRAM->value;
+      if ($this->canSendTelegram($able)) {
+        $able->send();
       }
     }
 
     return $sentToArr;
+  }
+
+  public static function createAndSendConfirmationCode(
+    ConfirmationPurposeEnum $purpose,
+    User $user,
+    array $ables
+  ) {
+    $mtu = new static($user, $ables);
+
+    /** Код создаётся здесь и записывается в $ables */
+    Confirmation::createCode(
+      $purpose,
+      $user,
+      $mtu
+    );
+
+    $mtu->send();
+
+    return $mtu;
   }
 }

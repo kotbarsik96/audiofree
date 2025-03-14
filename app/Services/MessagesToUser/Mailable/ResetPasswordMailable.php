@@ -11,24 +11,9 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class ResetPasswordMailable extends Mailable
+class ResetPasswordMailable extends MailableCustom
 {
   use Queueable, SerializesModels;
-
-  protected string $link;
-  protected User $user;
-
-  /**
-   * Create a new message instance.
-   */
-  public function __construct(string $code, User $user)
-  {
-    if ($user->email) {
-      $frontUrl = StringsService::resetLink($code, $user->email);
-      $this->link = "<a href=\"$frontUrl\">Сбросить пароль</a>";
-      $this->user = $user;
-    }
-  }
 
   /**
    * Get the message envelope.
@@ -45,6 +30,11 @@ class ResetPasswordMailable extends Mailable
    */
   public function content(): Content
   {
+    if ($this->user->email) {
+      $frontUrl = StringsService::resetLink($this->code, $this->user->email);
+      $link = "<a href=\"$frontUrl\">Сбросить пароль</a>";
+    }
+
     return new Content(
       view: 'email.GeneralTemplate',
       with: [
@@ -53,7 +43,7 @@ class ResetPasswordMailable extends Mailable
         'gt_contents' => [
           ['content' => 'Вы получили это письмо, так как был запрошен сброс пароля для вашего профиля'],
           ['content' => 'Чтобы сбросить текущий пароль, перейдите по ссылке ниже:'],
-          ['content' => $this->link]
+          ['content' => $link]
         ]
       ]
     );

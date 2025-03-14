@@ -2,7 +2,6 @@
 
 namespace App\Http\Telegram;
 
-use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphBot;
@@ -35,31 +34,23 @@ class StateHandler
       )
     );
 
-    $mtu = new MTUController($user);
-    $purpose = ConfirmationPurposeEnum::CONNECT_TELEGRAM;
-    $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
-
-    Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
-
-    $codeData = Confirmation::createCode(
-      $purpose,
+    $mtu = MTUController::createAndSendConfirmationCode(
+      ConfirmationPurposeEnum::CONNECT_TELEGRAM,
       $user,
-      $dto->codeLength
+      [
+        new ConnectToTelegramMailable(
+          $user,
+          $this->message->from()->username()
+        )
+      ]
     );
-    $codeData->update([
-      'sent_to' => $mtu->send(new ConnectToTelegramMailable(
-        $user,
-        $codeData->unhashedCode,
-        $this->message->from()->username()
-      ))
-    ]);
 
     $this->chat->setData(['user_id' => $user->id]);
     $this->chat->setState('connectProfileEnterCode');
     $this->chat->message(
       __(
         'telegram.connectProfile.codeSent',
-        ['sent_to' => implode(', ', $codeData->sent_to)]
+        ['sent_to' => implode(', ', $mtu->willBeSentTo)]
       )
     )
       ->keyboard(TelegraphKeyboard::cancelState())
@@ -92,6 +83,9 @@ class StateHandler
     Confirmation::deleteForPurpose($user, ConfirmationPurposeEnum::CONNECT_TELEGRAM);
     $this->chat->removeState();
     $this->chat->removeData();
+    $this->chat->update([
+      'user_id' => $user->id
+    ]);
     $this->chat
       ->message(__(
         'telegram.connectProfile.profileConnected',

@@ -10,15 +10,11 @@ use DefStudio\Telegraph\Keyboard\Keyboard;
 
 class ResetPasswordTelegramable extends Telegramable
 {
-  public function __construct(public string $code)
+  public function send()
   {
-  }
+    $link = StringsService::resetLink($this->code, $this->user->telegram);
 
-  public function send(User $user)
-  {
-    $link = StringsService::resetLink($this->code, $user->telegram);
-
-    $user->telegramChat
+    $this->user->telegramChat
       ->html(__('telegram.auth.resetPasswordRequested'))
       ->keyboard(Keyboard::make()->buttons([
         Button::make(__('telegram.auth.resetPassword'))->url($link)

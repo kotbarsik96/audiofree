@@ -7,13 +7,9 @@ use DefStudio\Telegraph\Facades\Telegraph;
 
 class LoginTelegramable extends Telegramable
 {
-  public function __construct(public string $code)
+  public function send()
   {
-  }
-
-  public function send(User $user)
-  {
-    $user->telegramChat
+    $this->user->telegramChat
       ->html(__('telegram.auth.code', ['code' => $this->code]))
       ->send();
   }

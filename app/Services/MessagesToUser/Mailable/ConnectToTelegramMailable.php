@@ -2,15 +2,13 @@
 
 namespace App\Services\MessagesToUser\Mailable;
 
-use App\Services\StringsService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class ConnectToTelegramMailable extends Mailable
+class ConnectToTelegramMailable extends MailableCustom
 {
   use Queueable, SerializesModels;
 
@@ -19,7 +17,6 @@ class ConnectToTelegramMailable extends Mailable
    */
   public function __construct(
     public User $user,
-    public string $code,
     public string $telegramLogin
   ) {
   }

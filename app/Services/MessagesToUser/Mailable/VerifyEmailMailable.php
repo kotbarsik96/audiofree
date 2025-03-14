@@ -8,22 +8,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerifyEmailMailable extends Mailable
+class VerifyEmailMailable extends MailableCustom
 {
   use Queueable, SerializesModels;
-
-  protected string $link;
   protected string $reason = 'было запрошено подтверждение адреса электронной почты';
-
-  /**
-   * Create a new message instance.
-   */
-  public function __construct(string $code)
-  {
-    $frontUrl = env("APP_FRONTEND_LINK", "") . "/confirmation/verify-email?code=" . $code;
-
-    $this->link = '<a href="' . $frontUrl . '">Подтвердить Email</a>';
-  }
 
   /**
    * Get the message envelope.
@@ -40,6 +28,10 @@ class VerifyEmailMailable extends Mailable
    */
   public function content(): Content
   {
+    $frontUrl = env("APP_FRONTEND_LINK", "") . "/confirmation/verify-email?code=" . $this->code;
+
+    $link = '<a href="' . $frontUrl . '">Подтвердить Email</a>';
+
     return new Content(
       view: 'email.GeneralTemplate',
       with: [
@@ -48,7 +40,7 @@ class VerifyEmailMailable extends Mailable
         'gt_contents' => [
           ['content' => 'Вы получили это письмо, так как был запрошен код подтверждения адреса эл. почты'],
           ['content' => 'Чтобы подтвердить адрес, перейдите по ссылке ниже:'],
-          ['content' => $this->link]
+          ['content' => $link]
         ]
       ]
     );

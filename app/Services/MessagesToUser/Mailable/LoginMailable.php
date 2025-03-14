@@ -9,18 +9,11 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class LoginMailable extends Mailable
+class LoginMailable extends MailableCustom
 {
   use Queueable, SerializesModels;
 
   protected string $reason = 'код для входа в профиль';
-
-  /**
-   * Create a new message instance.
-   */
-  public function __construct(protected string $code, protected User $user)
-  {
-  }
 
   public function getLink()
   {

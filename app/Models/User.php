@@ -6,6 +6,7 @@ use App\DTO\Auth\AuthDTOCollection;
 use App\Enums\AuthEnum;
 use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Telegram\TelegraphChat;
+use App\Services\MessagesToUser\MTUController;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
@@ -212,5 +213,40 @@ class User extends Authenticatable
   public function telegramChat()
   {
     return $this->hasOne(TelegraphChat::class, 'user_id');
+  }
+
+  /**
+   * Создать и отправить код пользователю (если код для $purpose уже есть - выбросит ошибку)
+   * @param \App\Enums\ConfirmationPurposeEnum $purpose - цель отправки
+   * @param array $ables - способы, которыми можно отправить код (экземпляры Mailable, Telegramable)
+   */
+  public function createAndSendCode(ConfirmationPurposeEnum $purpose, array $ables)
+  {
+    /** Проверить существование ещё действительного кода. Если есть - выбросить ошибку */
+    Confirmation::checkIfValidCodeExists(
+      $purpose,
+      $this->id,
+      true
+    );
+
+    $mtu = MTUController::createAndSendConfirmationCode(
+      $purpose,
+      $this,
+      $ables
+    );
+
+    return $mtu->willBeSentTo;
+  }
+
+  public function createCode(ConfirmationPurposeEnum $purpose)
+  {
+    /** Проверить существование ещё действительного кода. Если есть - выбросить ошибку */
+    Confirmation::checkIfValidCodeExists(
+      $purpose,
+      $this->id,
+      true
+    );
+
+    return Confirmation::createCode($purpose, $this);
   }
 }

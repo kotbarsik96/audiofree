@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use App\DTO\Auth\AuthDTO;
 use App\DTO\Auth\AuthDTOCollection;
-use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
 use App\Enums\AuthEnum;
 use App\Enums\ConfirmationPurposeEnum;
-use App\Enums\MessagesToUserEnum;
 use App\Models\User;
-use App\Services\MessagesToUser\MTUController;
 use App\Services\MessagesToUser\Telegramable\ResetPasswordTelegramable;
 use Illuminate\Http\Request;
 use App\Validations\AuthValidation;
@@ -39,7 +36,7 @@ class AuthController extends Controller
     // пользователь, указавший только логин, получит код авторизации
     else {
       // найти один из указанных ресурсов в логине и выслать код туда
-      foreach (AuthDTOCollection::getAllDTOs(AuthEnum::cases()) as $dto) {
+      foreach (AuthDTOCollection::getAllDTOs(keys: AuthEnum::cases()) as $dto) {
         // если код уже был выслан - выйти из цикла
         if ($codeSentTo)
           break;
@@ -209,24 +206,9 @@ class AuthController extends Controller
    */
   public function sendLoginCode(User $user, string $able)
   {
-    $mtu = new MTUController($user);
-
-    $purpose = ConfirmationPurposeEnum::LOGIN;
-    $dto = ConfirmationPurposeDTOCollection::getDTO($purpose);
-
-    Confirmation::checkIfValidCodeExists(
-      $purpose,
-      $user->id,
-      true
-    );
-
-    $codeData = Confirmation::createCode($purpose, $user, $dto->codeLength);
-    $sentTo = $mtu->send(new $able($codeData->unhashedCode, $user));
-    $codeData->update(['sent_to' => $sentTo]);
-
-    throw_if(
-      count($sentTo) < 1,
-      new UnprocessableEntityHttpException(__('abortions.messageNotSend'))
+    $sentTo = $user->createAndSendCode(
+      ConfirmationPurposeEnum::LOGIN,
+      [new $able($user)]
     );
 
     return (string) $sentTo[0];
@@ -261,16 +243,9 @@ class AuthController extends Controller
       new UnprocessableEntityHttpException(__('abortions.cannotResetPassword'))
     );
 
-    Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
-
-    $codeData = Confirmation::createCode($purpose, $user);
-    $mtu = new MTUController($user);
-    $sentTo = $mtu->send(
-      new ResetPasswordMailable($codeData->unhashedCode, $user),
-      new ResetPasswordTelegramable($codeData->unhashedCode)
-    );
-    $codeData->update([
-      'sent_to' => $sentTo
+    $sentTo = $user->createAndSendCode($purpose, [
+      new ResetPasswordMailable($user),
+      new ResetPasswordTelegramable($user)
     ]);
 
     return response([
@@ -361,13 +336,8 @@ class AuthController extends Controller
       new BadRequestHttpException(__('abortions.verificationEntityVerified'))
     );
 
-    Confirmation::checkIfValidCodeExists($purpose, $user->id, true);
-
-    $codeData = Confirmation::createCode($purpose, $user);
-    $mtu = new MTUController($user);
-    $sentTo = $mtu->send(new $dto->verifyAble($codeData->unhashedCode));
-    $codeData->update([
-      'sent_to' => $sentTo
+    $sentTo = $user->createAndSendCode($purpose, [
+      new $dto->verifyAble($user)
     ]);
 
     return response([
