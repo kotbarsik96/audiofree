@@ -1,4 +1,28 @@
 services:
+  laravel.test:
+    build:
+      context: './vendor/laravel/sail/runtimes/8.4'
+      dockerfile: Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: 'sail-8.4/app'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${APP_PORT:-80}:80'
+      - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+      XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+      IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - sail
+    depends_on:
+      - mysql
   nginx:
     image: "nginx:stable-alpine"
     ports:
@@ -7,6 +31,8 @@ services:
       - ./:/var/www/audiofree
       - ./_docker/nginx/nginx.conf/:/etc/nginx/conf.d/default.conf
     container_name: app_nginx
+    networks:
+      - sail
   php: 
     build: 
       context: "."
@@ -16,6 +42,8 @@ services:
     depends_on:
       - mysql
     container_name: app_php
+    networks:
+      - sail
   mysql: 
     image: mysql:8.0
     volumes:
@@ -27,3 +55,12 @@ services:
       - "3116:3306"
     command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
     container_name: app_mysql
+    networks:
+      - sail
+
+networks:
+  sail:
+      driver: bridge
+volumes:
+  sail-mysql:
+      driver: local
