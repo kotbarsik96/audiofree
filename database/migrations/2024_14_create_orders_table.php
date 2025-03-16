@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
   /**
    * Run the migrations.
    */
@@ -13,18 +12,21 @@ return new class extends Migration
   {
     Schema::create('orders', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('user_id')->constrained(table: 'users')->cascadeOnDelete();
-      $table->string('status')->nullable();
-      $table->string('address');
-      $table->text('comment')->nullable();
-      $table->string('name');
-      $table->string('email');
-      $table->string('phone_number');
+      $table->foreignId('user_id')->constrained('users');
+      $table->json('orderer_data')
+        ->comment('Данные о заказчике: имя, средство связи');
+      $table->string('delivery_place')
+        ->comment('Место выдачи (DeliveryPlaceEnum)');
+      $table->string('delivery_address');
+      $table->string('order_status')
+        ->comment('Статус заказа (OrderStatusEnum)');
+      $table->string('desired_payment_type')
+        ->comment('Желаемый тип оплаты (PaymentTypeEnum)');
+      $table->boolean('is_paid')
+        ->comment('Оплачен ли заказ');
+      $table->string('image')
+        ->nullable();
       $table->timestamps();
-
-      $table->foreign('status')->references('name')->on('taxonomies')
-        ->nullOnDelete()
-        ->cascadeOnUpdate();
     });
   }
 

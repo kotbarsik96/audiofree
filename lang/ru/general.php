@@ -36,4 +36,6 @@ return [
   'registeredAndCodeSentTo' => 'Вы успешно зарегистрировались. Код авторизации выслан на: :sentTo',
   'enterPassword' => 'Введите пароль',
   'verificationEntityVerified' => 'Вы подтвердили :entity',
+  'orderCreated' => 'Заказ №:num создан',
+  'orderCancelled' => 'Заказ №:num отменен',
 ];
