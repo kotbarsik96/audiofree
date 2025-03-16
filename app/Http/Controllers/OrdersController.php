@@ -80,6 +80,11 @@ class OrdersController extends Controller
             new UnprocessableEntityHttpException(__('validation.order.noCart'))
         );
 
+        $collage = Order::createCollage(
+            $this->getCartItems($request->cart_items)
+                ->map(fn($cartItem) => $cartItem->variation)
+        );
+
         $order = Order::create([
             'user_id' => auth()->user()->id,
             'orderer_data' => [
@@ -93,7 +98,7 @@ class OrdersController extends Controller
             'order_status' => OrderStatusEnum::PREPARING,
             'desired_payment_type' => $request->validated('desired_payment_type'),
             'is_paid' => true,
-            // 'image',
+            'image' => $collage,
         ]);
 
         $this->getCartItems($request->cart_items)
@@ -104,6 +109,10 @@ class OrdersController extends Controller
                 if ($missing > 0) {
                     $quantity -= $missing;
                 }
+
+                $item->variation->update([
+                    'quantity' => $item->variation->quantity - $quantity
+                ]);
 
                 OrderProduct::create([
                     'order_id' => $order->id,
