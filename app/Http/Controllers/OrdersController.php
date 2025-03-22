@@ -12,6 +12,7 @@ use App\Models\Cart\Cart;
 use App\Models\Order\Order;
 use App\Models\Order\OrderProduct;
 use App\Services\StringsService;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -25,7 +26,7 @@ class OrdersController extends Controller
             $this->cartItems = Cart::whereIn('id', $cartItemsIds)
                 ->where('user_id', auth()->user()->id)
                 ->with(
-                    'variation:id,product_id,slug,name,price,discount,quantity',
+                    'variation:id,product_id,slug,name,price,discount,quantity,image_id',
                     'variation.product:id,name,slug,image_id'
                 )
                 ->get();
@@ -80,11 +81,6 @@ class OrdersController extends Controller
             new UnprocessableEntityHttpException(__('validation.order.noCart'))
         );
 
-        $collage = Order::createCollage(
-            $this->getCartItems($request->cart_items)
-                ->map(fn($cartItem) => $cartItem->variation)
-        );
-
         $order = Order::create([
             'user_id' => auth()->user()->id,
             'orderer_data' => [
@@ -98,7 +94,6 @@ class OrdersController extends Controller
             'order_status' => OrderStatusEnum::PREPARING,
             'desired_payment_type' => $request->validated('desired_payment_type'),
             'is_paid' => true,
-            'image' => $collage,
         ]);
 
         $this->getCartItems($request->cart_items)
@@ -125,6 +120,11 @@ class OrdersController extends Controller
             });
 
         Cart::whereIn('id', $request->cart_items)->delete();
+
+        $order->createCollage(
+            $this->getCartItems($request->cart_items)
+                ->map(fn($cartItem) => $cartItem->variation)
+        );
 
         return response([
             'ok' => true,
@@ -157,11 +157,12 @@ class OrdersController extends Controller
                     'order_status',
                     'desired_payment_type',
                     'is_paid',
-                    'image',
+                    'image_id',
                     'created_at',
                     'updated_at',
                 ])
                     ->where('user_id', auth()->user()->id)
+                    ->with('image:id,name,extension,sort,path,alt,disk')
                     ->filter($request)
                     ->get()
             ]

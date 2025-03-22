@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Image;
 
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;

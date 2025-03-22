@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ConfirmationPurposeEnum;
 use App\Models\Cart\Cart;
 use App\Models\Confirmation;
+use App\Models\Order\Order;
 use App\Models\Product\ProductVariation;
 use App\Models\User;
 use DB;
@@ -14,6 +15,6 @@ class TestController extends Controller
 {
   public function test(Request $request)
   {
-
+    
   }
 }

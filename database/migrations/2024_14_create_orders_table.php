@@ -24,9 +24,15 @@ return new class extends Migration {
         ->comment('Желаемый тип оплаты (PaymentTypeEnum)');
       $table->boolean('is_paid')
         ->comment('Оплачен ли заказ');
-      $table->string('image')
+      $table->unsignedInteger('image_id')
         ->nullable();
       $table->timestamps();
+
+      $table->foreign('image_id')
+        ->references('id')
+        ->on('attachments')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
     });
   }
 

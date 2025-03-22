@@ -6,7 +6,7 @@ use App\Models\Product;
 use App\Models\Product\ProductVariation;
 use App\Observers\ProductObserver;
 use App\Observers\ProductVariationObserver;
-use App\Services\ImageService;
+use App\Services\Image\ImageService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

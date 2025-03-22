@@ -2,10 +2,14 @@
 
 namespace App\Models\Order;
 
+use App\Models\Product\ProductVariation;
+use App\Services\Image\CollageService;
 use App\Traits\Filterable;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Orchid\Attachment\Models\Attachment;
 
 class Order extends Model
 {
@@ -19,7 +23,7 @@ class Order extends Model
         'order_status',
         'desired_payment_type',
         'is_paid',
-        'image',
+        'image_id',
     ];
 
     protected $table = 'orders';
@@ -28,13 +32,36 @@ class Order extends Model
         'orderer_data' => 'array'
     ];
 
+    public function image()
+    {
+        return $this->hasOne(
+            Attachment::class,
+            'id',
+            'image_id'
+        )->withDefault();
+    }
+
     /**
      * @param \Illuminate\Database\Eloquent\Collection<\App\Models\Product\ProductVariation> $cartItems
      */
-    public static function createCollage(Collection $productVariations)
+    public function createCollage(Collection $productVariations)
     {
-        $images = $productVariations->slice(0, 4);
+        $images = $productVariations->slice(0, 4)
+            ->map(
+                fn(ProductVariation $pv)
+                => $pv->image()->first()?->url()
+            )
+            ->filter(fn($url) => !!$url);
 
-        return $images;
+        $attachment = (new CollageService(
+            $images->toArray(),
+            config('constants.paths.images.orders'),
+            "order-$this->id",
+            config('constants.order.image_group')
+        ))->createCollage();
+
+        $this->update(['image_id' => $attachment->id]);
+
+        return $this;
     }
 }
