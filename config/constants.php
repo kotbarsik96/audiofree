@@ -3,8 +3,9 @@
 return [
   'paths' => [
     'images' => [
-      'products' => env('APP_NAME_SLUG') . '/images/products'
-    ]
+      'products' => env('APP_NAME_SLUG').'/images/products',
+      'orders' => env('APP_NAME_SLUG').'/images/orders',
+    ],
   ],
   'roles' => [
     'S_ADMINISTRATOR' => 1,
@@ -51,15 +52,8 @@ return [
     'categories' => [
       'Наушники' => 'headphones'
     ],
-    'order_statuses' => [
-      'Ожидает оплаты' => 'waiting_payment',
-      'В доставке, оплачен' => 'in_delivery_paid',
-      'В доставке, не оплачен' => 'in_delivery_not_paid',
-      'Получен' => 'received',
-      'Оплачен' => 'paid',
-      'Отменён' => 'canceled',
-      'Ожидается возврат' => 'waiting_return',
-      'Возвращен' => 'returned'
-    ],
   ],
+  'order' => [
+    'image_group' => 'product_order'
+  ]
 ];

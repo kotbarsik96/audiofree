@@ -2,103 +2,197 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Order\DeliveryPlaceEnum;
+use App\Enums\Order\OrderStatusEnum;
+use App\Enums\Order\PaymentTypeEnum;
+use App\Filters\OrderFilter;
+use App\Http\Requests\Order\OrderGetRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
-use App\Http\Requests\Order\OrderCancelRequest;
-use App\Models\Order\Order;
 use App\Models\Cart\Cart;
+use App\Models\Order\Order;
 use App\Models\Order\OrderProduct;
-use App\Models\Product;
+use App\Services\StringsService;
+use Exception;
+use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class OrdersController extends Controller
 {
-  public function store(OrderStoreRequest $request)
-  {
-    $validated = $request->validated();
-    $cart = Cart::getCart(auth()->user()->id, $request->is_oneclick)
-      ->get();
+    protected ?Collection $cartItems = null;
 
-    if (count($cart) < 1)
-      abort(403, __('abortions.noProductsInCart'));
-
-    $inactive = $cart->filter(
-      fn (Cart $cartItem)
-      => !$cartItem->product_id || $cartItem->status !== 'active'
-    );
-    if (count($inactive) > 0)
-      abort(403, __('abortions.productIsInactive', ['product' => $inactive->first()->name]));
-
-    $takenAway = Cart::takeAwayExtra($cart);
-
-    $data = array_merge($validated, [
-      'user_id' => auth()->user()->id,
-      'status' => config('constants.order.statuses')[0]
-    ]);
-    $order = Order::create($data);
-    foreach ($cart as $cartItem) {
-      $product = Product::find($cartItem->product_id);
-      $product->update([
-        'quantity' => $product->quantity - $cartItem->quantity
-      ]);
-
-      OrderProduct::create([
-        'order_id' => $order->id,
-        'product_id' => $cartItem->product_id,
-        'variation_id' => $cartItem->variation_id,
-        'quantity' => $cartItem->quantity,
-        'discount' => $cartItem->discount,
-        'original_price' => $cartItem->price,
-        'price' => $cartItem->current_price,
-      ]);
-
-      $cartItem->delete();
+    public function getCartItems(array $cartItemsIds)
+    {
+        if (!$this->cartItems) {
+            $this->cartItems = Cart::whereIn('id', $cartItemsIds)
+                ->where('user_id', auth()->user()->id)
+                ->with(
+                    'variation:id,product_id,slug,name,price,discount,quantity,image_id',
+                    'variation.product:id,name,slug,image_id'
+                )
+                ->get();
+        }
+        return $this->cartItems;
     }
 
-    return [
-      'ok' => true,
-      'message' => __('general.orderAccepted'),
-      'data' => [
-        'takenAway' => $takenAway
-      ]
-    ];
-  }
+    /**
+     * Валидация заказа из корзины. Если некоторых товаров нет/не хватает в наличии, выдать сообщение об этом
+     */
+    public function creationAttempt(OrderStoreRequest $request)
+    {
+        /**
+         * Если всего товара хватает - $message не будет сформирован и останется пустым
+         */
+        $message = '';
+        $this->getCartItems($request->cart_items)
+            ->each(function (Cart $item) use (&$message) {
+                $missing = $item->quantity - $item->variation->quantity;
+                if ($missing > 0) {
+                    $addToMsg = __('validation.order.notEnoughItems.missing', [
+                        'productName' => $item->variation->product->name.' ('.$item->variation->name.')',
+                        'quantity' => $missing
+                    ]);
+                    if (strlen($message) < 1) {
+                        $message .= __('validation.order.notEnoughItems.attention').$addToMsg;
+                    } else {
+                        $message .= '; <br />'.$addToMsg;
+                    }
+                }
+            });
 
-  public function getSingle()
-  {
-    $order = Order::forUser(auth()->user()->id, request()->order_id)->first();
+        /** Если весь товар в наличии - передать запрос в $this->create */
+        if (strlen($message) < 1) {
+            $response = $this->create($request);
+        } else {
+            $response = response([
+                'ok' => false,
+                'reason' => 'failed_quantity',
+                'message' => $message,
+            ], 422);
+        }
 
-    if (!$order)
-      abort(404, __('abortions.orderNotFound'));
+        return $response;
+    }
 
-    $orderProducts = OrderProduct::forOrder($order->id)->get();
+    /** Создание заказа: если товара нет в наличии в указанном количестве - удалит лишнее количество */
+    public function create(OrderStoreRequest $request)
+    {
+        $noCart = $this->getCartItems($request->cart_items)->count() < 1;
+        throw_if(
+            $noCart,
+            new UnprocessableEntityHttpException(__('validation.order.noCart'))
+        );
 
-    return [
-      'ok' => true,
-      'data' => [
-        'order' => $order,
-        'products' => $orderProducts
-      ]
-    ];
-  }
+        $order = Order::create([
+            'user_id' => auth()->user()->id,
+            'orderer_data' => [
+                'name' => $request->validated('orderer_name'),
+                'email' => $request->validated('email'),
+                'telegram' => $request->validated('telegram'),
+                'phone_number' => $request->validated('phone_number'),
+            ],
+            'delivery_place' => $request->validated('delivery_place'),
+            'delivery_address' => $request->validated('delivery_address'),
+            'order_status' => OrderStatusEnum::PREPARING,
+            'desired_payment_type' => $request->validated('desired_payment_type'),
+            'is_paid' => true,
+        ]);
 
-  public function getProducts()
-  {
-    $products = OrderProduct::productsList(auth()->user()->id)->get();
+        $this->getCartItems($request->cart_items)
+            ->each(function (Cart $item) use ($order) {
+                $price = $item->variation->getCurrentPrice();
+                $quantity = $item->quantity;
+                $missing = $quantity - $item->variation->quantity;
+                if ($missing > 0) {
+                    $quantity -= $missing;
+                }
 
-    return [
-      'ok' => true,
-      'data' => [
-        'products' => $products
-      ]
-    ];
-  }
+                $item->variation->update([
+                    'quantity' => $item->variation->quantity - $quantity
+                ]);
 
-  public function cancel(OrderCancelRequest $request)
-  {
-    $request->order->cancel();
+                OrderProduct::create([
+                    'order_id' => $order->id,
+                    'product_variation_id' => $item->variation->id,
+                    'product_name' => $item->variation->product->name.' ('.$item->variation->name.')',
+                    'product_quantity' => $quantity,
+                    'product_price' => $price,
+                    'product_total_cost' => $price * $quantity,
+                ]);
+            });
 
-    return [
-      'ok' => true,
-      'message' => __('general.orderCanceled')
-    ];
-  }
+        Cart::whereIn('id', $request->cart_items)->delete();
+
+        $order->createCollage(
+            $this->getCartItems($request->cart_items)
+                ->map(fn($cartItem) => $cartItem->variation)
+        );
+
+        return response([
+            'ok' => true,
+            'message' => __('general.orderCreated', ['num' => $order->id])
+        ], 201);
+    }
+
+    public function cancel(OrderGetRequest $request)
+    {
+        $request->order->update([
+            'order_status' => OrderStatusEnum::CANCELLED
+        ]);
+
+        return response([
+            'ok' => true,
+            'message' => __('general.orderCancelled', ['num' => $request->order->id])
+        ]);
+    }
+
+    public function getOrdersList(OrderFilter $request)
+    {
+        return response([
+            'ok' => true,
+            'data' => [
+                'list' => Order::select([
+                    'id',
+                    'orderer_data',
+                    'delivery_place',
+                    'delivery_address',
+                    'order_status',
+                    'desired_payment_type',
+                    'is_paid',
+                    'image_id',
+                    'created_at',
+                    'updated_at',
+                ])
+                    ->where('user_id', auth()->user()->id)
+                    ->with('image:id,name,extension,sort,path,alt,disk')
+                    ->filter($request)
+                    ->get()
+            ]
+        ]);
+    }
+
+    public function getOrder(OrderGetRequest $request)
+    {
+        $request->order->load('image:id,name,extension,sort,path,alt,disk');
+
+        return response([
+            'ok' => true,
+            'data' => [
+                'order' => $request->order
+            ]
+        ]);
+    }
+
+    /**
+     * Списки: способы доставки, способы оплаты
+     */
+    public function getFormLists()
+    {
+        return response([
+            'ok' => true,
+            'data' => [
+                'delivery_places' => StringsService::enumToStringsArray(DeliveryPlaceEnum::cases()),
+                'payment_types' => StringsService::enumToStringsArray(PaymentTypeEnum::cases())
+            ]
+        ]);
+    }
 }

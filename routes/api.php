@@ -72,11 +72,13 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('product/favorites', [FavoritesController::class, 'delete']); // 5.3
   Route::get('product/favorites/sorts', [TaxonomiesController::class, 'favoritesSorts']); // 5.4
 
-  // 8. Product order
-  // Route::post('product/order', [OrdersController::class, 'store']); // 8.1
-  // Route::get('product/order', [OrdersController::class, 'getSingle']); // 8.2
-  // Route::get('product/orders/products', [OrdersController::class, 'getProducts']); // 8.3
-  // Route::post('product/order/cancel', [OrdersController::class, 'cancel']); // 8.4 
+  // 6. Product order
+  Route::post('order/new-attempt', [OrdersController::class, 'creationAttempt']); // 6.1
+  Route::post('order/new', [OrdersController::class, 'create']); // 6.2
+  Route::delete('order/cancel/{order_id}', [OrdersController::class, 'cancel']); // 6.3
+  Route::get('order/list', [OrdersController::class, 'getOrdersList']); // 6.4
+  Route::get('order/single/{order_id}', [OrdersController::class, 'getOrder']); // 6.5
+  Route::get('order/form-lists', [OrdersController::class, 'getFormLists']); // 6.6
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);

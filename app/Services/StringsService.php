@@ -9,4 +9,12 @@ class StringsService
     return env("APP_FRONTEND_LINK", "")
       . "/confirmation/reset-password?code=" . $code . "&login=" . $login;
   }
+
+  public static function enumToStringsArray($cases)
+  {
+    return array_map(
+      fn($case) => $case->value,
+      $cases
+    );
+  }
 }

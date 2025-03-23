@@ -5,6 +5,8 @@ namespace App\Models\Product;
 use App\Models\BaseModel;
 use App\Models\Product;
 use Database\Factories\Product\ProductVariationFactory;
+use DB;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchid\Attachment\Attachable;
@@ -57,7 +59,7 @@ class ProductVariation extends BaseModel
   public static function getByNameOrAbort($productId, $varName)
   {
     $variation = self::getByName($productId, $varName);
-    if (!$variation)
+    if (! $variation)
       abort(404, __('abortions.variationNotFound', ['name' => $varName]));
     return $variation;
   }
@@ -71,6 +73,16 @@ class ProductVariation extends BaseModel
   public function product()
   {
     return $this->belongsTo(Product::class, 'product_id');
+  }
+
+  public function scopeCurrentPrice(Builder $query)
+  {
+    return $query->addSelect(DB::raw(static::currentPriceSelectFormula()));
+  }
+
+  public function getCurrentPrice()
+  {
+    return $this->price - $this->price / 100 * $this->discount;
   }
 
   public function detachAndDelete()
@@ -93,7 +105,7 @@ class ProductVariation extends BaseModel
   public static function itemOrFail($variationId)
   {
     $variation = self::find($variationId);
-    throw_if(!$variation, new NotFoundHttpException(__('abortions.productNotFound')));
+    throw_if(! $variation, new NotFoundHttpException(__('abortions.productNotFound')));
 
     return $variation;
   }

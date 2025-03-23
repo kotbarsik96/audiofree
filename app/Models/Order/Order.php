@@ -2,62 +2,68 @@
 
 namespace App\Models\Order;
 
-use App\Models\BaseModel;
-use App\Models\Role;
-use App\Models\User;
+use App\Models\Product\ProductVariation;
+use App\Services\Image\CollageService;
+use App\Traits\Filterable;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Orchid\Attachment\Models\Attachment;
 
-class Order extends BaseModel
+class Order extends Model
 {
-  use HasFactory;
+    use HasFactory, Filterable;
 
-  protected $table = 'orders';
-
-  protected $fillable = [
-    'user_id',
-    'status',
-    'address',
-    'comment',
-    'name',
-    'email',
-    'phone_number',
-  ];
-
-  public function getSelect()
-  {
-    return [
-      'id',
-      'status',
-      'address',
-      'comment',
-      'name',
-      'email',
-      'phone_number',
-      'created_at',
-      'updated_at'
+    protected $fillable = [
+        'user_id',
+        'orderer_data',
+        'delivery_place',
+        'delivery_address',
+        'order_status',
+        'desired_payment_type',
+        'is_paid',
+        'image_id',
     ];
-  }
 
-  public function scopeForUser(Builder $query, $userId, $orderId = null)
-  {
-    $user = auth()->user();
-    if (!Role::isAdmin($user)) {
-      if ($user->id !== $userId)
-        abort(401, __('abortions.unauthorized'));
+    protected $table = 'orders';
+
+    protected $casts = [
+        'orderer_data' => 'array'
+    ];
+
+    public function image()
+    {
+        return $this->hasOne(
+            Attachment::class,
+            'id',
+            'image_id'
+        )->withDefault();
     }
 
-    $query->select($this->getSelect())
-      ->where('user_id', $userId);
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection<\App\Models\Product\ProductVariation> $cartItems
+     */
+    public function createCollage(Collection $productVariations)
+    {
+        $images = $productVariations->slice(0, 4)
+            ->map(
+                fn(ProductVariation $pv)
+                => $pv->image()->first()?->url()
+            )
+            ->filter(fn($url) => !!$url);
 
-    if ($orderId)
-      $query->where('id', $orderId);
-  }
+        $attachment = (new CollageService(
+            $images->toArray(),
+            config('constants.paths.images.orders'),
+            "order-$this->id",
+            new ImageManager(Driver::class),
+            config('constants.order.image_group')
+        ))->createCollage();
 
-  public function cancel()
-  {
-    $this->update([
-      'status' => 'canceled'
-    ]);
-  }
+        $this->update(['image_id' => $attachment->id]);
+
+        return $this;
+    }
 }

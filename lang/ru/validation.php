@@ -207,6 +207,21 @@ return [
     'variation_id' => 'Вариация не существует'
   ],
 
+  'order' => [
+    'orderer_name' => 'Не указаны имя и фамилия',
+    'contactMethod' => 'Необходимо указать один из способов связи',
+    'delivery_place' => 'Не указан способ доставки',
+    'delivery_address' => 'Не указан адрес доставки',
+    'desired_payment_type' => 'Не указан способ оплаты',
+    'cart_items' => 'Не удалось получить корзину товаров',
+    'orderNotExists' => 'Заказ не существует',
+    'noCart' => 'В корзине нет товаров',
+    'notEnoughItems' => [
+      'attention' => 'Внимание! Не все товары из заказа присутствуют в наличии в выбранном количестве: ',
+      'missing' => ':productName – не хватает :quantity'
+    ]
+  ],
+
   'incorrectLoginOrPassword' => 'Неверный логин или пароль',
 
   /*
