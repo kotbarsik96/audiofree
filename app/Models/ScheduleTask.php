@@ -21,8 +21,6 @@ class ScheduleTask extends Model
 
   public static function setOrderStatus()
   {
-      \Illuminate\Support\Facades\Log::info('test');
-
     Order::where(
       'created_at',
       '<=',
