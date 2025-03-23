@@ -5,7 +5,8 @@ namespace App\Models\Order;
 use App\Models\Product\ProductVariation;
 use App\Services\Image\CollageService;
 use App\Traits\Filterable;
-use Exception;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Imagick\Driver;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,6 +58,7 @@ class Order extends Model
             $images->toArray(),
             config('constants.paths.images.orders'),
             "order-$this->id",
+            new ImageManager(Driver::class),
             config('constants.order.image_group')
         ))->createCollage();
 
