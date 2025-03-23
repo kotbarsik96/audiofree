@@ -171,6 +171,8 @@ class OrdersController extends Controller
 
     public function getOrder(OrderGetRequest $request)
     {
+        $request->order->load('image:id,name,extension,sort,path,alt,disk');
+
         return response([
             'ok' => true,
             'data' => [
