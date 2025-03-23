@@ -91,7 +91,11 @@ class CollageService
           'offset_y' => $this->canvasHeight / 20,
         ];
         $collage = $this->placeMultipleImages(
-          $threeCanvasWidth,
+          [
+            $threeCanvasWidth,
+            $threeCanvasWidth,
+            $this->canvasWidth / 2.8
+          ],
           [
             PositionEnum::TOP_LEFT->value => $threeOffsets,
             PositionEnum::TOP_RIGHT->value => $threeOffsets,
@@ -126,7 +130,7 @@ class CollageService
     $collage = $collage->encodeByExtension('webp');
     $savePath = $this->getSavePath();
     Storage::put($savePath, (string) $collage);
-    
+
     return Attachment::create([
       'name' => $this->nameToSave,
       'original_name' => "$this->nameToSave.webp",
@@ -151,12 +155,12 @@ class CollageService
   }
 
   /**
-   * @param int $sizeOfImage размер одного изображения в коллаже
+   * @param int $sizesOfImages размер одного изображения в коллаже, либо массив для указания размера каждого изображения отдельно
    * @param array $placings расположения. 
    * Например, [PositionEnum::LEFT->value, PositionEnum::RIGHT->value] - изображение слева, изображение справа. 
    * Также можно указать оффсеты: [PositionEnum::LEFT->value => ['offset_x' => 5, 'offset_y' => 10]]
    */
-  protected function placeMultipleImages(int $sizeOfImage, array $placings)
+  protected function placeMultipleImages(int|array $sizesOfImages, array $placings)
   {
     $count = count($this->imageUrls);
     $canvas = $this->initCanvas("collage-$count");
@@ -164,8 +168,9 @@ class CollageService
     $placingValues = array_values($placings);
 
     foreach ($this->imageUrls as $index => $url) {
+      $size = is_array($sizesOfImages) ? $sizesOfImages[$index] : $sizesOfImages;
       $img = $this->loadImage($url);
-      $img->scale($sizeOfImage);
+      $img->scale($size);
 
       $placingKey = $placingKeys[$index];
       $placingValue = $placingValues[$index];
