@@ -76,7 +76,12 @@ class OrdersController extends Controller
     /** Создание заказа: если товара нет в наличии в указанном количестве - удалит лишнее количество */
     public function create(OrderStoreRequest $request)
     {
-        $noCart = $this->getCartItems($request->cart_items)->count() < 1;
+        $cartItems = $this->getCartItems($request->cart_items)
+            ->filter(
+                fn(Cart $cartItem)
+                => $cartItem->variation->quantity > 0
+            );
+        $noCart = $cartItems->count() < 1;
         throw_if(
             $noCart,
             new UnprocessableEntityHttpException(__('validation.order.noCart'))
@@ -97,34 +102,34 @@ class OrdersController extends Controller
             'is_paid' => true,
         ]);
 
-        $this->getCartItems($request->cart_items)
-            ->each(function (Cart $item) use ($order) {
-                $price = $item->variation->getCurrentPrice();
-                $quantity = $item->quantity;
-                $missing = $quantity - $item->variation->quantity;
-                if ($missing > 0) {
-                    $quantity -= $missing;
-                }
-                if($quantity < 1) return;
+        $cartItems->each(function (Cart $item) use ($order) {
+            $price = $item->variation->getCurrentPrice();
+            $quantity = $item->quantity;
+            $missing = $quantity - $item->variation->quantity;
+            if ($missing > 0) {
+                $quantity -= $missing;
+            }
+            if ($quantity < 1)
+                return;
 
-                $item->variation->update([
-                    'quantity' => $item->variation->quantity - $quantity
-                ]);
+            $item->variation->update([
+                'quantity' => $item->variation->quantity - $quantity
+            ]);
 
-                OrderProduct::create([
-                    'order_id' => $order->id,
-                    'product_variation_id' => $item->variation->id,
-                    'product_name' => $item->variation->product->name.' ('.$item->variation->name.')',
-                    'product_quantity' => $quantity,
-                    'product_price' => $price,
-                    'product_total_cost' => $price * $quantity,
-                ]);
-            });
+            OrderProduct::create([
+                'order_id' => $order->id,
+                'product_variation_id' => $item->variation->id,
+                'product_name' => $item->variation->product->name.' ('.$item->variation->name.')',
+                'product_quantity' => $quantity,
+                'product_price' => $price,
+                'product_total_cost' => $price * $quantity,
+            ]);
+        });
 
         Cart::whereIn('id', $request->cart_items)->delete();
 
         $order->createCollage(
-            $this->getCartItems($request->cart_items)
+            $cartItems
                 ->map(fn($cartItem) => $cartItem->variation)
         );
 
