@@ -65,7 +65,8 @@ class OrdersController extends Controller
         } else {
             $response = response([
                 'ok' => false,
-                'message' => $message
+                'reason' => 'failed_quantity',
+                'message' => $message,
             ], 422);
         }
 
