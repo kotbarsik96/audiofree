@@ -105,6 +105,7 @@ class OrdersController extends Controller
                 if ($missing > 0) {
                     $quantity -= $missing;
                 }
+                if($quantity < 1) return;
 
                 $item->variation->update([
                     'quantity' => $item->variation->quantity - $quantity
