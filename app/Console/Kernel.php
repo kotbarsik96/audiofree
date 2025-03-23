@@ -16,6 +16,10 @@ class Kernel extends ConsoleKernel
     $schedule->call(function () {
       ScheduleTask::clearExpiredConfirmations();
     })->everyMinute();
+
+    $schedule->call(function(){
+      ScheduleTask::setOrderStatus();
+    })->hourly();
   }
 
   /**
