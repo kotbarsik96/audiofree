@@ -196,15 +196,19 @@ class OrdersController extends Controller
      */
     public function getOrderCreationData(Request $request)
     {
+        $cartItemsIds = $request->get('cart_items')
+            ? explode(',', $request->get('cart_items'))
+            : [];
+        $cartItems = $this->getCartItems($cartItemsIds);
+
         throw_if(
-            !$request->get('cart_items'),
+            $cartItems->count() < 1,
             new UnprocessableEntityHttpException(
                 __('validation.order.noCart')
             )
         );
 
-        $cartItemsIds = explode(',', $request->cart_items);
-        $orderCost = $this->getCartItems($cartItemsIds)
+        $orderCost = $cartItems
             ->reduce(
                 fn(int $current, Cart $next) =>
                 $current + $next->variation->getCurrentPrice(),
