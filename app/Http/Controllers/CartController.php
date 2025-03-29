@@ -58,8 +58,7 @@ class CartController extends Controller
       'variation_id',
       'cart.quantity'
     ])
-      ->where('user_id', auth()->user()->id)
-      ->where('is_oneclick', (int) !!$request->input('is_oneclick'))
+      ->currentUser((int) !!$request->input('is_oneclick'))
       ->with([
         'variation' => function ($query) {
           return $query->select(

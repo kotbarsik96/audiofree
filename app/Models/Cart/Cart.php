@@ -4,6 +4,7 @@ namespace App\Models\Cart;
 
 use App\Models\BaseModel;
 use App\Models\Product\ProductVariation;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -41,12 +42,18 @@ class Cart extends BaseModel
       $isOneclick = request('is_oneclick');
 
     $item = self::where('variation_id', $variationId)
-      ->where('is_oneclick', (int) ! ! $isOneclick)
+      ->where('is_oneclick', (int) !!$isOneclick)
       ->where('user_id', auth()->user()->id)
       ->first();
 
-    throw_if(! $item, new NotFoundHttpException(__('abortions.cartItemNotFound')));
+    throw_if(!$item, new NotFoundHttpException(__('abortions.cartItemNotFound')));
 
     return $item;
+  }
+
+  public function scopeCurrentUser(Builder $query, bool $isOneclick = false)
+  {
+    return $query->where('user_id', auth()->user()->id)
+      ->where('is_oneclick', (int) $isOneclick);
   }
 }

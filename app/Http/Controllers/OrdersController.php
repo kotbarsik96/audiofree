@@ -12,8 +12,8 @@ use App\Models\Cart\Cart;
 use App\Models\Order\Order;
 use App\Models\Order\OrderProduct;
 use App\Services\StringsService;
-use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -21,10 +21,21 @@ class OrdersController extends Controller
 {
     protected ?Collection $cartItems = null;
 
-    public function getCartItems(array $cartItemsIds)
+    public function isOneclick(Request|FormRequest $request)
+    {
+        $isOneclick = $request->get('is_oneclick');
+        if ($isOneclick === 'false' || !$isOneclick)
+            $isOneclick = false;
+        else
+            $isOneclick = true;
+
+        return $isOneclick;
+    }
+
+    public function getCartItems(bool $isOneclick)
     {
         if (!$this->cartItems) {
-            $this->cartItems = Cart::whereIn('id', $cartItemsIds)
+            $this->cartItems = Cart::where('is_oneclick', $isOneclick)
                 ->where('user_id', auth()->user()->id)
                 ->with(
                     'variation:id,product_id,slug,name,price,discount,quantity,image_id',
@@ -44,7 +55,7 @@ class OrdersController extends Controller
          * Если всего товара хватает - $message не будет сформирован и останется пустым
          */
         $message = '';
-        $this->getCartItems($request->cart_items)
+        $this->getCartItems($this->isOneclick($request))
             ->each(function (Cart $item) use (&$message) {
                 $missing = $item->quantity - $item->variation->quantity;
                 if ($missing > 0) {
@@ -77,7 +88,7 @@ class OrdersController extends Controller
     /** Создание заказа: если товара нет в наличии в указанном количестве - удалит лишнее количество */
     public function create(OrderStoreRequest $request)
     {
-        $cartItems = $this->getCartItems($request->cart_items)
+        $cartItems = $this->getCartItems($this->isOneclick($request))
             ->filter(
                 fn(Cart $cartItem)
                 => $cartItem->variation->quantity > 0
@@ -127,7 +138,8 @@ class OrdersController extends Controller
             ]);
         });
 
-        Cart::whereIn('id', $request->cart_items)->delete();
+        Cart::whereIn('id', $cartItems->map(fn(Cart $item) => $item->id))
+            ->delete();
 
         $order->createCollage(
             $cartItems
@@ -190,16 +202,13 @@ class OrdersController extends Controller
     }
 
     /**
-     * Списки: способы доставки, способы оплаты
-     * 
-     * Информация о готовящемся заказе: сумма, стоимость доставки, итог...
+     * - Списки: способы доставки, способы оплаты
+     * - Информация о готовящемся заказе: сумма, стоимость доставки, итог...
+     * - Корзина: текущая корзина для выбранного типа is_oneclick
      */
     public function getOrderCreationData(Request $request)
     {
-        $cartItemsIds = $request->get('cart_items')
-            ? explode(',', $request->get('cart_items'))
-            : [];
-        $cartItems = $this->getCartItems($cartItemsIds);
+        $cartItems = $this->getCartItems($this->isOneclick($request));
 
         throw_if(
             $cartItems->count() < 1,
@@ -208,12 +217,12 @@ class OrdersController extends Controller
             )
         );
 
-        $orderCost = $cartItems
+        $orderCost = round($cartItems
             ->reduce(
                 fn(int $current, Cart $next) =>
                 $current + $next->variation->getCurrentPrice(),
                 0
-            );
+            ), 2);
         $deliveryCost = 0;
 
         return response([
@@ -227,7 +236,8 @@ class OrdersController extends Controller
                     'order_cost' => $orderCost,
                     'delivery_cost' => $deliveryCost,
                     'total_cost' => $orderCost + $deliveryCost
-                ]
+                ],
+                'cart' => Cart::currentUser($this->isOneclick($request))->get()
             ]
         ]);
     }

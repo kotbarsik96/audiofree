@@ -184,6 +184,8 @@ return [
     'regex' => 'Формат ника telegram: @login',
   ],
 
+  'error' => 'Ошибка',
+
   'product' => [
     'attachmentDoesntExist' => 'Вложение не существует',
     'description' => [
@@ -219,7 +221,7 @@ return [
     'notEnoughItems' => [
       'attention' => 'Внимание! Не все товары из заказа присутствуют в наличии в выбранном количестве: ',
       'missing' => ':productName – не хватает :quantity'
-    ]
+    ],
   ],
 
   'incorrectLoginOrPassword' => 'Неверный логин или пароль',

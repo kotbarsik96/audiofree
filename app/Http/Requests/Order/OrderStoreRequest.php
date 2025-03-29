@@ -33,7 +33,7 @@ class OrderStoreRequest extends FormRequest
             'delivery_place' => 'required|string',
             'delivery_address' => 'required|string',
             'desired_payment_type' => Rule::in($paymentTypes),
-            'cart_items' => 'required|array',
+            'is_oneclick' => 'boolean'
         ];
     }
 
@@ -49,7 +49,7 @@ class OrderStoreRequest extends FormRequest
             'delivery_place' => __('validation.order.delivery_place'),
             'delivery_address' => __('validation.order.delivery_address'),
             'desired_payment_type' => __('validation.order.desired_payment_type'),
-            'cart_items' => __('validation.order.cart_items'),
+            'is_oneclick' => __('validation.error')
         ];
     }
 }
