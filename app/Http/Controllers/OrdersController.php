@@ -14,6 +14,7 @@ use App\Models\Order\OrderProduct;
 use App\Services\StringsService;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class OrdersController extends Controller
@@ -190,14 +191,39 @@ class OrdersController extends Controller
 
     /**
      * Списки: способы доставки, способы оплаты
+     * 
+     * Информация о готовящемся заказе: сумма, стоимость доставки, итог...
      */
-    public function getFormLists()
+    public function getOrderCreationData(Request $request)
     {
+        throw_if(
+            !$request->get('cart_items'),
+            new UnprocessableEntityHttpException(
+                __('validation.order.noCart')
+            )
+        );
+
+        $cartItemsIds = explode(',', $request->cart_items);
+        $orderCost = $this->getCartItems($cartItemsIds)
+            ->reduce(
+                fn(int $current, Cart $next) =>
+                $current + $next->variation->getCurrentPrice(),
+                0
+            );
+        $deliveryCost = 0;
+
         return response([
             'ok' => true,
             'data' => [
-                'delivery_places' => StringsService::enumToStringsArray(DeliveryPlaceEnum::cases()),
-                'payment_types' => StringsService::enumToStringsArray(PaymentTypeEnum::cases())
+                'variants' => [
+                    'delivery_places' => StringsService::enumToStringsArray(DeliveryPlaceEnum::cases()),
+                    'payment_types' => StringsService::enumToStringsArray(PaymentTypeEnum::cases())
+                ],
+                'summary' => [
+                    'order_cost' => $orderCost,
+                    'delivery_cost' => $deliveryCost,
+                    'total_cost' => $orderCost + $deliveryCost
+                ]
             ]
         ]);
     }

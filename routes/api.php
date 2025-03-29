@@ -78,7 +78,10 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::delete('order/cancel/{order_id}', [OrdersController::class, 'cancel']); // 6.3
   Route::get('order/list', [OrdersController::class, 'getOrdersList']); // 6.4
   Route::get('order/single/{order_id}', [OrdersController::class, 'getOrder']); // 6.5
-  Route::get('order/form-lists', [OrdersController::class, 'getFormLists']); // 6.6
+  Route::get(
+    'order/creation-data',
+    [OrdersController::class, 'getOrderCreationData']
+  ); // 6.6
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);
