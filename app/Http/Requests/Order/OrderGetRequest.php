@@ -14,7 +14,7 @@ class OrderGetRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $this->order = Order::findOrFail($this->route()->parameter('order_id'));
+        $this->order = Order::totalCost()->findOrFail($this->route()->parameter('order_id'));
         return auth()->user()?->id ?? 0 === $this->order->user_id;
     }
 

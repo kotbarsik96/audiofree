@@ -169,20 +169,13 @@ class OrdersController extends Controller
         return response([
             'ok' => true,
             'data' => [
-                'list' => Order::select([
-                    'id',
-                    'orderer_data',
-                    'delivery_place',
-                    'delivery_address',
-                    'order_status',
-                    'desired_payment_type',
-                    'is_paid',
-                    'image_id',
-                    'created_at',
-                    'updated_at',
-                ])
+                'list' => Order::forList()
+                    ->totalCost()
                     ->where('user_id', auth()->user()->id)
-                    ->with('image:id,name,extension,sort,path,alt,disk')
+                    ->with([
+                        'image:id,name,extension,sort,path,alt,disk',
+                        'products:id,order_id,product_name,product_quantity,product_price,product_total_cost'
+                    ])
                     ->filter($request)
                     ->get()
             ]
@@ -191,7 +184,10 @@ class OrdersController extends Controller
 
     public function getOrder(OrderGetRequest $request)
     {
-        $request->order->load('image:id,name,extension,sort,path,alt,disk');
+        $request->order->load([
+            'image:id,name,extension,sort,path,alt,disk',
+            'products:id,order_id,product_name,product_quantity,product_price,product_total_cost'
+        ]);
 
         return response([
             'ok' => true,

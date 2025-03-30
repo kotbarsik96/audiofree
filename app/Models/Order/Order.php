@@ -10,6 +10,7 @@ use Intervention\Image\Drivers\Imagick\Driver;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Orchid\Attachment\Models\Attachment;
 
 class Order extends Model
@@ -30,7 +31,8 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $casts = [
-        'orderer_data' => 'array'
+        'orderer_data' => 'array',
+        'total_cost' => 'integer'
     ];
 
     public function image()
@@ -40,6 +42,11 @@ class Order extends Model
             'id',
             'image_id'
         )->withDefault();
+    }
+
+    public function products()
+    {
+        return $this->hasMany(OrderProduct::class);
     }
 
     /**
@@ -65,5 +72,26 @@ class Order extends Model
         $this->update(['image_id' => $attachment->id]);
 
         return $this;
+    }
+
+    public function scopeForList($query)
+    {
+        return $query->addSelect([
+            'id',
+            'orderer_data',
+            'delivery_place',
+            'delivery_address',
+            'order_status',
+            'desired_payment_type',
+            'is_paid',
+            'image_id',
+            'created_at',
+            'updated_at',
+        ]);
+    }
+
+    public function scopeTotalCost($query)
+    {
+        return $query->withSum('products as total_cost', 'product_total_cost');
     }
 }
