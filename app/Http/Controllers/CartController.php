@@ -32,10 +32,15 @@ class CartController extends Controller
     $variation = ProductVariation::find($request->input('variation_id'));
     $product = Product::find($variation->product_id);
 
-    $cartItem->quantity = (int) $request->input('quantity');
+    $requestQuantity = (int) $request->input('quantity');
+    if ($requestQuantity > 0) {
+      $cartItem->quantity = $requestQuantity;
+    } else if ($cartItem->exists) {
+      $cartItem->delete();
+    }
 
     throw_if(
-      $cartItem->quantity > $variation->quantity || $cartItem->quantity < 1,
+      $cartItem->quantity > $variation->quantity,
       new BadRequestHttpException(__('abortions.wrongQuantity'))
     );
 
