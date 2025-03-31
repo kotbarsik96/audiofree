@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Sort\SortDTOCollection;
 use App\Enums\Order\DeliveryPlaceEnum;
 use App\Enums\Order\OrderStatusEnum;
 use App\Enums\Order\PaymentTypeEnum;
+use App\Enums\SortEnum;
 use App\Filters\OrderFilter;
 use App\Http\Requests\Order\OrderGetRequest;
 use App\Http\Requests\Order\OrderStoreRequest;
@@ -166,6 +168,8 @@ class OrdersController extends Controller
 
     public function getOrdersList(OrderFilter $request)
     {
+        $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::ORDERS);
+
         return response([
             'ok' => true,
             'data' => [
@@ -177,6 +181,8 @@ class OrdersController extends Controller
                         'products:id,order_id,product_name,product_quantity,product_price,product_total_cost'
                     ])
                     ->filter($request)
+                    ->orderBy($sortData['sort'], $sortData['sortOrder'])
+                    ->paginate(request('per_page') ?? 8)
                     ->get()
             ]
         ]);
