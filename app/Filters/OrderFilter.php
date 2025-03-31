@@ -17,4 +17,19 @@ class OrderFilter extends QueryFilter
       $this->builder->where('desired_payment_type', $type);
     }
   }
+
+  public function search(string $string = null)
+  {
+    if ($string) {
+      $this->builder
+        ->addSelect('orders_products.product_name')
+        ->join(
+          'orders_products',
+          'orders.id',
+          '=',
+          'orders_products.order_id'
+        )
+        ->having('orders_products.product_name', 'like', "%$string%");
+    }
+  }
 }

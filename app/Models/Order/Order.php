@@ -77,16 +77,16 @@ class Order extends Model
     public function scopeForList($query)
     {
         return $query->addSelect([
-            'id',
-            'orderer_data',
-            'delivery_place',
-            'delivery_address',
-            'order_status',
-            'desired_payment_type',
-            'is_paid',
-            'image_id',
-            'created_at',
-            'updated_at',
+            'orders.id',
+            'orders.orderer_data',
+            'orders.delivery_place',
+            'orders.delivery_address',
+            'orders.order_status',
+            'orders.desired_payment_type',
+            'orders.is_paid',
+            'orders.image_id',
+            'orders.created_at',
+            'orders.updated_at',
         ]);
     }
 
