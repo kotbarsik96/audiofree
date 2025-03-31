@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     'order/creation-data',
     [OrdersController::class, 'getOrderCreationData']
   ); // 6.6
+  Route::get('order/sorts', [TaxonomiesController::class, 'orderSorts']); // 6.7
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);

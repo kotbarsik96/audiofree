@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Sort\SortDTOCollection;
+use App\Enums\SortEnum;
 use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Models\Product;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
-use App\Models\Taxonomy\Taxonomy;
-use App\Services\SortService;
 use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
@@ -48,13 +48,13 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $sortData = SortService::getSortsFromQuery(Taxonomy::catalogSorts());
+    $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::CATALOG);
 
     $products = Product::select([
-      Product::tableName() . '.id',
-      Product::tableName() . '.name',
-      Product::tableName() . '.slug',
-      Product::tableName() . '.image_id',
+      Product::tableName().'.id',
+      Product::tableName().'.name',
+      Product::tableName().'.slug',
+      Product::tableName().'.image_id',
       'status_id',
       'brand_id'
     ])
@@ -84,15 +84,15 @@ class ProductsController extends Controller
   public function productPage($productSlug, $variationSlug)
   {
     $product = Product::select(
-      Product::tableName() . '.id',
-      Product::tableName() . '.slug',
-      Product::tableName() . '.name',
-      Product::tableName() . '.description',
-      Product::tableName() . '.image_id',
-      Product::tableName() . '.status_id',
-      Product::tableName() . '.brand_id',
-      Product::tableName() . '.category_id',
-      Product::tableName() . '.type_id',
+      Product::tableName().'.id',
+      Product::tableName().'.slug',
+      Product::tableName().'.name',
+      Product::tableName().'.description',
+      Product::tableName().'.image_id',
+      Product::tableName().'.status_id',
+      Product::tableName().'.brand_id',
+      Product::tableName().'.category_id',
+      Product::tableName().'.type_id',
     )
       ->where('products.slug', $productSlug)
       ->with([
@@ -107,15 +107,15 @@ class ProductsController extends Controller
       ->firstOrFail();
 
     $variation = ProductVariation::select(
-      ProductVariation::tableName() . '.id',
-      ProductVariation::tableName() . '.slug',
-      ProductVariation::tableName() . '.price',
-      ProductVariation::tableName() . '.discount',
-      ProductVariation::tableName() . '.name',
-      ProductVariation::tableName() . '.quantity',
-      DB::raw(Product::priceWithDiscountFormula() . ' as current_price'),
+      ProductVariation::tableName().'.id',
+      ProductVariation::tableName().'.slug',
+      ProductVariation::tableName().'.price',
+      ProductVariation::tableName().'.discount',
+      ProductVariation::tableName().'.name',
+      ProductVariation::tableName().'.quantity',
+      DB::raw(Product::priceWithDiscountFormula().' as current_price'),
     )
-      ->where(ProductVariation::tableName() . '.slug', $variationSlug)
+      ->where(ProductVariation::tableName().'.slug', $variationSlug)
       ->where('product_id', $product->id)
       ->with(['gallery:id,name,extension,path,alt,disk'])
       ->firstOrFail();

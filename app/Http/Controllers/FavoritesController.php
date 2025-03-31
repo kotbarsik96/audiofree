@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Sort\SortDTOCollection;
+use App\Enums\SortEnum;
 use App\Filters\ProductFilter;
 use App\Models\Favorite;
 use App\Models\Product;
 use App\Models\Product\ProductRating;
 use App\Models\Product\ProductVariation;
-use App\Models\Taxonomy\Taxonomy;
 use App\Models\Taxonomy\TaxonomyValue;
-use App\Services\SortService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Models\Attachment;
@@ -40,7 +40,7 @@ class FavoritesController extends Controller
 
   public function get(ProductFilter $request)
   {
-    $sortData = SortService::getSortsFromQuery(Taxonomy::favoritesSorts());
+    $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::FAVORITES);
 
     $favoriteFields = ['favorites.id', 'favorites.created_at'];
     $productFields = [

@@ -97,44 +97,4 @@ class Taxonomy extends BaseModel
       'max' => $prices->max_price
     ];
   }
-
-  public static function catalogSorts()
-  {
-    return [
-      [
-        'label' => 'Популярность',
-        'value' => 'rating_count'
-      ],
-      [
-        'label' => 'Цена',
-        'value' => 'min_price'
-      ],
-      [
-        'label' => 'Рейтинг',
-        'value' => 'rating_value'
-      ]
-    ];
-  }
-
-  public static function favoritesSorts()
-  {
-    return [
-      [
-        'label' => 'Дата добавления',
-        'value' => 'created_at'
-      ],
-      [
-        'label' => 'Цена',
-        'value' => 'current_price'
-      ],
-      [
-        'label' => 'Популярность',
-        'value' => 'rating_count'
-      ],
-      [
-        'label' => 'Рейтинг',
-        'value' => 'rating_value'
-      ],
-    ];
-  }
 }
