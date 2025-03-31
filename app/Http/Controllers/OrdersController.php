@@ -170,8 +170,9 @@ class OrdersController extends Controller
     {
         $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::ORDERS);
 
-        return response(
-            Order::forList()
+        return response([
+            'ok' => true,
+            'data' => Order::forList()
                 ->totalCost()
                 ->where('user_id', auth()->user()->id)
                 ->with([
@@ -181,21 +182,22 @@ class OrdersController extends Controller
                 ->filter($request)
                 ->orderBy($sortData['sort'], $sortData['sortOrder'])
                 ->paginate(request('per_page') ?? 8)
-        );
+        ]);
     }
 
     public function getOrder(OrderGetRequest $request)
     {
         $request->order->load([
             'image:id,name,extension,sort,path,alt,disk',
-            'products:id,order_id,product_name,product_quantity,product_price,product_total_cost'
+            'products:id,product_variation_id,order_id,product_name,product_quantity,product_price,product_total_cost',
+            'products.variation:id,image_id,product_id,slug',
+            'products.variation.image:id,name,mime,extension,path,disk',
+            'products.variation.product:id,slug'
         ]);
 
         return response([
             'ok' => true,
-            'data' => [
-                'order' => $request->order
-            ]
+            'data' => $request->order
         ]);
     }
 
