@@ -57,6 +57,7 @@ services:
     container_name: app_mysql
     networks:
       - sail
+    restart: unless-stopped
 
 networks:
   sail:
