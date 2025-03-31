@@ -170,21 +170,18 @@ class OrdersController extends Controller
     {
         $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::ORDERS);
 
-        return response([
-            'ok' => true,
-            'data' => [
-                'list' => Order::forList()
-                    ->totalCost()
-                    ->where('user_id', auth()->user()->id)
-                    ->with([
-                        'image:id,name,extension,sort,path,alt,disk',
-                        'products:id,order_id,product_name,product_quantity,product_price,product_total_cost'
-                    ])
-                    ->filter($request)
-                    ->orderBy($sortData['sort'], $sortData['sortOrder'])
-                    ->paginate(request('per_page') ?? 8)
-            ]
-        ]);
+        return response(
+            Order::forList()
+                ->totalCost()
+                ->where('user_id', auth()->user()->id)
+                ->with([
+                    'image:id,name,extension,sort,path,alt,disk',
+                    'products:id,order_id,product_name,product_quantity,product_price,product_total_cost'
+                ])
+                ->filter($request)
+                ->orderBy($sortData['sort'], $sortData['sortOrder'])
+                ->paginate(request('per_page') ?? 8)
+        );
     }
 
     public function getOrder(OrderGetRequest $request)
