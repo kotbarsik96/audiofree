@@ -183,7 +183,6 @@ class OrdersController extends Controller
                     ->filter($request)
                     ->orderBy($sortData['sort'], $sortData['sortOrder'])
                     ->paginate(request('per_page') ?? 8)
-                    ->get()
             ]
         ]);
     }
