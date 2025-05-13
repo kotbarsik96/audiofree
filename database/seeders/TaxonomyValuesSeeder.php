@@ -57,16 +57,5 @@ class TaxonomyValuesSeeder extends Seeder
         'updated_at' => $now
       ]);
     }
-
-    // order_status
-    foreach (config('constants.taxonomy.order_statuses') as $name => $slug) {
-      DB::table('taxonomy_values')->insert([
-        'value' => $name,
-        'value_slug' => $slug,
-        'slug' => 'order_status',
-        'created_at' => $now,
-        'updated_at' => $now
-      ]);
-    }
   }
 }
