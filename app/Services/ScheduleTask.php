@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Services;
 
 use App\Enums\Order\OrderStatusEnum;
 use App\Models\Order\Order;

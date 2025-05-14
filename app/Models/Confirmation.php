@@ -8,7 +8,7 @@ use App\Services\MessagesToUser\MTUController;
 use Hash;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
-use \Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use App\Services\CodePhrase;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -49,7 +49,8 @@ class Confirmation extends BaseModel
   public static function getExpirationTime($timeout)
   {
     return Carbon::createFromTimestamp(
-      Carbon::now()->timestamp + $timeout
+      Carbon::now()->timestamp + $timeout,
+      config('app.timezone')
     );
   }
 
