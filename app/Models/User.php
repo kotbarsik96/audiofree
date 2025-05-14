@@ -160,7 +160,10 @@ class User extends Authenticatable
     if (!$user)
       abort(404, __('abortions.userNotFound'));
 
-    if (!Hash::check(request('current_password'), $user->password)) {
+    // у пользователя может не быть пароля
+    $userHasPassword = !!$user->password;
+
+    if ($userHasPassword && !Hash::check(request('current_password'), $user->password)) {
       abort(401, __('validation.current_password'));
     }
     $user->update([
