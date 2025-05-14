@@ -19,7 +19,6 @@ services:
   mysql: 
     image: mysql:8.0
     volumes:
-      - ./:/var/www/audiofree
       - ./tmp/db/:/var/lib/mysql
     env_file:
       - ./_docker/mysql/.env

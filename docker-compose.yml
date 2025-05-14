@@ -47,7 +47,6 @@ services:
   mysql: 
     image: mysql:8.0
     volumes:
-      - ./:/var/www/audiofree
       - ./tmp/db/:/var/lib/mysql
     env_file:
       - ./_docker/mysql/.env
@@ -62,6 +61,3 @@ services:
 networks:
   sail:
       driver: bridge
-volumes:
-  sail-mysql:
-      driver: local
