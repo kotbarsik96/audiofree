@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 // 1. User
 Route::post('signup', action: [AuthController::class, 'signup']); // 1.1
 Route::post('login', [AuthController::class, 'login']); // 1.2
+Route::post('logout', [AuthController::class, 'logout'])
+  ->middleware('auth:web'); // 1.3
 Route::post(
   'profile/reset-password/request',
   [AuthController::class, 'requestResetPassword']
@@ -39,7 +41,6 @@ Route::get('products/{productId}/reviews', [ProductsController::class, 'reviews'
 
 Route::middleware('auth:sanctum')->group(function () {
   // 1. User
-  Route::post('logout', [AuthController::class, 'logout']); // 1.3
   Route::get('profile/user', [AuthController::class, 'user']); // 1.4
   Route::post('profile/edit', [UsersController::class, 'edit']); // 1.5
   Route::post(
