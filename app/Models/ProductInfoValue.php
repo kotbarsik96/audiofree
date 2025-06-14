@@ -41,15 +41,12 @@ class ProductInfoValue extends Model
                         && $sInfo['value'] === $info->value
                     );
 
-                // Если характеристика используется, удалить её из массива $infoToDelete
-                $isStored = !$isNotStored;
-                if ($isStored) {
-                    $infoToDelete = $infoToDelete->filter(
-                        fn($fInfo) =>
-                        $fInfo->name === $info->name && $fInfo->value === $info->value
-                        ? false : true
-                    );
-                }
+                // Характеристика используется - удалить её из массива $infoToDelete
+                $infoToDelete = $infoToDelete->filter(
+                    fn($fInfo) =>
+                    $fInfo->name === $info->name && $fInfo->value === $info->value
+                    ? false : true
+                );
 
                 // Сбор несохранённых характеристик
                 if ($isNotStored) {

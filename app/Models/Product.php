@@ -52,24 +52,6 @@ class Product extends BaseModel
     'current_price' => 'float',
   ];
 
-  /**
-   * Регистрация слушателей на события
-   */
-  public static function booted()
-  {
-    static::created(function (Product $product) {
-      ProductInfoValue::updateTable();
-    });
-
-    static::saved(function (Product $product) {
-      ProductInfoValue::updateTable();
-    });
-
-    static::deleted(function (Product $product) {
-      ProductInfoValue::updateTable();
-    });
-  }
-
   public static function priceWithDiscountFormula()
   {
     return 'product_variations.price - (product_variations.price / 100 * product_variations.discount)';
