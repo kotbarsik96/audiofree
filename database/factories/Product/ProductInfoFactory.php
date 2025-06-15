@@ -44,7 +44,7 @@ class ProductInfoFactory extends Factory
       'value' => '10 мм / 40 мм / 50 мм',
     ],
     [
-      'name' => 'Тип драйвер',
+      'name' => 'Тип драйвера',
       'value' => 'Динамический / Арматурный / Планарный',
     ],
     [

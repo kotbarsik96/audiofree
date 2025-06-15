@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Product\ProductInfo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class ProductInfoValue extends Model
 {
@@ -53,7 +54,8 @@ class ProductInfoValue extends Model
                     $infoToStore->push(
                         [
                             'name' => $info->name,
-                            'value' => $info->value
+                            'value' => $info->value,
+                            'slug' => Str::slug($info->name)
                         ]
                     );
                 }
