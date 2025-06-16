@@ -55,7 +55,7 @@ class ProductInfoValue extends Model
                         [
                             'name' => $info->name,
                             'value' => $info->value,
-                            'slug' => Str::slug($info->name)
+                            'slug' => $info->slug
                         ]
                     );
                 }

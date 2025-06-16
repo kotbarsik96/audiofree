@@ -19,7 +19,8 @@ class QueryFilter
 
   public function excludeQueries(?array $queries)
   {
-    if (!$queries) return;
+    if (!$queries)
+      return;
 
     $this->excludedQueries = array_merge($this->excludedQueries, $queries);
 
@@ -28,7 +29,7 @@ class QueryFilter
 
   public function queries()
   {
-    return array_filter($this->request->query(), function($key){
+    return array_filter($this->request->query(), function ($key) {
       return !in_array($key, $this->excludedQueries);
     }, ARRAY_FILTER_USE_KEY);
   }
@@ -40,6 +41,8 @@ class QueryFilter
     foreach ($this->queries() as $name => $value) {
       if (method_exists($this, $name)) {
         call_user_func_array([$this, $name], [$value]);
+      } else {
+        $this->handleDynamicQuery($name, $value);
       }
     }
 
@@ -49,5 +52,15 @@ class QueryFilter
   public function paramToArray($param)
   {
     return explode($this->delimeter, $param);
+  }
+
+  /** 
+   * Реализует динамическую фильтрацию, т.е. когда мы не определяем одноимённый метод заранее
+   * @param $name ключ, который выступал бы названием метода в статической фильтрации
+   * @param $value значение фильтра
+   * @return $this->builder если метод не переопределён
+   */
+  public function handleDynamicQuery(string $name, $value) {
+    return $this->builder;
   }
 }

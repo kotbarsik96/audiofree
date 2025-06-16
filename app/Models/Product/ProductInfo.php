@@ -10,6 +10,7 @@ use Database\Factories\Product\ProductInfoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Str;
 
 class ProductInfo extends BaseModel
 {
@@ -20,6 +21,7 @@ class ProductInfo extends BaseModel
   protected $fillable = [
     'product_id',
     'name',
+    'slug',
     'value'
   ];
 
@@ -72,6 +74,7 @@ class ProductInfo extends BaseModel
         self::create([
           'product_id' => $product->id,
           'name' => $infoItem['name'],
+          'slug' => Str::slug($infoItem['name']),
           'value' => $infoItem['value']
         ]);
       }
@@ -81,7 +84,7 @@ class ProductInfo extends BaseModel
   public function scopeForProduct(Builder $query, $productId)
   {
     $query
-      ->select(['name', 'value'])
+      ->select(['name', 'value', 'slug'])
       ->where('product_id', $productId);
   }
 }
