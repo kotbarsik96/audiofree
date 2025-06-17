@@ -13,6 +13,13 @@ class ProductFilter extends QueryFilter
 
   public function handleDynamicQuery(string $slug, $values)
   {
+    if (!$values)
+      return;
+
+    if (is_string($values)) {
+      $values = $this->paramToArray($values);
+    }
+
     // получить и сохранить список существующих характеристик
     if (!$this->possibleInfos) {
       $this->possibleInfos = ProductInfoValue::all(['slug'])
