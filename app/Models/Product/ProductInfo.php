@@ -5,10 +5,12 @@ namespace App\Models\Product;
 use App\Helpers\AppHelper;
 use App\Models\BaseModel;
 use App\Models\Product;
+use App\Models\ProductInfoValue;
 use Database\Factories\Product\ProductInfoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Str;
 
 class ProductInfo extends BaseModel
 {
@@ -19,6 +21,7 @@ class ProductInfo extends BaseModel
   protected $fillable = [
     'product_id',
     'name',
+    'slug',
     'value'
   ];
 
@@ -27,13 +30,31 @@ class ProductInfo extends BaseModel
     return ProductInfoFactory::new();
   }
 
+  /**
+   * Регистрация слушателей на события
+   */
+  public static function booted()
+  {
+    static::created(function (ProductInfo $info) {
+      ProductInfoValue::updateTable();
+    });
+
+    static::saved(function (ProductInfo $info) {
+      ProductInfoValue::updateTable();
+    });
+
+    static::deleted(function (ProductInfo $info) {
+      ProductInfoValue::updateTable();
+    });
+  }
+
   public static function removeNotInRequest(array $info, Product $product)
   {
     $collection = self::where('product_id', $product->id)->get();
     foreach ($collection as $item) {
       $isInRequest = AppHelper::array_find(
         $info,
-        fn ($infoItem) => $infoItem['name'] === $item->name
+        fn($infoItem) => $infoItem['name'] === $item->name
       );
       if (!$isInRequest)
         $item->delete();
@@ -53,6 +74,7 @@ class ProductInfo extends BaseModel
         self::create([
           'product_id' => $product->id,
           'name' => $infoItem['name'],
+          'slug' => Str::slug($infoItem['name']),
           'value' => $infoItem['value']
         ]);
       }
@@ -62,7 +84,7 @@ class ProductInfo extends BaseModel
   public function scopeForProduct(Builder $query, $productId)
   {
     $query
-      ->select(['name', 'value'])
+      ->select(['name', 'value', 'slug'])
       ->where('product_id', $productId);
   }
 }

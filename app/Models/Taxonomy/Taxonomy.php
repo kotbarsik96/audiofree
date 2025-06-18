@@ -5,6 +5,7 @@ namespace App\Models\Taxonomy;
 use App\Filters\ProductFilter;
 use App\Models\BaseModel;
 use App\Models\Product;
+use App\Models\ProductInfoValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -57,6 +58,7 @@ class Taxonomy extends BaseModel
     });
 
     $filters->push(self::getPricesFilter());
+    $filters->push(self::getInfoFilters());
 
     $filters->push([
       'type' => 'checkbox_boolean',
@@ -95,6 +97,29 @@ class Taxonomy extends BaseModel
       'name' => 'Цена',
       'min' => $prices->min_price,
       'max' => $prices->max_price
+    ];
+  }
+
+  public static function getInfoFilters()
+  {
+    $infoRaw = ProductInfoValue::all(['name', 'value', 'slug']);
+    $infoValues = $infoRaw->unique('name');
+    $info = collect();
+    foreach ($infoValues as $item) {
+      $name = $item->name;
+      $itemWithValues = [
+        'name' => $name,
+        'slug' => $item->slug,
+        'values' => $infoRaw->where('name', $name)->pluck('value')
+      ];
+      $info->push($itemWithValues);
+    }
+
+    return [
+      'type' => 'info',
+      'slug' => 'info',
+      'name' => 'Характеристики',
+      'values' => $info
     ];
   }
 }

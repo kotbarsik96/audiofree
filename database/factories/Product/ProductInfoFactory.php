@@ -2,8 +2,8 @@
 
 namespace Database\Factories\Product;
 
-use App\Models\Product\ProductInfo;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
@@ -44,7 +44,7 @@ class ProductInfoFactory extends Factory
       'value' => '10 мм / 40 мм / 50 мм',
     ],
     [
-      'name' => 'Тип драйвер',
+      'name' => 'Тип драйвера',
       'value' => 'Динамический / Арматурный / Планарный',
     ],
     [
@@ -108,15 +108,8 @@ class ProductInfoFactory extends Factory
   {
     return [
       'name' => fake()->randomElement(array_column(self::$namesAndValues, 'name')),
-      'value' => ' '
+      'slug' => fn(array $attributes) => Str::slug($attributes['name']),
+      'value' => fn(array $attributes) => self::getRandomValue($attributes['name']),
     ];
-  }
-
-  public function configure()
-  {
-    return $this->afterCreating(function (ProductInfo $pInfo) {
-      $value = self::getRandomValue($pInfo->name);
-      $pInfo->update(['value' => $value]);
-    });
   }
 }

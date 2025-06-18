@@ -3,11 +3,13 @@
 namespace Database\Factories\Product;
 
 use App\Models\Product;
+use App\Models\Product\ProductInfo;
 use App\Models\Taxonomy\TaxonomyValue;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchid\Attachment\Models\Attachment;
 use ElForastero\Transliterate\Facade as Transliterate;
+use Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
@@ -125,31 +127,45 @@ class ProductFactory extends Factory
   public function clearDuplicateInfo(Product $product)
   {
     $info = $product->info()->get();
+    $duplicates = collect();
+    $usedNames = $info->pluck('name')->toArray();
 
-    // пройтись по каждой характ-ке товара
-    foreach ($info as $item) {
-      // получить характ-ки этого товара с одинаковыми названиями
-      $withSameName = $info->filter(fn($i) => $i->name === $item->name);
-      // если есть дубликаты:
-      if ($withSameName->count() > 1) {
-        // занятые названия
-        $takenNames = $info->pluck('name')->toArray();
+    // сбор id'шников дубликатов
+    foreach ($info as $key => $item) {
+      foreach ($info as $s_key => $s_item) {
+        if ($key === $s_key)
+          continue;
+        if ($item->name !== $s_item->name)
+          continue;
 
-        // оставить первую характ-ку, а остальным:
-        foreach ($withSameName->slice(1) as $dupInfo) {
-          // найти новые характ-ки, откидывая уже занятые
-          $elementsWithoutDuplicates = collect(ProductInfoFactory::$namesAndValues)
-            ->filter(
-              fn($nameAndValue) => array_search($nameAndValue['name'], $takenNames) === false
-            );
+        $duplicates->push($s_item);
+      }
+    }
 
-          $newName = fake()->randomElement($elementsWithoutDuplicates)['name'];
+    // если дубликаты есть
+    if ($duplicates->count() > 0) {
+      // собрать ещё не использованные в данном товаре характеристики
+      $unusedInfo = collect(ProductInfoFactory::$namesAndValues)
+        ->filter(fn($item) => !in_array($item['name'], $usedNames));
 
-          // обновить запись в бд
-          $dupInfo->update([
-            'name' => $newName,
-            'value' => ProductInfoFactory::getRandomValue($newName)
+      foreach ($duplicates as $item) {
+        // найти для каждого дубликата неиспользованную характеристику
+        $replacer = fake()->randomElement($unusedInfo->toArray());
+
+        if ($replacer) {
+          // найдя такую, убрать дубликат
+          $item->update([
+            'name' => $replacer['name'],
+            'slug' => Str::slug($replacer['name']),
+            'value' => ProductInfoFactory::getRandomValue($replacer['name'])
           ]);
+          // убрать из неиспользованных характеристик только что использованную
+          $unusedInfo = $unusedInfo
+            ->filter(fn($u_item) => $u_item['name'] !== $replacer['name']);
+        }
+        // не найдя замену, убрать характеристику
+        else {
+          $item->delete();
         }
       }
     }

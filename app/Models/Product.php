@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Events\Product\ProductCreated;
+use App\Events\Product\ProductDeleted;
+use App\Events\Product\ProductSaved;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;
@@ -12,6 +15,7 @@ use Database\Factories\Product\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Orchid\Attachment\Attachable;
 use Orchid\Attachment\Models\Attachment;
@@ -22,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Product extends BaseModel
 {
-  use HasFactory, AsSource, Attachable, Filterable;
+  use HasFactory, AsSource, Attachable, Filterable, Notifiable;
 
   protected $fillable = [
     'name',
@@ -97,6 +101,7 @@ class Product extends BaseModel
       ProductInfo::updateOrCreate([
         'product_id' => $this->id,
         'name' => $item['name'],
+      ], [
         'value' => $item['value'],
       ]);
     }
@@ -152,7 +157,7 @@ class Product extends BaseModel
   public function scopeMinPrice(Builder $query)
   {
     return $query->addSelect(
-      DB::raw('MIN(' . self::priceWithDiscountFormula() . ') as min_price')
+      DB::raw('MIN('.self::priceWithDiscountFormula().') as min_price')
     )
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id');
@@ -160,7 +165,7 @@ class Product extends BaseModel
   public function scopeMaxPrice(Builder $query)
   {
     return $query->addSelect(
-      DB::raw('MAX(' . self::priceWithDiscountFormula() . ') as max_price')
+      DB::raw('MAX('.self::priceWithDiscountFormula().') as max_price')
     )
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id');
@@ -170,8 +175,8 @@ class Product extends BaseModel
     return $query
       ->addSelect(
         'products.id',
-        DB::raw('MIN(' . self::priceWithDiscountFormula() . ') as min_price'),
-        DB::raw('MAX(' . self::priceWithDiscountFormula() . ') as max_price'),
+        DB::raw('MIN('.self::priceWithDiscountFormula().') as min_price'),
+        DB::raw('MAX('.self::priceWithDiscountFormula().') as max_price'),
       )
       ->join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->groupBy('products.id');
