@@ -17,14 +17,14 @@ class RolesSeeder extends Seeder
     DB::table('roles')->insert([
       'slug' => 'developer',
       'name' => 'Разработчик',
-      'permissions' => '{"platform.index": "1", "platform.systems.roles": "1", "platform.systems.users": "1", "platform.systems.products": "1", "platform.systems.attachment": "1"}',
+      'permissions' => '{"platform.index": "1", "platform.systems.roles": "1", "platform.systems.users": "1", "platform.systems.products": "1", "platform.systems.attachment": "1", "platform.systems.seo": "1"}',
       'created_at' => $now,
       'updated_at' => $now
     ]);
     DB::table('roles')->insert([
       'slug' => 'administrator',
       'name' => 'Администратор',
-      'permissions' => '{"platform.index": "1", "platform.systems.roles": "0", "platform.systems.users": "1", "platform.systems.products": "1", "platform.systems.attachment": "1"}',
+      'permissions' => '{"platform.index": "1", "platform.systems.roles": "0", "platform.systems.users": "1", "platform.systems.products": "1", "platform.systems.attachment": "1", "platform.systems.seo": "1"}',
       'created_at' => $now,
       'updated_at' => $now
     ]);

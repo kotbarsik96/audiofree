@@ -23,6 +23,13 @@ class TaxonomyValueEditScreen extends Screen
    */
   public $taxonomy;
 
+  public function permission(): ?iterable
+  {
+    return [
+      'platform.systems.products'
+    ];
+  }
+
   /**
    * Fetch data to be displayed on the screen.
    *

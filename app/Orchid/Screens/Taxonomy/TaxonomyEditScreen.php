@@ -26,6 +26,13 @@ class TaxonomyEditScreen extends Screen
     return $this->taxonomy->exists ? $this->taxonomy->$attrName : null;
   }
 
+  public function permission(): ?iterable
+  {
+    return [
+      'platform.systems.products'
+    ];
+  }
+
   /**
    * Fetch data to be displayed on the screen.
    *
@@ -66,7 +73,8 @@ class TaxonomyEditScreen extends Screen
       Button::make(__('Delete'))
         ->method('delete')
         ->icon('trash')
-        ->canSee($this->taxonomy->exists),
+        ->canSee($this->taxonomy->exists)
+        ->confirm(__('orchid.taxonomy.areYouSureToDeleteValue')),
     ];
   }
 

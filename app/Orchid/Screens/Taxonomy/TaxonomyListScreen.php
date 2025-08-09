@@ -10,6 +10,13 @@ use Orchid\Screen\Screen;
 
 class TaxonomyListScreen extends Screen
 {
+  public function permission(): ?iterable
+  {
+    return [
+      'platform.systems.products'
+    ];
+  }
+
   /**
    * Fetch data to be displayed on the screen.
    *

@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Models\Seo;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Products\ProductEditScreen;
 use App\Orchid\Screens\Products\ProductsListScreen;
 use App\Orchid\Screens\Products\ProductVariationScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Seo\SeoEditScreen;
+use App\Orchid\Screens\Seo\SeoListScreen;
 use App\Orchid\Screens\Taxonomy\TaxonomyEditScreen;
 use App\Orchid\Screens\Taxonomy\TaxonomyListScreen;
 use App\Orchid\Screens\TaxonomyValueEditScreen;
@@ -85,25 +88,85 @@ Route::screen('roles', RoleListScreen::class)
 Route::screen('/products', ProductsListScreen::class)
   ->name('platform.products')
   ->breadcrumbs(
-    fn(Trail $taril) => $taril
+    fn(Trail $trail) => $trail
       ->parent('platform.index')
-      ->push(__('general.products'))
+      ->push(__('general.products'), route('platform.products'))
   );
-// Platform > Product Variation
-Route::screen('/product/{product}/variation/{variation?}', ProductVariationScreen::class)
-  ->name('platform.product.variation.edit');
+
 // Platform > Product
 Route::screen('/product/{product?}', ProductEditScreen::class)
-  ->name('platform.product.edit');
+  ->name('platform.product.edit')
+  ->breadcrumbs(
+    function (Trail $trail, $product = null) {
+      $route = $product ? route('platform.product.edit', $product->id) : null;
+
+      return $trail
+        ->parent('platform.products')
+        ->push($product?->name ?? __('orchid.product.create'), $route);
+    }
+  );
+
+// Platform > Product Variation
+Route::screen('/product/{product}/variation/{variation?}', ProductVariationScreen::class)
+  ->name('platform.product.variation.edit')
+  ->breadcrumbs(
+    function (Trail $trail, $product, $variation = null) {
+      $route = $variation ? route('platform.product.variation.edit', $variation->id) : null;
+
+      return $trail
+        ->parent('platform.product.edit', $product)
+        ->push($variation?->name ?? __('orchid.product.variation'), $route);
+    }
+
+  );
 
 // Platform > Taxonomies
 Route::screen('/taxonomies', TaxonomyListScreen::class)
-  ->name('platform.taxonomies');
+  ->name('platform.taxonomies')
+  ->breadcrumbs(function (Trail $trail) {
+    return $trail
+      ->parent('platform.index')
+      ->push(__('orchid.taxonomy.taxonomies'), route('platform.taxonomies'));
+  });
 
 // Platform > Taxonomy
 Route::screen('/taxonomy/{taxonomy?}', TaxonomyEditScreen::class)
-  ->name('platform.taxonomy.edit');
+  ->name('platform.taxonomy.edit')
+  ->breadcrumbs(function (Trail $trail, $taxonomy = null) {
+    $route = $taxonomy ? route('platform.taxonomy.edit', $taxonomy?->id) : null;
+
+    return $trail
+      ->parent('platform.taxonomies')
+      ->push($taxonomy?->name ?? __('orchid.taxonomy.create'), $route);
+  });
 
 // Platform > Taxonomy value
 Route::screen('/taxonomy-value/{taxonomy}/{tValue?}', TaxonomyValueEditScreen::class)
-  ->name('platform.taxonomy.value.edit');
+  ->name('platform.taxonomy.value.edit')
+  ->breadcrumbs(function (Trail $trail, $taxonomy, $tvalue) {
+    if ($tvalue)
+      return $trail
+        ->parent('platform.taxonomy.edit', $taxonomy)
+        ->push($tvalue->value);
+    else
+      return $trail;
+  });
+
+// Platform > Seo
+Route::screen('/seo', SeoListScreen::class)
+  ->name('platform.seo')
+  ->breadcrumbs(function (Trail $trail) {
+    return $trail
+      ->parent('platform.index')
+      ->push('SEO', route('platform.seo'));
+  });
+
+Route::screen('/seo/page/{seoPage?}', SeoEditScreen::class)
+  ->name('platform.seo.edit')
+  ->breadcrumbs(function (Trail $trail, $seoPage = null) {
+    $route = $seoPage ? route('platform.seo.edit', $seoPage->id) : null;
+
+    return $trail
+      ->parent('platform.seo')
+      ->push($seoPage?->slug ?? __('orchid.seo.create'), $route);
+  });

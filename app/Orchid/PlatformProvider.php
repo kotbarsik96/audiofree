@@ -55,11 +55,17 @@ class PlatformProvider extends OrchidServiceProvider
         ->route('platform.taxonomies')
         ->permission('platform.systems.products'),
 
+
       Menu::make(__('orchid.product.products'))
         ->icon('bs.journals')
         ->route('platform.products')
-        ->divider()
         ->permission('platform.systems.products'),
+
+      Menu::make('SEO')
+        ->icon('bs.file-earmark')
+        ->route('platform.seo')
+        ->divider()
+        ->permission('platform.systems.seo'),
     ];
   }
 
@@ -74,7 +80,8 @@ class PlatformProvider extends OrchidServiceProvider
       ItemPermission::group(__('System'))
         ->addPermission('platform.systems.roles', __('orchid.roles'))
         ->addPermission('platform.systems.users', __('orchid.users'))
-        ->addPermission('platform.systems.products', __('orchid.product.products')),
+        ->addPermission('platform.systems.products', __('orchid.product.products'))
+        ->addPermission('platform.systems.seo', 'SEO'),
     ];
   }
 }
