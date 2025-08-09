@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\TaxonomiesController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UsersController;
@@ -38,6 +39,9 @@ Route::get('products/catalog', [ProductsController::class, 'catalog']); // 2.1
 Route::get('products/catalog/filters', [TaxonomiesController::class, 'catalogFilters']); // 2.3
 Route::get('products/catalog/sorts', [TaxonomiesController::class, 'catalogSorts']); // 2.4
 Route::get('products/{productId}/reviews', [ProductsController::class, 'reviews']); // 2.5
+
+// 7.1 SEO
+Route::get('page/{slug}', [SeoController::class, 'getPageInfo']);
 
 Route::middleware('auth:sanctum')->group(function () {
   // 1. User
