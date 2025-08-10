@@ -14,6 +14,14 @@ class SeoRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'title' => $this->title ? htmlspecialchars($this->title) : null,
+            'description' => $this->description ? htmlspecialchars($this->description) : null
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

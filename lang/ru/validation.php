@@ -256,4 +256,9 @@ return [
 
   'attributes' => [],
 
+  'seo' => [
+    'slug' => [
+      'unique' => 'Slug должен быть уникальным'
+    ]
+  ]
 ];

@@ -14,6 +14,8 @@ class SeoController extends Controller
 
         throw_if(!$seoPage, new NotFoundHttpException(__('abortions.pageNotFound')));
 
-        return $seoPage;
+        return [
+            'data' => $seoPage
+        ];
     }
 }
