@@ -63,6 +63,13 @@ class ProductValidation
 
     return ['max:' . $max];
   }
+  
+  public static function description_seo()
+  {
+    $max = config('constants.product.description_seo.maxlength');
+
+    return ['max:' . $max];
+  }
 
   public static function infoNameAndValue()
   {
@@ -98,6 +105,7 @@ class ProductValidation
       'rating_value.min' => __('validation.rating_value.min'),
       'rating_value.max' => __('validation.rating_value.max'),
       'description.max' => __('validation.product.description.max'),
+      'description_seo.max' => __('validation.product.description.max'),
       'image_id' => __('validation.product.attachmentDoesntExist'),
     ];
   }

@@ -59,6 +59,14 @@ class ProductFactory extends Factory
     '<p><strong><em>Управление жестами и голосом</em></strong></p><p><br></p><p>Интеллектуальные сенсоры реагируют на простые касания или жесты, позволяя мгновенно переключаться между треками, настраивать громкость или отвечать на звонки. Благодаря встроенному голосовому ассистенту с функцией «всегда на связи», вы можете легко управлять устройствами, задавая простые команды, не доставая телефон. Беспроводное подключение с низкой задержкой обеспечит плавную работу как во время игр, так и при просмотре видео.</p><p><br></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Система активного шумоподавления</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Технология 4D-аудио</li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Эргономичные вставки </li></ol><p><br></p><p><strong><em>Технология SoundSense AI</em></strong> адаптирует эквалайзер под ваши предпочтения на основе анализа того, как долго вы слушаете разные жанры музыки. Специальные датчики давления и температуры кожи автоматически переключают режимы прослушивания для максимального комфорта. Полностью беспроводная конструкция с водонепроницаемой защитой IP68 позволяет не переживать за погоду или активные тренировки.</p>'
   ];
 
+  public static $descriptionsSeo = [
+    'Откройте для себя качественное звучание и комфорт. Подробные характеристики, фото, отзывы и выгодная цена — всё, что нужно для правильного выбора.',
+    'Стильный дизайн, чистый звук и надёжность. Узнайте подробности, сравните параметры и оформите заказ в пару кликов.',
+    'Высокое качество звука и современный функционал. Смотрите фото, читайте отзывы и выбирайте подходящую модель.',
+    'Комфортное прослушивание музыки и звонков каждый день. Полное описание, технические данные и условия быстрой доставки.',
+    'Оцените удобство и звук профессионального уровня. Характеристики, преимущества и простое оформление покупки онлайн.'
+  ];
+
   /**
    * Define the model's default state.
    *
@@ -68,6 +76,7 @@ class ProductFactory extends Factory
   {
     $names = self::$productNames;
     $descriptions = self::$descriptions;
+    $descriptionsSeo = self::$descriptionsSeo;
     $statusId = TaxonomyValue::where('slug', 'product_status')
       ->where('value_slug', 'active')
       ->first()
@@ -82,6 +91,7 @@ class ProductFactory extends Factory
       'name' => fake()->unique()->randomElement($names),
       'slug' => fake()->unique()->name(),
       'description' => fake()->randomElement($descriptions),
+      'description_seo' => fake()->randomElement($descriptionsSeo),
       'image_id' => fake()->randomElement($images),
       'status_id' => $statusId,
       'brand_id' => fake()->randomElement($brands),

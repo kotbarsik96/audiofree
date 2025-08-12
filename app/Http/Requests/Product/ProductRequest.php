@@ -52,6 +52,7 @@ class ProductRequest extends FormRequest
       'brand_id' => $taxonomyValidation,
       'category_id' => $taxonomyValidation,
       'description' => ProductValidation::description(),
+      'description_seo' => ProductValidation::description_seo(),
       'info' => 'array'
     ];
   }

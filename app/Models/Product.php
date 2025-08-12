@@ -33,6 +33,7 @@ class Product extends BaseModel
     'slug',
     'image_id',
     'description',
+    'description_seo',
     'status_id',
     'brand_id',
     'category_id',

@@ -23,6 +23,9 @@ return [
     'description' => [
       'maxlength' => 2000
     ],
+    'description_seo' => [
+      'maxlength' => 1000
+    ],
     'variation' => [
       'gallery_group' => 'product_variation_gallery',
       'max_gallery_images' => 5

@@ -15,6 +15,7 @@ use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Quill;
 use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
@@ -129,6 +130,12 @@ class ProductEditScreen extends Screen
         Quill::make('description')
           ->title(__('Description'))
           ->set('value', $this->getAttr('description')),
+
+        TextArea::make('description_seo')
+          ->title(__('orchid.seo.description'))
+          ->set('value', $this->getAttr('description_seo'))
+          ->set('maxlength', config('constants.product.description_seo.maxlength'))
+          ->set('rows', 4),
 
         Cropper::make('image_id')
           ->title(__('orchid.product.image'))
