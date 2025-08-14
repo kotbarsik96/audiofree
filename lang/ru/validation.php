@@ -260,5 +260,10 @@ return [
     'slug' => [
       'unique' => 'Slug должен быть уникальным'
     ]
+  ],
+
+  'address' => [
+    'invalid' => 'Несуществующий адрес',
+    'addressNotFull' => 'Неполный адрес'
   ]
 ];
