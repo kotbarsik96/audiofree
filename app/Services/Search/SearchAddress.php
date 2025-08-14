@@ -15,7 +15,7 @@ class SearchAddress
 
   public static function search(string $value)
   {
-    $search = new static($value);
+    $search = new static(substr($value, 0, 290));
 
     return $search
       ->searchDadata()
