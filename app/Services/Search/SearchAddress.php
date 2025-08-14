@@ -2,7 +2,7 @@
 
 namespace App\Services\Search;
 
-use App\Models\Product;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SearchAddress
 {
@@ -32,6 +32,8 @@ class SearchAddress
       fn($item) => $item['value'],
       $dadata->suggest("address", $this->searchValue)
     );
+
+    throw_if(count($this->results) < 1, new NotFoundHttpException(__('abortions.noSearchResults')));
 
     return $this;
   }
