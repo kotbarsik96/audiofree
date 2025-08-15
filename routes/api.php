@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\TaxonomiesController;
 use App\Http\Controllers\TestController;
@@ -88,6 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
     [OrdersController::class, 'getOrderCreationData']
   ); // 6.6
   Route::get('order/sorts', [TaxonomiesController::class, 'orderSorts']); // 6.7
+
+  // 8. Search
+  Route::get('search/address', [SearchController::class, 'address'])
+    ->middleware(['throttle:search-address']); // 8.1
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);

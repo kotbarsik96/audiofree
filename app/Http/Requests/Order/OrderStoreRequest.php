@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Order;
 
 use App\Enums\Order\PaymentTypeEnum;
+use App\Rules\AddressMustExist;
 use App\Services\StringsService;
 use App\Validations\AuthValidation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -31,7 +32,7 @@ class OrderStoreRequest extends FormRequest
                 AuthValidation::phoneNumber()
             ),
             'delivery_place' => 'required|string',
-            'delivery_address' => 'required|string',
+            'delivery_address' => ['required', 'string', new AddressMustExist],
             'desired_payment_type' => Rule::in($paymentTypes),
             'is_oneclick' => 'boolean'
         ];
@@ -47,7 +48,7 @@ class OrderStoreRequest extends FormRequest
             'email.email' => __('validation.email.email'),
             'phone_number.regex' => __('validation.phone_number.regex'),
             'delivery_place' => __('validation.order.delivery_place'),
-            'delivery_address' => __('validation.order.delivery_address'),
+            'delivery_address.required' => __('validation.order.delivery_address'),
             'desired_payment_type' => __('validation.order.desired_payment_type'),
             'is_oneclick' => __('validation.error')
         ];
