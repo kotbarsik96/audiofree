@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\Sort\SortDTOCollection;
-use App\Enums\SortEnum;
+use App\DTO\Enums\SortEnum;
 use App\Models\Taxonomy\Taxonomy;
 
 class TaxonomiesController extends Controller
@@ -26,7 +25,7 @@ class TaxonomiesController extends Controller
   {
     return response([
       'ok' => true,
-      'data' => SortDTOCollection::getDTO(SortEnum::CATALOG)->sorts
+      'data' => SortEnum::CATALOG->dto()->sorts
     ]);
   }
 
@@ -34,7 +33,7 @@ class TaxonomiesController extends Controller
   {
     return response([
       'ok' => true,
-      'data' => SortDTOCollection::getDTO(SortEnum::FAVORITES)->sorts
+      'data' => SortEnum::FAVORITES->dto()->sorts
     ]);
   }
 
@@ -42,7 +41,7 @@ class TaxonomiesController extends Controller
   {
     return response([
       'ok' => true,
-      'data' => SortDTOCollection::getDTO(SortEnum::ORDERS)->sorts
+      'data' => SortEnum::ORDERS->dto()->sorts
     ]);
   }
 }

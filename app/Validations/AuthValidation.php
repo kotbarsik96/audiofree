@@ -2,7 +2,7 @@
 
 namespace App\Validations;
 
-use App\DTO\Auth\AuthDTOCollection;
+use App\DTO\Enums\AuthEnum;
 use Illuminate\Validation\Rules\Password;
 
 class AuthValidation
@@ -31,7 +31,7 @@ class AuthValidation
   public static function emailRequiredWithout()
   {
     $requiredWithout = 'required_without:'
-      . AuthDTOCollection::getPossibleAuthsWithout('email', true);
+      .AuthEnum::getPossibleAuthsWithout('email', true);
 
     return array_merge(
       self::email(),
@@ -47,7 +47,7 @@ class AuthValidation
   public static function telegramRequiredWithout()
   {
     $requiredWithout = 'required_without:'
-      . AuthDTOCollection::getPossibleAuthsWithout('telegram', true);
+      .AuthEnum::getPossibleAuthsWithout('telegram', true);
     return array_merge(
       self::telegram(),
       [$requiredWithout]

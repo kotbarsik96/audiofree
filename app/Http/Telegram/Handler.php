@@ -2,8 +2,8 @@
 
 namespace App\Http\Telegram;
 
-use App\Enums\ConfirmationPurposeEnum;
-use App\Enums\MessagesToUserEnum;
+use App\DTO\Enums\ConfirmationPurposeEnum;
+use App\DTO\Enums\MessagesToUserEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphBot;
 use \DefStudio\Telegraph\Handlers\WebhookHandler;

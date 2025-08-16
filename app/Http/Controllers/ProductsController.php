@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\Sort\SortDTOCollection;
-use App\Enums\SortEnum;
+use App\DTO\Enums\SortEnum;
 use App\Filters\ProductFilter;
 use App\Http\Requests\Product\ProductRatingRequest;
 use App\Models\Product;
@@ -48,7 +47,7 @@ class ProductsController extends Controller
 
   public function catalog(ProductFilter $request)
   {
-    $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::CATALOG);
+    $sortData = SortEnum::getSortsFromRequest(SortEnum::CATALOG);
 
     $products = Product::select([
       Product::tableName().'.id',
