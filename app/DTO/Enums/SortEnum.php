@@ -3,7 +3,7 @@
 namespace App\DTO\Enums;
 
 use App\DTO\SortDTO;
-use App\DTO\SortItem;
+use App\DTO\Enums\Catalogs\SortCatalog;
 
 enum SortEnum: string
 {
@@ -15,21 +15,21 @@ enum SortEnum: string
   {
     return match ($this) {
       SortEnum::FAVORITES => new SortDTO([
-        new SortItem('Дата добавления', 'created_at'),
-        new SortItem('Цена', 'current_price'),
-        new SortItem('Популярность', 'rating_count'),
-        new SortItem('Рейтинг', 'rating_value'),
+        new SortCatalog('Дата добавления', 'created_at'),
+        new SortCatalog('Цена', 'current_price'),
+        new SortCatalog('Популярность', 'rating_count'),
+        new SortCatalog('Рейтинг', 'rating_value'),
       ]),
 
       SortEnum::CATALOG => new SortDTO([
-        new SortItem('Популярность', 'rating_count'),
-        new SortItem('Цена', 'min_price'),
-        new SortItem('Рейтинг', 'rating_value'),
+        new SortCatalog('Популярность', 'rating_count'),
+        new SortCatalog('Цена', 'min_price'),
+        new SortCatalog('Рейтинг', 'rating_value'),
       ]),
 
       SortEnum::ORDERS => new SortDTO([
-        new SortItem('Дата', 'created_at'),
-        new SortItem('Стоимость', 'total_cost'),
+        new SortCatalog('Дата', 'created_at'),
+        new SortCatalog('Стоимость', 'total_cost'),
       ])
     };
   }

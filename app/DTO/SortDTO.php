@@ -2,20 +2,13 @@
 
 namespace App\DTO;
 
+use App\DTO\Enums\Catalogs\SortCatalog;
+
 class SortDTO
 {
-  /** @param array<SortItem> $sorts */
+  /** @param array<SortCatalog> $sorts */
   public function __construct(
     public array $sorts
-  ) {
-  }
-}
-
-class SortItem
-{
-  public function __construct(
-    public string $label,
-    public string $value
   ) {
   }
 }
