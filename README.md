@@ -15,21 +15,3 @@ App/Services/MesagesToUser/Email/{entity-name}Mailable
 и App/Services/MessagesToUser/Telegram/{entity-name}Telegramable: LoginMailable, LoginTelegramable
 
 Для того, чтобы выслать сообщение, используется MTUController (MTU - Messages To User). Он определяет, какие каналы указаны пользователем. Метод send принимает в себя наследников Mailable, Telegramable и т.д. Далее он смотрит на доступные каналы связи и высылает сообщение в них.
-
-## DTO
-
-Data Transfer Objects используются для удобного определения наборов данных для их дальнейшего использования. В основном, это некоторые настройки для различных сущностей. Хранятся в App\DTO
-
-- (entity-name)DTOCollection - Класс, представляющий непосредственно DTO. В его конструктрор передаются аргументы, которые записываются в класс и могут в дальнейшем быть доступны при получении этого DTO. DTO можно получить через (entity-name)DTOCollection.
-- DTOCollection - Родительский класс, от которого нужно наследовать (entity-name)DTOCollection. Он имеет метод register, позволяющий зарегистрировать DTO по ключу key и в дальнейшем его получить через метод DTOCollection::getDTO(key) или через DTOCollectiongetAllDTOs.
-
-Подробнее о существующих DTO:
-
-- App\DTO\Auth:
-Регистрирует сущности, позволяющие работать с авторизацией пользователя. Например, вход по коду через Email или Telegram. Эти же сущности возможно подтверждать (email_verified_at), либо подтверждение указывается другим образом (наличие чата с телегой).
-
-- App\DTO\ConfirmationPurpose
-Используется в связке с таблицей confirmations, позволяющей делать подтверждение чего-либо путём сообщения кода пользователю
-
-- App\DTO\MessagesToUser
-Используется для настроек упомянутого MTU (Messages To User)

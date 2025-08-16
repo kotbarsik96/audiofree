@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ConfirmationPurposeEnum;
+use App\DTO\Enums\ConfirmationPurposeEnum;
 use App\Filters\QueryFilter;
 use App\Models\Cart\Cart;
 use App\Models\Confirmation;

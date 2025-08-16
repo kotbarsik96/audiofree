@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
-use App\Enums\ConfirmationPurposeEnum;
+use App\DTO\Enums\ConfirmationPurposeEnum;
 use App\Services\MessagesToUser\MTUController;
 use Hash;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -32,16 +31,6 @@ class Confirmation extends BaseModel
     'sent_to' => 'json'
   ];
 
-  public static function getTtl($purpose)
-  {
-    return ConfirmationPurposeDTOCollection::getDTO($purpose)->ttl;
-  }
-
-  public static function getCodeLength($purpose)
-  {
-    return ConfirmationPurposeDTOCollection::getDTO($purpose)->codeLength;
-  }
-
   /**
    * Получить дату истечения действия кода (к текущему timestamp'у прибавить указанное кол-во секунд)
    * @param $timestamp - кол-во секунд
@@ -58,7 +47,7 @@ class Confirmation extends BaseModel
    * Создаёт код по указанной цели пользователю. 
    * 
    * Если передан $mtu - отправит код автоматически. Но, в этом случае, если некуда отправить код - выбросит ошибку
-   * @param string $purpose - цель. Должна быть зарегистрирована в App\DTO\ConfirmationPurpose\ConfirmationPurposeDTOCollection;
+   * @param $purpose - цель. Должна быть зарегистрирована в App\DTO\Enums\ConfirmationPurposeEnum
    * @param \App\Models\User $user - пользователь
    */
   public static function createCode(
@@ -66,9 +55,9 @@ class Confirmation extends BaseModel
     User $user,
     ?MTUController $mtu = null
   ): static {
-    $code = CodePhrase::generateNumeric(self::getCodeLength($purpose));
+    $code = CodePhrase::generateNumeric($purpose->dto()->codeLength);
     $hashedCode = Hash::make($code);
-    $ttl = self::getTtl($purpose);
+    $ttl = $purpose->dto()->ttl;
 
     /** Если передан экземпляр MessagesToUserController'а, осуществить проверки и записать код */
     if (!!$mtu) {

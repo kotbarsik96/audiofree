@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\Sort\SortDTOCollection;
-use App\Enums\SortEnum;
+use App\DTO\Enums\SortEnum;
 use App\Filters\ProductFilter;
 use App\Models\Favorite;
 use App\Models\Product;
@@ -40,7 +39,7 @@ class FavoritesController extends Controller
 
   public function get(ProductFilter $request)
   {
-    $sortData = SortDTOCollection::getSortsFromRequest(SortEnum::FAVORITES);
+    $sortData = SortEnum::getSortsFromRequest(SortEnum::FAVORITES);
 
     $favoriteFields = ['favorites.id', 'favorites.created_at'];
     $productFields = [

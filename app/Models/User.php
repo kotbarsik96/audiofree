@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\DTO\Auth\AuthDTOCollection;
-use App\Enums\AuthEnum;
-use App\Enums\ConfirmationPurposeEnum;
+use App\DTO\Enums\AuthEnum;
+use App\DTO\Enums\ConfirmationPurposeEnum;
 use App\Models\Telegram\TelegraphChat;
 use App\Services\MessagesToUser\MTUController;
 use Orchid\Filters\Types\Like;
@@ -191,14 +190,16 @@ class User extends Authenticatable
   }
 
   /**
-   * Получить пользователя по логину (возможные логины зарегистрированы в AuthDTOCollection)
+   * Получить пользователя по логину (возможные логины зарегистрированы в AuthEnum)
    * 
    * если пользователь не найден - выдать ошибку
    */
   public static function getByLogin(string $login): static
   {
     $user = null;
-    foreach (AuthDTOCollection::getAllDTOs(AuthEnum::cases()) as $dto) {
+    foreach (AuthEnum::cases() as $dtoEnum) {
+      $dto = $dtoEnum->dto();
+
       if ($user)
         break;
 
@@ -220,7 +221,7 @@ class User extends Authenticatable
 
   /**
    * Создать и отправить код пользователю (если код для $purpose уже есть - выбросит ошибку)
-   * @param \App\Enums\ConfirmationPurposeEnum $purpose - цель отправки
+   * @param \App\DTO\Enums\ConfirmationPurposeEnum $purpose - цель отправки
    * @param array $ables - способы, которыми можно отправить код (экземпляры Mailable, Telegramable)
    */
   public function createAndSendCode(ConfirmationPurposeEnum $purpose, array $ables)

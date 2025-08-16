@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\Auth\AuthDTO;
-use App\DTO\Auth\AuthDTOCollection;
-use App\Enums\AuthEnum;
-use App\Enums\ConfirmationPurposeEnum;
+use App\DTO\AuthDTO;
+use App\DTO\Enums\AuthEnum;
+use App\DTO\Enums\ConfirmationPurposeEnum;
 use App\Models\User;
 use App\Services\MessagesToUser\Telegramable\ResetPasswordTelegramable;
 use Illuminate\Http\Request;
@@ -37,7 +36,8 @@ class AuthController extends Controller
     // пользователь, указавший только логин, получит код авторизации
     else {
       // найти один из указанных ресурсов в логине и выслать код туда
-      foreach (AuthDTOCollection::getAllDTOs(keys: AuthEnum::cases()) as $dto) {
+      foreach (AuthEnum::cases() as $dtoEnum) {
+        $dto = $dtoEnum->dto();
         // если код уже был выслан - выйти из цикла
         if ($codeSentTo)
           break;
@@ -69,7 +69,7 @@ class AuthController extends Controller
     return $response ?? response([
       'ok' => false,
       'message' => __('validation.login.required', [
-        'possibleLogins' => AuthDTOCollection::getPossibleAuths('/')
+        'possibleLogins' => AuthEnum::getPossibleAuths('/')
       ])
     ], 422);
   }
@@ -125,7 +125,7 @@ class AuthController extends Controller
     $codeValid = Confirmation::validateCode($purpose, $user->id, $code);
     if ($codeValid || $isDev) {
       // выставить подтверждение логина
-      $dto = AuthDTOCollection::getDTOByLogin($user, $login);
+      $dto = AuthEnum::getDTOByLogin($user, $login);
       $user->update([
         $dto->verifiedColumName => Carbon::now()
       ]);
@@ -189,7 +189,7 @@ class AuthController extends Controller
           ]
         ]);
       } else {
-        $dto = AuthDTOCollection::getDTOByLogin($user, $request->login);
+        $dto = AuthEnum::getDTOByLogin($user, $request->login);
         $sentTo = $this->sendLoginCode($user, $dto->loginAble);
         $response = response([
           'ok' => true,
@@ -311,30 +311,31 @@ class AuthController extends Controller
     ]);
   }
 
-  public function getAuthDTO(AuthEnum|string $entity): AuthDTO
+  public function getAuthDTO(AuthEnum|string|null $enum): AuthDTO
   {
-    $dto = AuthDTOCollection::getDTO($entity);
     throw_if(
-      !$dto,
+      is_string($enum) || !isset($enum),
       new UnprocessableEntityHttpException(__('abortions.noVerificationEntity'))
     );
+
+    $dto = $enum->dto();
 
     return $dto;
   }
 
   /**
-   * Запросить подтверждение ресурса, зарегистрированного в AuthDTOCollection
+   * Запросить подтверждение ресурса, зарегистрированного в AuthEnum
    */
   public function requestVerification(Request $request)
   {
-    $entity = AuthDTOCollection::entityToVerificationEnum($request->entity);
-    $dto = $this->getAuthDTO($entity);
+    $enum = AuthEnum::fromValue($request->entity);
+    $dto = $this->getAuthDTO($enum);
     throw_if(
       !$dto->verifiedColumName,
       new BadRequestHttpException(__('abortions.verificationIsUnavailable'))
     );
 
-    $purpose = AuthDTOCollection::entityToPurpose($entity);
+    $purpose = AuthEnum::authToPurpose($enum);
     $verifiedColumnName = $dto->verifiedColumName;
     $user = User::find(auth()->user()->id);
 
@@ -358,14 +359,14 @@ class AuthController extends Controller
   }
 
   /**
-   * Проверить код и подтвердить ресурс, зарегистрированный в AuthDTOCollection
+   * Проверить код и подтвердить ресурс, зарегистрированный в AuthEnum
    */
   public function confirmVerification(Request $request)
   {
-    $entity = AuthDTOCollection::entityToVerificationEnum($request->entity);
+    $entity = AuthEnum::fromValue($request->entity);
     $entityStr = $entity->value;
     $dto = $this->getAuthDTO($entity);
-    $purpose = AuthDTOCollection::entityToPurpose($entity);
+    $purpose = AuthEnum::authToPurpose($entity);
     $code = $request->code;
 
     $user = auth()->user();

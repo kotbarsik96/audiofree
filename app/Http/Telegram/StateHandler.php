@@ -2,7 +2,7 @@
 
 namespace App\Http\Telegram;
 
-use App\Enums\ConfirmationPurposeEnum;
+use App\DTO\Enums\ConfirmationPurposeEnum;
 use App\Models\Confirmation;
 use App\Models\Telegram\TelegraphBot;
 use App\Models\Telegram\TelegraphChat;
