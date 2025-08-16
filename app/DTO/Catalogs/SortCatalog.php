@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO\Enums\Catalogs;
+namespace App\DTO\Catalogs;
 
 class SortCatalog
 {

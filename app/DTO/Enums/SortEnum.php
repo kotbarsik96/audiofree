@@ -3,7 +3,7 @@
 namespace App\DTO\Enums;
 
 use App\DTO\SortDTO;
-use App\DTO\Enums\Catalogs\SortCatalog;
+use App\DTO\Catalogs\SortCatalog;
 
 enum SortEnum: string
 {

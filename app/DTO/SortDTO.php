@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\DTO\Enums\Catalogs\SortCatalog;
+use App\DTO\Catalogs\SortCatalog;
 
 class SortDTO
 {
