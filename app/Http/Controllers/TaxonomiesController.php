@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Enums\ProductFilterEnum;
 use App\DTO\Enums\SortEnum;
 use App\Models\Taxonomy\Taxonomy;
 
@@ -9,11 +10,7 @@ class TaxonomiesController extends Controller
 {
   public function catalogFilters()
   {
-    $filters = Taxonomy::filters()->select(['id', 'name', 'slug'])
-      ->with('values:id,slug,value,value_slug')
-      ->get();
-
-    $filters = Taxonomy::mapFilters($filters);
+    $filters = array_map(fn($enum) => $enum->dto(), ProductFilterEnum::cases());
 
     return response([
       'ok' => true,
