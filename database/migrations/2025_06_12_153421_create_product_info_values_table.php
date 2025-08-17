@@ -4,8 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+/** Данная таблица служит для хранения всех доступных значений характеристик и используется в фильтрах на фронте. products_info, в отличие от этой таблицы, хранит характеристики по конкретно товарам */
+return new class extends Migration {
     /**
      * Run the migrations.
      */
