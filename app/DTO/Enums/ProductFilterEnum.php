@@ -5,6 +5,7 @@ namespace App\DTO\Enums;
 use App\DTO\ProductFilterCheckboxDTO;
 use App\DTO\ProductFilterInfoDTO;
 use App\DTO\ProductFilterRangeDTO;
+use Illuminate\Http\Request;
 
 enum ProductFilterEnum: string
 {
@@ -16,7 +17,7 @@ enum ProductFilterEnum: string
   case INFO = 'info';
   case HAS_DISCOUNT = 'has_discount';
 
-  public function dto()
+  public function dto(Request $request)
   {
     return match ($this) {
       static::BRAND => ProductFilterCheckboxDTO::loadFromTaxonomy('brand'),
@@ -27,7 +28,7 @@ enum ProductFilterEnum: string
 
       static::TYPE => ProductFilterCheckboxDTO::loadFromTaxonomy('type'),
 
-      static::PRICE => ProductFilterRangeDTO::loadPrice(),
+      static::PRICE => ProductFilterRangeDTO::loadPrice($request),
 
       static::INFO => ProductFilterInfoDTO::load(),
 

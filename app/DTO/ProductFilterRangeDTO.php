@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use App\Filters\ProductFilter;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductFilterRangeDTO
 {
@@ -12,14 +13,14 @@ class ProductFilterRangeDTO
   public function __construct(
     public string $slug,
     public string $name,
-    public int $min,
-    public int $max,
+    public int | null $min,
+    public int | null $max,
   ) {
   }
 
-  public static function loadPrice()
+  public static function loadPrice(Request $request)
   {
-    $filter = new ProductFilter(request());
+    $filter = new ProductFilter($request);
 
     $prices = Product::select([
       'min_price' => Product::minPrice()

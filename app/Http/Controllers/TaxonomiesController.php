@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\DTO\Enums\ProductFilterEnum;
 use App\DTO\Enums\SortEnum;
 use App\Models\Taxonomy\Taxonomy;
+use Illuminate\Http\Request;
 
 class TaxonomiesController extends Controller
 {
-  public function catalogFilters()
+  public function catalogFilters(Request $request)
   {
-    $filters = array_map(fn($enum) => $enum->dto(), ProductFilterEnum::cases());
+    $filters = array_map(fn($enum) => $enum->dto($request), ProductFilterEnum::cases());
 
     return response([
       'ok' => true,

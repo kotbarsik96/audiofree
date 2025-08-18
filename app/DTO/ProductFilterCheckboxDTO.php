@@ -8,10 +8,10 @@ use App\Models\Taxonomy\Taxonomy;
 class ProductFilterCheckboxDTO
 {
   public function __construct(
-    public int $id,
     public ProductFilterCheckboxTypeEnum $type,
     public string $slug,
     public string $name,
+    /** @param array{value: string, value_slug: string} $values */
     public array $values = [],
   ) {
   }
@@ -24,7 +24,6 @@ class ProductFilterCheckboxDTO
       ->first();
 
     return new static(
-      $taxonomy->id,
       ProductFilterCheckboxTypeEnum::CHECKBOX,
       $taxonomy->slug,
       $taxonomy->name,
@@ -35,13 +34,14 @@ class ProductFilterCheckboxDTO
   public static function initHasDiscount()
   {
     return new static(
-      100,
       ProductFilterCheckboxTypeEnum::CHECKBOX_BOOLEAN,
       'has_discount',
       'Скидка',
       [
-        'value' => 'Есть скидка',
-        'value_slug' => 'has_discount'
+        [
+          'value' => 'Есть скидка',
+          'value_slug' => 'has_discount'
+        ]
       ]
     );
   }
