@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Product\ProductInfo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Str;
 
 class ProductInfoValue extends Model
@@ -18,6 +19,8 @@ class ProductInfoValue extends Model
 
     public static function updateTable()
     {
+        $now = DB::raw("NOW()");
+
         // Характеристики, уже существующие в таблице
         $storedInfo = ProductInfoValue::all();
         // Характеристики, которые будут удалены из-за того, что отсутствуют у всех товаров (изначально просто копия $storedInfo, из которого будут удаляться элементы при прохождении по товарам)
@@ -26,9 +29,9 @@ class ProductInfoValue extends Model
         $infoToStore = collect();
 
         // Проход по каждому товару
-        Product::lazy()->each(function (Product $product) use ($storedInfo, $infoToStore, &$infoToDelete) {
+        Product::lazy()->each(function (Product $product) use ($storedInfo, $infoToStore, &$infoToDelete, $now) {
             // Проход по каждой характеристике товара
-            $product->info->each(function (ProductInfo $info) use ($storedInfo, $infoToStore, &$infoToDelete) {
+            $product->info->each(function (ProductInfo $info) use ($storedInfo, $infoToStore, &$infoToDelete, $now) {
                 // Поиск несохранённых характеристик (нет в таблице product_info_values)
                 $isNotStored = !$storedInfo
                     ->first(
@@ -55,7 +58,9 @@ class ProductInfoValue extends Model
                         [
                             'name' => $info->name,
                             'value' => $info->value,
-                            'slug' => $info->slug
+                            'slug' => $info->slug,
+                            'created_at' => $now,
+                            'updated_at' => $now,
                         ]
                     );
                 }
