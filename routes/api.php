@@ -41,8 +41,11 @@ Route::get('products/catalog/filters', [TaxonomiesController::class, 'catalogFil
 Route::get('products/catalog/sorts', [TaxonomiesController::class, 'catalogSorts']); // 2.4
 Route::get('products/{productId}/reviews', [ProductsController::class, 'reviews']); // 2.5
 
-// 7.1 SEO
-Route::get('page/{slug}', [SeoController::class, 'getPageInfo']);
+// 7. SEO
+Route::get('page/{slug}', [SeoController::class, 'getPageInfo']); // 7.1
+
+// 8. Search
+Route::get('search/products', [SearchController::class, 'products']); // 8.2
 
 Route::middleware('auth:sanctum')->group(function () {
   // 1. User

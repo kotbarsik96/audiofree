@@ -17,4 +17,10 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
+if (env('DEV_MODE') && env('DEV_MODE') !== 'false') {
+    Route::get('/test', function () {
+        
+    });
+}
+
 require __DIR__.'/auth.php';

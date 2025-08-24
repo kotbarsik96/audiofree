@@ -28,5 +28,6 @@ return [
   'messageNotSend' => 'Не удалось отправить сообщение',
   'cannotResetPassword' => 'Не удалось сбросить пароль. Попробуйте использовать код авторизации',
   'pageNotFound' => 'Страница не найдена',
-  'noSearchResults' => 'Результаты не найдены'
+  'noSearchResults' => 'Результаты не найдены',
+  'incorrectProductSearchType' => 'Неверный параметр type'
 ];

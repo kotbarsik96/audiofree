@@ -17,11 +17,6 @@ class TestController extends Controller
 {
   public function test(Request $request)
   {
-    $value = trim($request->input('value'));
-    $token = env('DADATA_API_KEY');
-    $secret = env('DADATA_SECRET_KEY');
-    $dadata = new \Dadata\DadataClient($token, $secret);
-
-    return $dadata->clean('address', $value);
+    
   }
 }
