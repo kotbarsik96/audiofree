@@ -5,8 +5,6 @@ namespace App\Services\Search\SearchProduct;
 use App\DTO\Enums\SearchProductEnum;
 use App\DTO\SearchProductDTO;
 use App\Models\Product;
-use App\Models\Product\ProductVariation;
-use Illuminate\Support\Collection;
 
 class SearchProduct
 {
@@ -38,64 +36,60 @@ class SearchProduct
   {
     array_push(
       $this->results,
-      ...$this->getProductVariations()->toArray(),
-      ...$this->getProducts()->toArray()
+      ...$this->searchAndMapProducts()
     );
 
     return $this;
   }
 
-  /**
-   * @return Collection<SearchProductResult>
-   */
-  public function getProducts()
+  public function searchAndMapProducts()
   {
-    return Product::whereFullText(
-      ['name', 'slug', 'description'],
-      $this->searchValue
-    )
-      ->paginate($this->searchSettings->productResultsPerPage)
-      ->map(function (Product $product) {
-        $description = strip_tags($product->description);
-        $regex = '/(\b\S+\b\s+)?(\S+)?'.$this->searchValue.'(\S+)?(\s+\b\S+\b)?/iu';
+    $products = Product::join('product_variations', 'product_variations.product_id', '=', 'products.id')
+      ->join('taxonomy_values as brands', 'brands.id', '=', 'products.brand_id')
+      ->join('taxonomy_values as categories', 'categories.id', '=', 'products.category_id')
+      ->join('taxonomy_values as types', 'types.id', '=', 'products.type_id')
+      ->select([
+        'products.id as product_id',
+        'products.name as product_name',
+        'products.slug as product_slug',
+        'products.description as description',
+        'product_variations.id as variation_id',
+        'product_variations.name as variation_name',
+        'product_variations.slug as variation_slug',
+        'brands.value as brand',
+        'categories.value as category',
+        'types.value as type'
+      ])
+      ->whereRaw('MATCH(brands.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+      ->orWhereRaw('MATCH(categories.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+      ->orWhereRaw('MATCH(types.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+      ->orWhereRaw('MATCH(products.name, products.slug, products.description) AGAINST(+? IN BOOLEAN MODE)', [$this->searchValue])
+      ->orWhereRaw('MATCH(product_variations.name, product_variations.slug) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+      ->paginate($this->searchSettings->productResultsPerPage);
 
-        preg_match_all($regex, $description, $matches);
-        $firstDescriptionMatch = '';
-        if (!empty($matches[0]) && !empty($matches[0][0])) {
-          $firstDescriptionMatch = $matches[0][0];
-          $firstDescriptionMatch = preg_replace(
-            '/('.$this->searchValue.')/',
-            '<span>$1</span>',
-            $firstDescriptionMatch
-          );
-        }
+    return $products->map(function ($productResult) {
+      $description = strip_tags($productResult->description);
+      $regex = '/(\b\S+\b\s+)?(\S+)?'.$this->searchValue.'(\S+)?(\s+\b\S+\b)?/iu';
 
-        return new SearchProductResult(
-          $product->name,
-          __('general.product'),
-          $firstDescriptionMatch,
-          $this->buildLink('product/'.$product->slug.'/'.$product->firstVariation->slug),
-          $product->image
+      preg_match_all($regex, $description, $matches);
+      $firstDescriptionMatch = '';
+      if (!empty($matches[0]) && !empty($matches[0][0])) {
+        $firstDescriptionMatch = $matches[0][0];
+        $firstDescriptionMatch = preg_replace(
+          '/('.$this->searchValue.')/',
+          '<span>$1</span>',
+          $firstDescriptionMatch
         );
-      });
-  }
+      }
 
-  /**
-   * @return Collection<SearchProductResult>
-   */
-  public function getProductVariations()
-  {
-    return ProductVariation::whereFullText(['name', 'slug'], $this->searchValue)
-      ->paginate($this->searchSettings->productResultsPerPage)
-      ->map(function (ProductVariation $variation) {
-        return new SearchProductResult(
-          $variation->product->name.' ('.$variation->name.')',
-          __('general.product'),
-          '',
-          $this->buildLink('product/'.$variation->product->slug.'/'.$variation->slug),
-          $variation->image
-        );
-      });
+      return new SearchProductResult(
+        $productResult->product_name.'('.$productResult->variation_name.')',
+        __('general.product'),
+        $firstDescriptionMatch,
+        $this->buildLink('product/'.$productResult->product_slug.'/'.$productResult->variation_slug),
+        Product::find($productResult->product_id)->image->url()
+      );
+    });
   }
 
   public function byFilters()
