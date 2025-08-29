@@ -10,21 +10,11 @@ class StringsService
       ."/confirmation/reset-password?code=".$code."&login=".$login;
   }
 
-  public static function enumToStringsArray($cases)
+  public static function enumToStringsArray($cases) // todo: переместить в EnumHelper
   {
     return array_map(
       fn($case) => $case->value,
       $cases
-    );
-  }
-
-  public static function enumCaseExists(string $enumCase, $enum)
-  {
-    $casesValues = array_map(fn($e) => $e->value, $enum::cases());
-
-    return in_array(
-      $enumCase,
-      $casesValues
     );
   }
 }

@@ -2,11 +2,14 @@
 
 namespace App\DTO\Enums;
 
+use App\DTO\Enums\Traits\EnumHelper;
 use App\DTO\SearchProductDTO;
 use App\Services\StringsService;
 
 enum SearchProductEnum: string
 {
+  use EnumHelper;
+
   /**
    * Поиск на отдельной странице сайта
    */
@@ -33,10 +36,5 @@ enum SearchProductEnum: string
 
       'searchbar' => static::SEARCHBAR
     };
-  }
-
-  public static function caseExists(string $case)
-  {
-    return StringsService::enumCaseExists($case, static::class);
   }
 }

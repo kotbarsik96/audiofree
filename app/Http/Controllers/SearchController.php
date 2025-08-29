@@ -27,7 +27,11 @@ class SearchController extends Controller
         );
 
         return response([
-            'data' => SearchProduct::search($request->get('value'), SearchProductEnum::fromValue($type))
+            'data' => SearchProduct::search(
+                $request->get('value'),
+                SearchProductEnum::fromValue($type),
+                $request
+            )
         ], 200);
     }
 }

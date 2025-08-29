@@ -38,5 +38,6 @@ return [
   'verificationEntityVerified' => 'Вы подтвердили :entity',
   'orderCreated' => 'Заказ №:num создан',
   'orderCancelled' => 'Заказ №:num отменен',
-  'product' => 'Товар'
+  'product' => 'Товар',
+  'catalog' => 'Каталог'
 ];

@@ -6,9 +6,12 @@ use App\DTO\ProductFilterCheckboxDTO;
 use App\DTO\ProductFilterInfoDTO;
 use App\DTO\ProductFilterRangeDTO;
 use Illuminate\Http\Request;
+use App\DTO\Enums\Traits\EnumHelper;
 
 enum ProductFilterEnum: string
 {
+  use EnumHelper;
+
   case BRAND = 'brand';
   case CATEGORY = 'category';
   case PRODUCT_STATUS = 'product_status';
