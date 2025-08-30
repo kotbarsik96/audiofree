@@ -8,10 +8,21 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\EncodedImageInterface;
 use Orchid\Attachment\Models\Attachment;
 use SplFileInfo;
+use Illuminate\Support\Facades\Hash;
 
 class ImageService
 {
   public SplFileInfo $imageInfo;
+
+  /**
+   * Обновляется при вызове saveToStorage. Путь к последнему сохранённому изображению без слеша в конце
+   */
+  protected string|null $lastSavedPath;
+
+  /**
+   * Обновляется при вызове saveToStorage. Название последнего сохранённого изображения (без расширения)
+   */
+  protected string|null $lastSavedName;
 
   public static function getImageManager()
   {
@@ -23,24 +34,27 @@ class ImageService
    */
   public static function imageToWebp(SplFileInfo $image): static
   {
-    $imagePath = $image->getPathname();
-    $imageExtension = pathinfo($imagePath, PATHINFO_EXTENSION);
+    $imageFilePath = $image->getPathname();
+    $imageExtension = pathinfo($imageFilePath, PATHINFO_EXTENSION);
 
     // сформировать новый путь на основе переданного
-    $imageName = pathinfo($imagePath, PATHINFO_FILENAME);
-    $newImagePath = dirname($imagePath)."/$imageName.webp";
-    $newImage = static::getImageManager()->read($newImagePath);
+    $imageName = pathinfo($imageFilePath, PATHINFO_FILENAME);
+    $webpImagePath = dirname($imageFilePath)."/$imageName.webp";
+    $processedImage = static::getImageManager()
+      ->read(
+        dirname($imageFilePath)."/$imageName.$imageExtension"
+      );
 
     if ($imageExtension !== 'webp') {
       // преобразовать в .webp, удалить изображение старого формата и сохранить новое
-      unlink($imagePath);
-      $newImage = $newImage->toWebp(75);
-      $newImage->save($newImagePath);
+      unlink($imageFilePath);
+      $processedImage = $processedImage->toWebp(75);
+      $processedImage->save($webpImagePath);
     } else {
-      $newImage = $newImage->encode();
+      $processedImage = $processedImage->encode();
     }
 
-    return new static($newImage, $newImagePath);
+    return new static($processedImage, $webpImagePath);
   }
 
   /** 
@@ -125,6 +139,24 @@ class ImageService
 
     Storage::put($pathWithName, (string) $this->image);
 
+    $this->lastSavedPath = $_path;
+    $this->lastSavedName = $_name;
+
     return $this;
+  }
+
+  public function getLastSavedPath()
+  {
+    return $this->lastSavedPath;
+  }
+
+  public function getLastSavedName()
+  {
+    return $this->lastSavedName;
+  }
+
+  public function makeImagePathHash()
+  {
+    return Hash::make($this->imageInfo->getRealPath());
   }
 }
