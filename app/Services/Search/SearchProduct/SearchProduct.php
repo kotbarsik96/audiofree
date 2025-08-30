@@ -54,8 +54,8 @@ class SearchProduct
     $search = new static(strip_tags($searchValue), $type, $request);
 
     return $search
-      ->byProducts()
       ->byFilters()
+      ->byProducts()
       ->getResults();
   }
 
