@@ -13,7 +13,7 @@ use App\Orchid\Screens\Seo\SeoEditScreen;
 use App\Orchid\Screens\Seo\SeoListScreen;
 use App\Orchid\Screens\Taxonomy\TaxonomyEditScreen;
 use App\Orchid\Screens\Taxonomy\TaxonomyListScreen;
-use App\Orchid\Screens\TaxonomyValueEditScreen;
+use App\Orchid\Screens\Taxonomy\TaxonomyValueEditScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;

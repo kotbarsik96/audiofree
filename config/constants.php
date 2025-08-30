@@ -5,6 +5,7 @@ return [
     'images' => [
       'products' => env('APP_NAME_SLUG').'/images/products',
       'orders' => env('APP_NAME_SLUG').'/images/orders',
+      'taxonomies' => env('APP_NAME_SLUG').'/images/taxonomies'
     ],
   ],
   'roles' => [

@@ -34,7 +34,8 @@ class TaxonomyValueRequest extends FormRequest
     return [
       'slug' => 'required|exists:taxonomies,slug',
       'value' => ['required', $uniqueRuleValue],
-      'value_slug' => ['required', $uniqueRuleValueSlug]
+      'value_slug' => ['required', $uniqueRuleValueSlug],
+      'image_id' => ['nullable', 'exists:attachments,id']
     ];
   }
 
@@ -44,6 +45,7 @@ class TaxonomyValueRequest extends FormRequest
       'slug' => __('validation.taxonomyValue.slug'),
       'value' => __('validation.taxonomyValue.value'),
       'value_slug' => __('validation.taxonomyValue.value_slug'),
+      'image_id' => __('validation.attachmentDoesntExist')
     ];
   }
 }

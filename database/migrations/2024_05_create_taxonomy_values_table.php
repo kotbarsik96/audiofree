@@ -15,11 +15,18 @@ return new class extends Migration {
       $table->string('slug');
       $table->string('value')->index();
       $table->string('value_slug');
+      $table->unsignedInteger('image_id')->nullable();
       $table->timestamps();
 
       $table->foreign('slug')->references('slug')->on('taxonomies')
         ->cascadeOnDelete()
         ->cascadeOnUpdate();
+
+      $table->foreign('image_id')
+        ->references('id')
+        ->on('attachments')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
 
       $table->fullText('value');
     });
