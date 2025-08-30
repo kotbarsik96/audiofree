@@ -168,7 +168,7 @@ class SearchProduct
             __('general.catalog'),
             '',
             $this->buildLink('catalog?'.$filterItem->slug.'='.$valueData['value_slug']),
-            null
+            $valueData['image']
           );
 
           array_push($results, $newResult);
