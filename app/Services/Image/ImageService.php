@@ -106,4 +106,25 @@ class ImageService
 
     return $this;
   }
+
+  /**
+   * @param string $path путь без указания названия
+   * @param string|null $name название без расширения. Если не указан, сформирует автоматически
+   * @return static
+   */
+  public function saveToStorage(string $path, string|null $name = null)
+  {
+    /** Без слеша в конце */
+    $filename = $this->getFilename();
+    $extension = $this->getExtension();
+
+    $_path = str_ends_with($path, '/') ? substr($path, 0, strlen($path) - 1) : $path;
+    $_name = !!$name ? "$name.$extension" : "$filename.$extension";
+
+    $pathWithName = "$_path/$_name";
+
+    Storage::put($pathWithName, (string) $this->image);
+
+    return $this;
+  }
 }

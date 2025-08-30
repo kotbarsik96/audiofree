@@ -46,8 +46,7 @@ class AttachmentSeeder extends Seeder
       $filename = $imageModified->getFilename();
 
       // сохранить в хранилище изображений
-      $path = $this->productImagesPath("/$filename.$extension");
-      Storage::put($path, (string) $image);
+      $imageModified->saveToStorage($this->productImagesPath());
 
       // связать аттачмент с базой данных
       Attachment::create(
