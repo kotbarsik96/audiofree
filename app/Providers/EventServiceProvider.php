@@ -36,8 +36,7 @@ class EventServiceProvider extends ServiceProvider
 
     Event::listen(function (UploadFileEvent $event) {
       $att = $event->attachment;
-      $imageService = new ImageService();
-      $imageService->attachmentToWebp($att);
+      ImageService::attachmentToWebp($att);
     });
   }
 

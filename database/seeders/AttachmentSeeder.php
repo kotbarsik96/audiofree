@@ -15,7 +15,7 @@ class AttachmentSeeder extends Seeder
 {
   public function productImagesPath(string|null $to = null): string
   {
-    return config('constants.paths.images.products') . $to ?? '';
+    return config('constants.paths.images.products').$to ?? '';
   }
 
   public function getStoragePath(string $path)
@@ -28,7 +28,6 @@ class AttachmentSeeder extends Seeder
     // взять изображения из /storage/app/public/images/products
     $storagePath = storage_path($this->getStoragePath($this->productImagesPath()));
     $images = File::allFiles($storagePath);
-    $imageService = new ImageService();
 
     // получить названия групп для изображения товаров и для галереи
     $groups = [
@@ -38,13 +37,13 @@ class AttachmentSeeder extends Seeder
 
     foreach ($images as $image) {
       // преобразовать изображение в .webp формат, если оно не .webp
-      $imageModified = $imageService->imageToWebp($image);
+      $imageModified = ImageService::imageToWebp($image);
       $image = $imageModified->image;
       $imageInfo = $imageModified->imageInfo;
 
       // получить расширение и имя файла
-      $extension = pathinfo($imageInfo->getRealPath(), PATHINFO_EXTENSION);
-      $filename = pathinfo($imageInfo->getRealPath(), PATHINFO_FILENAME);
+      $extension = $imageModified->getExtension();
+      $filename = $imageModified->getFilename();
 
       // сохранить в хранилище изображений
       $path = $this->productImagesPath("/$filename.$extension");
@@ -58,7 +57,7 @@ class AttachmentSeeder extends Seeder
           'mime' => "image/$extension",
           'extension' => $extension,
           'size' => $imageInfo->getSize(),
-          'path' => $this->productImagesPath() . '/',
+          'path' => $this->productImagesPath().'/',
           'user_id' => User::all()->random()->first()->id,
           'sort' => 0,
           'hash' => Hash::make($imageInfo->getRealPath()),
