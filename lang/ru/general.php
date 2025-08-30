@@ -39,5 +39,7 @@ return [
   'orderCreated' => 'Заказ №:num создан',
   'orderCancelled' => 'Заказ №:num отменен',
   'product' => 'Товар',
-  'catalog' => 'Каталог'
+  'catalog' => 'Каталог',
+  'upToNumber' => 'До :number',
+  'fromNumber' => 'От :number'
 ];

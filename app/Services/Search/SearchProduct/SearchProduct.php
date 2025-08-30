@@ -18,16 +18,29 @@ class SearchProduct
   protected $regexp;
 
   protected SearchProductDTO $searchSettings;
-  protected $searchableSlugs;
 
   public function __construct(
     protected $searchValue,
     public SearchProductEnum $type,
     public Request $request
   ) {
+    $this->searchValue = trim($this->searchValue);
     $this->searchSettings = $type->dto();
-    $this->regexp = '/('.$this->searchValue.')/ui';
-    $this->searchableSlugs = ['brand', 'category', 'type', 'price'];
+  }
+
+  public static function getSearchableSlugs()
+  {
+    return ['brand', 'category', 'type', 'price'];
+  }
+
+  public static function isSearchableFilterItem($filterItemSlug)
+  {
+    return in_array($filterItemSlug, static::getSearchableSlugs());
+  }
+
+  public function getRegexp()
+  {
+    return '/('.$this->searchValue.')/ui';
   }
 
   public static function search(
@@ -50,13 +63,13 @@ class SearchProduct
   {
     array_push(
       $this->results,
-      ...$this->searchAndMapProducts()
+      ...$this->collectAndMapProducts()
     );
 
     return $this;
   }
 
-  public function searchAndMapProducts()
+  public function collectAndMapProducts()
   {
     $products = Product::join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->join('taxonomy_values as brands', 'brands.id', '=', 'products.brand_id')
@@ -110,13 +123,13 @@ class SearchProduct
   {
     array_push(
       $this->results,
-      ...$this->getFiltersResults()
+      ...$this->collectFiltersResults()
     );
 
     return $this;
   }
 
-  public function getFiltersResults()
+  public function collectFiltersResults()
   {
     $results = [];
 
@@ -124,10 +137,10 @@ class SearchProduct
       ->each(
         function (ProductFilterCheckboxDTO|ProductFilterRangeDTO|ProductFilterInfoDTO $filterItem) use (&$results) {
           if ($filterItem instanceof ProductFilterCheckboxDTO) {
-            array_push($results, ...$this->getFilterResultsByCheckboxes($filterItem));
+            array_push($results, ...$this->collectFilterResultsByCheckboxes($filterItem));
           }
           if ($filterItem instanceof ProductFilterRangeDTO) {
-            array_push($results, ...$this->getFilterResultsByRanges($filterItem));
+            array_push($results, ...$this->collectFilterResultsByRanges($filterItem));
           }
         }
       );
@@ -135,20 +148,30 @@ class SearchProduct
     return $results;
   }
 
-  public function getFilterResultsByCheckboxes(ProductFilterCheckboxDTO $filterItem)
+  public function collectFilterResultsByCheckboxes(ProductFilterCheckboxDTO $filterItem)
   {
     $results = [];
 
-    if (in_array($filterItem->slug, $this->searchableSlugs)) {
+    if ($this->isSearchableFilterItem($filterItem->slug)) {
       foreach ($filterItem->values as $valueData) {
-        if (preg_match($this->regexp, $valueData['value']) || preg_match($this->regexp, $valueData['value_slug'])) {
-          array_push($results, new SearchProductResult(
+        $matchValueOrSlug = preg_match(
+          $this->getRegexp(),
+          $valueData['value']
+        ) || preg_match(
+          $this->getRegexp(),
+          $valueData['value_slug']
+        );
+
+        if ($matchValueOrSlug) {
+          $newResult = new SearchProductResult(
             $filterItem->name.' '.$valueData['value'],
             __('general.catalog'),
             '',
             $this->buildLink('catalog?'.$filterItem->slug.'='.$valueData['value_slug']),
             null
-          ));
+          );
+
+          array_push($results, $newResult);
         }
       }
     }
@@ -156,9 +179,40 @@ class SearchProduct
     return $results;
   }
 
-  public function getFilterResultsByRanges(ProductFilterRangeDTO $filterItem)
+  public function collectFilterResultsByRanges(ProductFilterRangeDTO $filterItem)
   {
-    return [];
+    $results = [];
+    $searchNumber = intval(preg_replace('/\D+/', '', $this->searchValue));
+    $isNumberSearched = !!$searchNumber;
+    $units = $filterItem->units ?? '';
+
+    if ($this->isSearchableFilterItem($filterItem->slug) && $isNumberSearched) {
+      if ($searchNumber <= $filterItem->max) {
+        $newResult = new SearchProductResult(
+          __('general.upToNumber', ['number' => $searchNumber]).' '.$units,
+          __('general.catalog'),
+          '',
+          $this->buildLink('catalog?max_'.$filterItem->slug.'='.$searchNumber),
+          null
+        );
+
+        array_push($results, $newResult);
+      }
+
+      if ($searchNumber >= $filterItem->min) {
+        $newResult = new SearchProductResult(
+          __('general.fromNumber', ['number' => $searchNumber]).' '.$units,
+          __('general.catalog'),
+          '',
+          $this->buildLink('catalog?min_'.$filterItem->slug.'='.$searchNumber),
+          null
+        );
+
+        array_push($results, $newResult);
+      }
+    }
+
+    return $results;
   }
 
   public function buildLink(string $to)
