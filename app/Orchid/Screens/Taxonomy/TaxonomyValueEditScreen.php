@@ -99,6 +99,7 @@ class TaxonomyValueEditScreen extends Screen
         Cropper::make('image_id')
           ->title(__('orchid.taxonomy.image'))
           ->path(config('constants.paths.images.taxonomies').'/'.$this->taxonomy->slug)
+          ->groups(config('constants.taxonomy_values.image_group'))
           ->width(500)
           ->height(500)
           ->value($this->taxonomy->image_id)

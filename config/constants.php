@@ -57,6 +57,9 @@ return [
       'Наушники' => 'headphones'
     ],
   ],
+  'taxonomy_values' => [
+    'image_group' => 'taxonomy_value'
+  ],
   'order' => [
     'image_group' => 'product_order'
   ]
