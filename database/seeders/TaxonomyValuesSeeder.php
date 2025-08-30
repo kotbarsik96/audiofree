@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Orchid\Attachment\Models\Attachment;
 
 class TaxonomyValuesSeeder extends Seeder
 {
@@ -16,10 +17,14 @@ class TaxonomyValuesSeeder extends Seeder
 
     // brands
     foreach (config('constants.taxonomy.brands') as $brand) {
+      $image = Attachment::where('description', "taxonomy_seeder_brand_$brand")
+        ->first();
+
       DB::table('taxonomy_values')->insert([
         'value' => $brand,
         'value_slug' => strtolower($brand),
         'slug' => 'brand',
+        'image_id' => $image?->id,
         'created_at' => $now,
         'updated_at' => $now
       ]);

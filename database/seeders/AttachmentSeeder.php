@@ -70,11 +70,12 @@ class AttachmentSeeder extends Seeder
 
         // сохранить в хранилище изображений
         $imageModified->saveToStorage($path);
+        $name = $imageModified->getLastSavedName();
 
         // связать аттачмент с базой данных
         $this->createAttachment(
           $imageModified,
-          "taxonomy_seeder_$slug",
+          "taxonomy_seeder_$slug"."_$name",
           config('constants.taxonomy_values.image_group')
         );
       }

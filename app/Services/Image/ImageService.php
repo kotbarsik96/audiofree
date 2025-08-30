@@ -24,6 +24,11 @@ class ImageService
    */
   protected string|null $lastSavedName;
 
+  /**
+   * Обновляется при вызове saveToStorage. Расширение последнего сохранённого изображения
+   */
+  protected string|null $lastSavedExtension;
+
   public static function getImageManager()
   {
     return new ImageManager(Driver::class);
@@ -140,7 +145,8 @@ class ImageService
     Storage::put($pathWithName, (string) $this->image);
 
     $this->lastSavedPath = $_path;
-    $this->lastSavedName = $_name;
+    $this->lastSavedName = $name ? $name : $filename;
+    $this->lastSavedExtension = $extension;
 
     return $this;
   }
@@ -153,6 +159,11 @@ class ImageService
   public function getLastSavedName()
   {
     return $this->lastSavedName;
+  }
+
+  public function getLastSavedExtension()
+  {
+    return $this->lastSavedExtension;
   }
 
   public function makeImagePathHash()
