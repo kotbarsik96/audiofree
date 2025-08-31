@@ -26,12 +26,15 @@ class SearchController extends Controller
             new BadRequestHttpException(__('abortions.incorrectProductSearchType'))
         );
 
+        $searchResults = SearchProduct::search(
+            $request->get('value'),
+            SearchProductEnum::fromValue($type),
+            $request
+        );
+
         return response([
-            'data' => SearchProduct::search(
-                $request->get('value'),
-                SearchProductEnum::fromValue($type),
-                $request
-            )
+            'data' => $searchResults->getResults(),
+            'pagination' => $searchResults->getPaginationData()
         ], 200);
     }
 }

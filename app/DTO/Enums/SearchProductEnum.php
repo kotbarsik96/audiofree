@@ -23,7 +23,8 @@ enum SearchProductEnum: string
   public function dto()
   {
     return match ($this) {
-      static::FULL => new SearchProductDTO(10),
+      // static::FULL => new SearchProductDTO(10),
+      static::FULL => new SearchProductDTO(2),
 
       static::SEARCHBAR => new SearchProductDTO(3)
     };

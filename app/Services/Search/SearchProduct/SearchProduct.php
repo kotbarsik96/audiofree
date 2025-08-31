@@ -16,7 +16,7 @@ class SearchProduct
   /** @param array<SearchProductResult> $results */
   protected array $results = [];
   protected $regexp;
-
+  protected int $resultsCount = 0;
   protected SearchProductDTO $searchSettings;
 
   public function __construct(
@@ -53,10 +53,11 @@ class SearchProduct
 
     $search = new static(strip_tags($searchValue), $type, $request);
 
-    return $search
+    $search
       ->byFilters()
-      ->byProducts()
-      ->getResults();
+      ->byProducts();
+
+    return $search;
   }
 
   public function byProducts()
@@ -71,7 +72,7 @@ class SearchProduct
 
   public function collectAndMapProducts()
   {
-    $products = Product::join('product_variations', 'product_variations.product_id', '=', 'products.id')
+    $productsQuery = Product::join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->join('taxonomy_values as brands', 'brands.id', '=', 'products.brand_id')
       ->join('taxonomy_values as categories', 'categories.id', '=', 'products.category_id')
       ->join('taxonomy_values as types', 'types.id', '=', 'products.type_id')
@@ -91,8 +92,10 @@ class SearchProduct
       ->orWhereRaw('MATCH(categories.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
       ->orWhereRaw('MATCH(types.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
       ->orWhereRaw('MATCH(products.name, products.slug, products.description) AGAINST(+? IN BOOLEAN MODE)', [$this->searchValue])
-      ->orWhereRaw('MATCH(product_variations.name, product_variations.slug) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
-      ->paginate($this->searchSettings->productResultsPerPage);
+      ->orWhereRaw('MATCH(product_variations.name, product_variations.slug) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue]);
+
+    $this->resultsCount = $this->resultsCount + $productsQuery->count();
+    $products = $productsQuery->paginate($this->searchSettings->productResultsPerPage);
 
     return $products->map(function ($productResult) {
       $description = strip_tags($productResult->description);
@@ -105,7 +108,7 @@ class SearchProduct
         $firstDescriptionMatch = preg_replace(
           '/('.$this->searchValue.')/',
           '<span>$1</span>',
-          $firstDescriptionMatch
+          '...'.$firstDescriptionMatch.'...'
         );
       }
 
@@ -121,10 +124,18 @@ class SearchProduct
 
   public function byFilters()
   {
-    array_push(
-      $this->results,
-      ...$this->collectFiltersResults()
-    );
+    $byFiltersResults = $this->collectFiltersResults();
+
+    $page = $this->request->get('page') ? intval($this->request->get('page')) : 1;
+
+    if ($page === 1) {
+      array_push(
+        $this->results,
+        ...$byFiltersResults
+      );
+    }
+
+    $this->resultsCount = $this->resultsCount + count($byFiltersResults);
 
     return $this;
   }
@@ -224,5 +235,18 @@ class SearchProduct
   public function getResults()
   {
     return $this->results;
+  }
+
+  public function getPaginationData()
+  {
+    return [
+      'page' => intval($this->request->get('page')) ?? 1,
+      'total_items' => $this->resultsCount,
+      'total_pages' => round(
+        $this->resultsCount / $this->searchSettings->productResultsPerPage,
+        0,
+        PHP_ROUND_HALF_UP
+      )
+    ];
   }
 }
