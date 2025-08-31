@@ -240,13 +240,14 @@ class SearchProduct
   public function getPaginationData()
   {
     return [
-      'page' => intval($this->request->get('page')) ?? 1,
+      'current_page' => intval($this->request->get('page')) ?? 1,
       'total_items' => $this->resultsCount,
       'total_pages' => round(
         $this->resultsCount / $this->searchSettings->productResultsPerPage,
         0,
         PHP_ROUND_HALF_UP
-      )
+      ),
+      'per_page' => $this->searchSettings->productResultsPerPage
     ];
   }
 }
