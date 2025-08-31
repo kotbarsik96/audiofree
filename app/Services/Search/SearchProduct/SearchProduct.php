@@ -110,7 +110,7 @@ class SearchProduct
       }
 
       return new SearchProductResult(
-        $productResult->product_name.'('.$productResult->variation_name.')',
+        $productResult->product_name.' ('.$productResult->variation_name.')',
         __('general.product'),
         $firstDescriptionMatch,
         $this->buildLink('product/'.$productResult->product_slug.'/'.$productResult->variation_slug),
@@ -217,7 +217,8 @@ class SearchProduct
 
   public function buildLink(string $to)
   {
-    return env('APP_FRONTEND_LINK').'/'.$to;
+    // return env('APP_FRONTEND_LINK').'/'.$to;
+    return "/$to";
   }
 
   public function getResults()
