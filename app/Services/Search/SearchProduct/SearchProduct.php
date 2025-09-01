@@ -49,7 +49,7 @@ class SearchProduct
     Request $request
   ) {
     if (!$searchValue)
-      return [];
+      return new static('', $type, $request);
 
     $search = new static(strip_tags($searchValue), $type, $request);
 
