@@ -45,16 +45,16 @@ class ImageService
     // сформировать новый путь на основе переданного
     $imageName = pathinfo($imageFilePath, PATHINFO_FILENAME);
     $webpImagePath = dirname($imageFilePath)."/$imageName.webp";
-    $processedImage = static::getImageManager()
-      ->read(
-        dirname($imageFilePath)."/$imageName.$imageExtension"
-      );
+    $processedImage = static::getImageManager()->read($imageFilePath);
 
     if ($imageExtension !== 'webp') {
       // преобразовать в .webp, удалить изображение старого формата и сохранить новое
-      unlink($imageFilePath);
-      $processedImage = $processedImage->toWebp(75);
-      $processedImage->save($webpImagePath);
+      $encoded = $processedImage->toWebp(75);
+      $encoded->save($webpImagePath);
+      if (is_file($webpImagePath)) {
+        unlink($imageFilePath);
+      }
+      $processedImage = $encoded;
     } else {
       $processedImage = $processedImage->encode();
     }

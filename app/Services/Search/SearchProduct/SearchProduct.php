@@ -40,7 +40,8 @@ class SearchProduct
 
   public function getRegexp()
   {
-    return '/('.$this->searchValue.')/ui';
+    $escaped = preg_quote($this->searchValue, '/');
+    return '/('.$escaped.')/ui';
   }
 
   public static function search(
@@ -72,10 +73,12 @@ class SearchProduct
 
   public function collectAndMapProducts()
   {
-    $productsQuery = Product::join('product_variations', 'product_variations.product_id', '=', 'products.id')
+    $baseQuery = Product::join('product_variations', 'product_variations.product_id', '=', 'products.id')
       ->join('taxonomy_values as brands', 'brands.id', '=', 'products.brand_id')
       ->join('taxonomy_values as categories', 'categories.id', '=', 'products.category_id')
-      ->join('taxonomy_values as types', 'types.id', '=', 'products.type_id')
+      ->join('taxonomy_values as types', 'types.id', '=', 'products.type_id');
+
+    $productsQuery = (clone $baseQuery)
       ->select([
         'products.id as product_id',
         'products.name as product_name',
@@ -87,14 +90,15 @@ class SearchProduct
         'brands.value as brand',
         'categories.value as category',
         'types.value as type'
-      ])
-      ->whereRaw('MATCH(brands.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
-      ->orWhereRaw('MATCH(categories.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
-      ->orWhereRaw('MATCH(types.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
-      ->orWhereRaw('MATCH(products.name, products.slug, products.description) AGAINST(+? IN BOOLEAN MODE)', [$this->searchValue])
-      ->orWhereRaw('MATCH(product_variations.name, product_variations.slug) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue]);
+      ])->where(function ($query) {
+        $query->whereRaw('MATCH(brands.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+          ->orWhereRaw('MATCH(categories.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+          ->orWhereRaw('MATCH(types.value) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue])
+          ->orWhereRaw('MATCH(products.name, products.slug, products.description) AGAINST(+? IN BOOLEAN MODE)', [$this->searchValue])
+          ->orWhereRaw('MATCH(product_variations.name, product_variations.slug) AGAINST(? IN BOOLEAN MODE)', [$this->searchValue]);
+      });
 
-    $this->resultsCount = $this->resultsCount + $productsQuery->count();
+    $this->resultsCount += (clone $productsQuery)->count();
     $products = $productsQuery->paginate($this->searchSettings->productResultsPerPage);
 
     return $products->map(function ($productResult) {
@@ -240,7 +244,7 @@ class SearchProduct
   public function getPaginationData()
   {
     return [
-      'current_page' => intval($this->request->get('page')) ?? 1,
+      'current_page' => intval($this->request->get('page') ?? 1),
       'total_items' => $this->resultsCount,
       'total_pages' => round(
         $this->resultsCount / $this->searchSettings->productResultsPerPage,
