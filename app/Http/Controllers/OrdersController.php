@@ -167,7 +167,7 @@ class OrdersController extends Controller
 
     public function getOrdersList(OrderFilter $request)
     {
-        $sortData = SortEnum::ORDERS->dto()->sorts;
+        $sortData = SortEnum::getSortsFromRequest(SortEnum::ORDERS);
 
         return response([
             'ok' => true,

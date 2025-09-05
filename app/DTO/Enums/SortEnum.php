@@ -34,13 +34,20 @@ enum SortEnum: string
     };
   }
 
+  /**
+   * @return array{sort: string, sortOrder: string}
+   */
   public static function getSortsFromRequest(
     SortEnum $sortEntity,
-    $sortBy = 'sort',
+    $sortByKey = 'sort',
     $orderKey = 'sort_order'
   ) {
     $sortsArr = $sortEntity->dto()->sorts;
-    $sort = trim(strtolower(request($sortBy, $sortsArr[0]->value)));
+
+    $sort = trim(strtolower(request($sortByKey, $sortsArr[0]->value)));
+    if (!collect($sortsArr)->first(fn(SortCatalog $item) => $item->value === $sort))
+      $sort = $sortsArr[0]->value;
+
     $sortOrder = trim(strtolower(request($orderKey)));
     if ($sortOrder !== 'asc' && $sortOrder !== 'desc')
       $sortOrder = 'asc';
