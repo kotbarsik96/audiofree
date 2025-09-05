@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
     $this->call([
       SeoSeeder::class,
       RolesSeeder::class,
-      TaxonomiesSeeder::class,
-      TaxonomyValuesSeeder::class,
       UserSeeder::class,
       AttachmentSeeder::class,
+      TaxonomiesSeeder::class,
+      TaxonomyValuesSeeder::class,
       ProductSeeder::class,
       ProductInfoValuesSeeder::class,
     ]);

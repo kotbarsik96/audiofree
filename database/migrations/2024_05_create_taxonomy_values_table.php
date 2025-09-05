@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
   /**
    * Run the migrations.
    */
@@ -16,11 +15,20 @@ return new class extends Migration
       $table->string('slug');
       $table->string('value')->index();
       $table->string('value_slug');
+      $table->unsignedInteger('image_id')->nullable();
       $table->timestamps();
 
       $table->foreign('slug')->references('slug')->on('taxonomies')
         ->cascadeOnDelete()
         ->cascadeOnUpdate();
+
+      $table->foreign('image_id')
+        ->references('id')
+        ->on('attachments')
+        ->cascadeOnUpdate()
+        ->nullOnDelete();
+
+      $table->fullText('value');
     });
   }
 

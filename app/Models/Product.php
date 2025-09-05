@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Events\Product\ProductCreated;
-use App\Events\Product\ProductDeleted;
-use App\Events\Product\ProductSaved;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Product\ProductInfo;
 use App\Models\Product\ProductRating;

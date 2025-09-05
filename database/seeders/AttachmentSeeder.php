@@ -6,16 +6,14 @@ use App\Models\User;
 use App\Services\Image\ImageService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Hash;
+
 use Orchid\Attachment\Models\Attachment;
-use SplFileInfo;
-use Storage;
 
 class AttachmentSeeder extends Seeder
 {
   public function productImagesPath(string|null $to = null): string
   {
-    return config('constants.paths.images.products') . $to ?? '';
+    return config('constants.paths.images.products').$to ?? '';
   }
 
   public function getStoragePath(string $path)
@@ -25,10 +23,9 @@ class AttachmentSeeder extends Seeder
 
   public function productImagesRun()
   {
-    // взять изображения из /storage/app/public/images/products
+    // взять изображения из /storage
     $storagePath = storage_path($this->getStoragePath($this->productImagesPath()));
     $images = File::allFiles($storagePath);
-    $imageService = new ImageService();
 
     // получить названия групп для изображения товаров и для галереи
     $groups = [
@@ -38,35 +35,77 @@ class AttachmentSeeder extends Seeder
 
     foreach ($images as $image) {
       // преобразовать изображение в .webp формат, если оно не .webp
-      $imageModified = $imageService->imageToWebp($image);
-      $image = $imageModified->image;
-      $imageInfo = $imageModified->imageInfo;
-
-      // получить расширение и имя файла
-      $extension = pathinfo($imageInfo->getRealPath(), PATHINFO_EXTENSION);
-      $filename = pathinfo($imageInfo->getRealPath(), PATHINFO_FILENAME);
+      $imageModified = ImageService::imageToWebp($image);
 
       // сохранить в хранилище изображений
-      $path = $this->productImagesPath("/$filename.$extension");
-      Storage::put($path, (string) $image);
+      $imageModified->saveToStorage($this->productImagesPath());
 
       // связать аттачмент с базой данных
-      Attachment::create(
-        [
-          'name' => $filename,
-          'original_name' => "$filename.$extension",
-          'mime' => "image/$extension",
-          'extension' => $extension,
-          'size' => $imageInfo->getSize(),
-          'path' => $this->productImagesPath() . '/',
-          'user_id' => User::all()->random()->first()->id,
-          'sort' => 0,
-          'hash' => Hash::make($imageInfo->getRealPath()),
-          'disk' => 's3',
-          'group' => fake()->randomElement($groups)
-        ]
+      $this->createAttachment(
+        $imageModified,
+        null,
+        fake()->randomElement($groups)
       );
     }
+  }
+
+  public function taxonomiesImagesRun()
+  {
+    // для каждого taxonomy-slug'а есть свой каталог в /storage/seeders/audiofree/images. Необходимо указать каталоги с существующими изображениями тут
+    $slugs = [
+      'brand'
+    ];
+
+    foreach ($slugs as $slug) {
+      $path = env('APP_NAME_SLUG').'/images/taxonomies/'.$slug;
+
+      $imagesPath = storage_path(
+        $this->getStoragePath($path)
+      );
+      $images = File::allFiles($imagesPath);
+
+      foreach ($images as $image) {
+        // преобразовать изображение в .webp формат, если оно не .webp
+        $imageModified = ImageService::imageToWebp($image);
+
+        // сохранить в хранилище изображений
+        $imageModified->saveToStorage($path);
+        $name = $imageModified->getLastSavedName();
+
+        // связать аттачмент с базой данных
+        $this->createAttachment(
+          $imageModified,
+          "taxonomy_seeder_$slug"."_$name",
+          config('constants.taxonomy_values.image_group')
+        );
+      }
+    }
+  }
+
+  public function createAttachment(
+    ImageService $imageModified,
+    string|null $description = null,
+    string|null $group = null
+  ) {
+    $extension = $imageModified->getExtension();
+    $filename = $imageModified->getFilename();
+
+    Attachment::create(
+      [
+        'name' => $filename,
+        'original_name' => "$filename.$extension",
+        'mime' => "image/$extension",
+        'description' => $description,
+        'extension' => $extension,
+        'size' => $imageModified->imageInfo->getSize(),
+        'path' => $imageModified->getLastSavedPath().'/',
+        'user_id' => User::all()->random()->first()->id,
+        'sort' => 0,
+        'hash' => $imageModified->makeImagePathHash(),
+        'disk' => 's3',
+        'group' => $group
+      ]
+    );
   }
 
   /**
@@ -75,5 +114,6 @@ class AttachmentSeeder extends Seeder
   public function run(): void
   {
     $this->productImagesRun();
+    $this->taxonomiesImagesRun();
   }
 }

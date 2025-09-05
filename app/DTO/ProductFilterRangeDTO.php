@@ -10,11 +10,15 @@ class ProductFilterRangeDTO
 {
   public $type = 'range';
 
+  /**
+   * @param string|null $units единицы измерения
+   */
   public function __construct(
     public string $slug,
     public string $name,
-    public int | null $min,
-    public int | null $max,
+    public int|null $min,
+    public int|null $max,
+    public string|null $units
   ) {
   }
 
@@ -38,7 +42,8 @@ class ProductFilterRangeDTO
       'price',
       'Цена',
       $prices->min_price,
-      $prices->max_price
+      $prices->max_price,
+      '₽'
     );
   }
 }

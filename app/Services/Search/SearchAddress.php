@@ -13,8 +13,11 @@ class SearchAddress
   ) {
   }
 
-  public static function search(string $value)
+  public static function search(string|null $value)
   {
+    if (!$value)
+      return [];
+
     $search = new static(substr($value, 0, 290));
 
     return $search

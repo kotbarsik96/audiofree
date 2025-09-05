@@ -29,6 +29,8 @@ return new class extends Migration {
         ->on('attachments')
         ->cascadeOnUpdate()
         ->nullOnDelete();
+
+      $table->fullText(['name', 'slug']);
     });
   }
 

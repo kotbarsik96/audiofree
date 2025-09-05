@@ -7,10 +7,10 @@ class StringsService
   public static function resetLink(string $code, string $login): string
   {
     return env("APP_FRONTEND_LINK", "")
-      . "/confirmation/reset-password?code=" . $code . "&login=" . $login;
+      ."/confirmation/reset-password?code=".$code."&login=".$login;
   }
 
-  public static function enumToStringsArray($cases)
+  public static function enumToStringsArray($cases) // todo: переместить в EnumHelper
   {
     return array_map(
       fn($case) => $case->value,

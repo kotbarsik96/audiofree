@@ -183,6 +183,7 @@ return [
   'telegram' => [
     'regex' => 'Формат ника telegram: @login',
   ],
+  'attachmentDoesntExist' => 'Вложение не существует',
 
   'error' => 'Ошибка',
 

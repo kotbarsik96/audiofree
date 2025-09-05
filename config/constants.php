@@ -5,6 +5,7 @@ return [
     'images' => [
       'products' => env('APP_NAME_SLUG').'/images/products',
       'orders' => env('APP_NAME_SLUG').'/images/orders',
+      'taxonomies' => env('APP_NAME_SLUG').'/images/taxonomies'
     ],
   ],
   'roles' => [
@@ -55,6 +56,9 @@ return [
     'categories' => [
       'Наушники' => 'headphones'
     ],
+  ],
+  'taxonomy_values' => [
+    'image_group' => 'taxonomy_value'
   ],
   'order' => [
     'image_group' => 'product_order'

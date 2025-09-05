@@ -4,6 +4,8 @@ namespace App\DTO;
 
 use App\DTO\Enums\ProductFilterCheckboxTypeEnum;
 use App\Models\Taxonomy\Taxonomy;
+use App\Models\Taxonomy\TaxonomyValue;
+use Orchid\Attachment\Models\Attachment;
 
 class ProductFilterCheckboxDTO
 {
@@ -11,7 +13,7 @@ class ProductFilterCheckboxDTO
     public ProductFilterCheckboxTypeEnum $type,
     public string $slug,
     public string $name,
-    /** @param array{value: string, value_slug: string} $values */
+    /** @param array{value: string, value_slug: string, image_id: string} $values */
     public array $values = [],
   ) {
   }
@@ -20,8 +22,14 @@ class ProductFilterCheckboxDTO
   {
     $taxonomy = Taxonomy::select(['id', 'slug', 'name'])
       ->where('slug', $slug)
-      ->with('values:id,slug,value,value_slug')
+      ->with('values:id,slug,value,value_slug,image_id')
       ->first();
+
+    $taxonomy->values = $taxonomy->values->map(function (TaxonomyValue $tValue) {
+      $tValue['image'] = Attachment::find($tValue->image_id)?->url();
+      unset($tValue['image_id']);
+      return $tValue;
+    });
 
     return new static(
       ProductFilterCheckboxTypeEnum::CHECKBOX,

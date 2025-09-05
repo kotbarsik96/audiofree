@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Orchid\Screens;
+namespace App\Orchid\Screens\Taxonomy;
 
 use App\Http\Requests\Taxonomy\TaxonomyValueRequest;
 use App\Models\Taxonomy\Taxonomy;
 use App\Models\Taxonomy\TaxonomyValue;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\Cropper;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Alert;
@@ -43,6 +44,7 @@ class TaxonomyValueEditScreen extends Screen
       'value' => $tValue->value,
       'slug' => $taxonomy->slug,
       'value_slug' => $tValue->value_slug,
+      'image_id' => $tValue->image_id,
       'id' => $tValue->id,
     ];
   }
@@ -55,7 +57,7 @@ class TaxonomyValueEditScreen extends Screen
   public function name(): ?string
   {
     return $this->tValue->exists
-      ? __('Taxonomy value edit') . ': ' . $this->taxonomy->name
+      ? __('Taxonomy value edit').': '.$this->taxonomy->name
       : 'Taxonomy value create';
   }
 
@@ -93,6 +95,15 @@ class TaxonomyValueEditScreen extends Screen
 
         Input::make('value_slug')
           ->title(__('orchid.taxonomy.valueSlug')),
+
+        Cropper::make('image_id')
+          ->title(__('orchid.taxonomy.image'))
+          ->path(config('constants.paths.images.taxonomies').'/'.$this->taxonomy->slug)
+          ->groups(config('constants.taxonomy_values.image_group'))
+          ->width(500)
+          ->height(500)
+          ->value($this->taxonomy->image_id)
+          ->targetId(),
 
         Input::make('slug')
           ->type('hidden'),
