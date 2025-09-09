@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
   pecl install imagick && \
   docker-php-ext-enable imagick && \
   apt-get clean && \
+  docker-php-ext-configure pcntl --enable-pcntl && \ 
+  docker-php-ext-install pcntl && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY ./_docker/php/php.ini /usr/local/etc/php/conf.d/php.ini

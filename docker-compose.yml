@@ -23,6 +23,8 @@ services:
       - sail
     depends_on:
       - mysql
+    container_name: app_laraveltest
+
   nginx:
     image: "nginx:stable-alpine"
     ports:
@@ -33,6 +35,7 @@ services:
     container_name: app_nginx
     networks:
       - sail
+
   php: 
     build: 
       context: "."
@@ -44,6 +47,20 @@ services:
     container_name: app_php
     networks:
       - sail
+
+  reverb: 
+    build: 
+      context: "."
+      dockerfile: ./_docker/php/reverb/Dockerfile
+    volumes:
+      - ./:/var/www/audiofree
+    depends_on:
+      - mysql
+      - php
+    container_name: app_reverb
+    networks:
+      - sail
+
   mysql: 
     image: mysql:8.0
     volumes:
