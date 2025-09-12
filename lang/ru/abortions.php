@@ -29,5 +29,6 @@ return [
   'cannotResetPassword' => 'Не удалось сбросить пароль. Попробуйте использовать код авторизации',
   'pageNotFound' => 'Страница не найдена',
   'noSearchResults' => 'Результаты не найдены',
-  'incorrectProductSearchType' => 'Неверный параметр type'
+  'incorrectProductSearchType' => 'Неверный параметр type',
+  'chatUserIdNotSpecifid' => 'Не указан id пользователя, к которому привязан чат'
 ];

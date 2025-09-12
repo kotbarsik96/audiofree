@@ -266,5 +266,14 @@ return [
   'address' => [
     'invalid' => 'Несуществующий адрес',
     'addressNotFull' => 'Неполный адрес'
+  ],
+
+  'support' => [
+    'messageRequired' => 'Необходимо указать сообщение',
+    'chatUserIdRequired' => 'Необходимо указать ID пользователя чата'
+  ],
+  
+  'chat' => [
+    'cannotMessageYourself' => 'Невозмжоно отправить сообщение себе'
   ]
 ];
