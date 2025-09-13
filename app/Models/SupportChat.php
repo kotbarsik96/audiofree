@@ -21,7 +21,7 @@ class SupportChat extends Model
   ];
 
   protected $casts = [
-    'by_self' => 'boolean'
+    'by_user' => 'boolean'
   ];
 
   public function scopeChatHistory(Builder $query, $userId)

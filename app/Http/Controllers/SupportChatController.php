@@ -17,24 +17,32 @@ class SupportChatController extends Controller
       auth()->user()->id
     )->paginate($request->get('per_page') ?? 10);
 
-    return response([
-      'ok' => true,
-      'data' => $messages
-    ], 200);
+    return response($messages, 200);
   }
 
   public function userWriteMessage(Request $request)
   {
     throw_if(!$request->message, new BadRequestHttpException());
 
-    SupportChat::create([
+    $message = SupportChat::create([
       'user_id' => auth()->user()->id,
       'message_author' => auth()->user()->id,
-      'message_text' => $request->message
+      'message_text' => strip_tags($request->message)
+    ]);
+    $message->by_user = true;
+    $message = $message->only([
+      'id',
+      'message_text',
+      'by_user',
+      'created_at',
+      'updated_at'
     ]);
 
     return response([
-      'ok' => true
+      'ok' => true,
+      'data' => [
+        'message' => $message
+      ]
     ], 201);
   }
 
@@ -44,22 +52,30 @@ class SupportChatController extends Controller
       $request->chat_user_id
     )->paginate($request->get('per_page') ?? 10);
 
-    return response([
-      'ok' => true,
-      'data' => $messages
-    ], 200);
+    return response($messages, 200);
   }
 
   public function writeMessageAsSupporter(SupporterNewMessageRequest $request)
   {
-    SupportChat::create([
+    $message = SupportChat::create([
       'user_id' => $request->chat_user_id,
       'message_author' => auth()->user()->id,
-      'message_text' => $request->message
+      'message_text' => strip_tags($request->message)
+    ]);
+    $message->by_user = false;
+    $message = $message->only([
+      'id',
+      'message_text',
+      'by_user',
+      'created_at',
+      'updated_at'
     ]);
 
     return response([
-      'ok' => true
+      'ok' => true,
+      'data' => [
+        'message' => $message
+      ]
     ], 201);
   }
 }
