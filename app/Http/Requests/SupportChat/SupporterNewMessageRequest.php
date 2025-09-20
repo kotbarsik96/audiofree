@@ -16,7 +16,7 @@ class SupporterNewMessageRequest extends FormRequest
   {
     return [
       'message' => 'required',
-      'chat_user_id' => ['required', new CannotMessageSelf]
+      'chat_id' => ['required', new CannotMessageSelf]
     ];
   }
 
@@ -24,7 +24,7 @@ class SupporterNewMessageRequest extends FormRequest
   {
     return [
       'message.required' => __('validation.support.messageRequired'),
-      'chat_user_id.required' => __('validation.support.chatUserIdRequired'),
+      'chat_id.required' => __('validation.support.chatIdRequired'),
     ];
   }
 }

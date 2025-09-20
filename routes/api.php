@@ -99,16 +99,17 @@ Route::middleware('auth:sanctum')->group(function () {
     ->middleware(['throttle:search-address']); // 8.1
 
   // 9. Chats
-  Route::get('support-chat/user/history', [SupportChatController::class, 'userGetMessages']);
-  Route::post('support-chat/user/message', [SupportChatController::class, 'userWriteMessage']);
+  Route::get('support-chat/user/history', [SupportChatController::class, 'userGetMessages']); // 9.1
+  Route::post('support-chat/user/message', [SupportChatController::class, 'userWriteMessage']); // 9.2
   Route::get('support-chat/supporter/history', [
     SupportChatController::class,
-    'getMessagesAsSupporter'
-  ]);
+    'supporterGetMessages'
+  ]); // 9.3
   Route::post('support-chat/supporter/message', [
     SupportChatController::class,
-    'writeMessageAsSupporter'
-  ]);
+    'supporterWriteMessage'
+  ]); // 9.4
+  Route::get('support-chat/chats-list', [SupportChatController::class, 'supporterGetChatsList']); // 9.5
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);

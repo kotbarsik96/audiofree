@@ -270,10 +270,12 @@ return [
 
   'support' => [
     'messageRequired' => 'Необходимо указать сообщение',
-    'chatUserIdRequired' => 'Необходимо указать ID пользователя чата'
+    'chatIdRequired' => 'Необходимо указать ID чата'
   ],
   
   'chat' => [
-    'cannotMessageYourself' => 'Невозмжоно отправить сообщение себе'
+    'cannotMessageYourself' => 'Невозмжоно отправить сообщение себе',
+    'notFound' => 'Чат не найден',
+    'notExists' => 'Чат не существует'
   ]
 ];

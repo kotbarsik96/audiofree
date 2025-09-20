@@ -15,14 +15,15 @@ class SupporterRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'chat_user_id' => ['required', new CannotMessageSelf]
+      'chat_id' => ['required', new CannotMessageSelf, 'exists:support_chats,id']
     ];
   }
 
   public function messages()
   {
     return [
-      'chat_user_id.required' => __('validation.support.chatUserIdRequired'),
+      'chat_id.required' => __('validation.support.chatIdRequired'),
+      'chat_id.exists' => __('validation.chat.notExists')
     ];
   }
 }

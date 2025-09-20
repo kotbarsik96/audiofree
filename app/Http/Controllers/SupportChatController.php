@@ -2,19 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SupportChat\SupportChatsListRequest;
 use App\Http\Requests\SupportChat\SupporterNewMessageRequest;
 use App\Http\Requests\SupportChat\SupporterRequest;
-use App\Models\SupportChat;
+use App\Models\SupportChat\SupportChat;
+use App\Models\SupportChat\SupportChatMessage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class SupportChatController extends Controller
 {
   public function userGetMessages(Request $request)
   {
+    $user = auth()->user();
+
+    $supportChat = $user->supportChat;
+    if (!$supportChat) {
+      $supportChat = SupportChat::create([
+        'user_id' => $user->id
+      ]);
+    }
+
     $messages = SupportChat::chatHistory(
-      auth()->user()->id
+      $supportChat->id
     )->paginate($request->get('per_page') ?? 10);
 
     return response($messages, 200);
@@ -24,8 +34,8 @@ class SupportChatController extends Controller
   {
     throw_if(!$request->message, new BadRequestHttpException());
 
-    $message = SupportChat::create([
-      'user_id' => auth()->user()->id,
+    $message = SupportChatMessage::create([
+      'chat_id' => auth()->user()->supportChat->id,
       'message_author' => auth()->user()->id,
       'message_text' => strip_tags($request->message)
     ]);
@@ -46,19 +56,19 @@ class SupportChatController extends Controller
     ], 201);
   }
 
-  public function getMessagesAsSupporter(SupporterRequest $request)
+  public function supporterGetMessages(SupporterRequest $request)
   {
     $messages = SupportChat::chatHistory(
-      $request->chat_user_id
+      $request->chat_id
     )->paginate($request->get('per_page') ?? 10);
 
     return response($messages, 200);
   }
 
-  public function writeMessageAsSupporter(SupporterNewMessageRequest $request)
+  public function supporterWriteMessage(SupporterNewMessageRequest $request)
   {
-    $message = SupportChat::create([
-      'user_id' => $request->chat_user_id,
+    $message = SupportChatMessage::create([
+      'chat_id' => $request->chat_id,
       'message_author' => auth()->user()->id,
       'message_text' => strip_tags($request->message)
     ]);
@@ -77,5 +87,13 @@ class SupportChatController extends Controller
         'message' => $message
       ]
     ], 201);
+  }
+
+  public function supporterGetChatsList(SupportChatsListRequest $request)
+  {
+    $chats = SupportChat::chatsList()
+      ->paginate($request->per_page ?? 10);
+
+    return response($chats, 200);
   }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\DTO\Enums\AuthEnum;
 use App\DTO\Enums\ConfirmationPurposeEnum;
+use App\Models\SupportChat\SupportChat;
 use App\Models\Telegram\TelegraphChat;
 use App\Services\MessagesToUser\MTUController;
 use Orchid\Filters\Types\Like;
@@ -252,5 +253,10 @@ class User extends Authenticatable
     );
 
     return Confirmation::createCode($purpose, $this);
+  }
+
+  public function supportChat()
+  {
+    return $this->hasOne(SupportChat::class, 'user_id');
   }
 }

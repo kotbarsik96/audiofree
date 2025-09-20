@@ -14,7 +14,7 @@ class CannotMessageSelf implements ValidationRule
    */
   public function validate(string $attribute, mixed $value, Closure $fail): void
   {
-    if (intval($value) === auth()->user()->id) {
+    if (intval($value) === auth()->user()->supportChat->id) {
       $fail(__('validation.chat.cannotMessageYourself'));
     }
   }
