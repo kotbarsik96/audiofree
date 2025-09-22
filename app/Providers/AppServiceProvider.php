@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\SupportChat;
-use App\Policies\SupportChatPolicy;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +23,5 @@ class AppServiceProvider extends ServiceProvider
   public function boot(): void
   {
     App::setLocale(request()->header('Locale') ?? config('app.fallback_locale'));
-
-    Gate::policy(SupportChat::class, SupportChatPolicy::class);
   }
 }

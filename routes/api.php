@@ -110,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     'supporterWriteMessage'
   ]); // 9.4
   Route::get('support-chat/chats-list', [SupportChatController::class, 'supporterGetChatsList']); // 9.5
+  Route::get('support-chat/current-user-chat', [SupportChatController::class, 'currentUserChat']); // 9.6
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);
