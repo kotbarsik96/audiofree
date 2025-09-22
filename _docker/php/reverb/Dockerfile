@@ -5,7 +5,9 @@ FROM php:8.2-cli
 WORKDIR /var/www/audiofree
 
 # Install necessary PHP extensions
-RUN docker-php-ext-install pcntl pdo pdo_mysql
+RUN docker-php-ext-configure pcntl --enable-pcntl \
+  && docker-php-ext-install \
+    pcntl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -13,4 +15,4 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy the application
 COPY . .
 
-CMD ["php", "artisan", "reverb:start"]
+CMD ["php", "artisan", "reverb:start", "--debug"]

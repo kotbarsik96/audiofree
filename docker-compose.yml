@@ -54,6 +54,8 @@ services:
       dockerfile: ./_docker/php/reverb/Dockerfile
     volumes:
       - ./:/var/www/audiofree
+    ports:
+      - "${REVERB_PORT}:${REVERB_PORT}"
     depends_on:
       - mysql
       - php
