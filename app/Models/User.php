@@ -6,6 +6,7 @@ use App\DTO\Enums\AuthEnum;
 use App\DTO\Enums\ConfirmationPurposeEnum;
 use App\Models\SupportChat\SupportChat;
 use App\Models\Telegram\TelegraphChat;
+use App\Observers\UserObserver;
 use App\Services\MessagesToUser\MTUController;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -21,7 +22,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
   use HasApiTokens, Notifiable, HasFactory, CanUseTableNameStatically;

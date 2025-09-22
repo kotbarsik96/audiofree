@@ -38,4 +38,21 @@ class MessageEvent implements ShouldBroadcast
       new PrivateChannel('support.message.'.$this->chat->id),
     ];
   }
+
+  public function broadcastAs(): string
+  {
+    return 'support-message';
+  }
+
+  public function broadcastWith()
+  {
+    $this->message->by_user = $this->chat->user_id === $this->message->message_author;
+
+    return [
+      'event' => 'new_message',
+      'data' => [
+        'message' => $this->message->attrsToFront()
+      ]
+    ];
+  }
 }

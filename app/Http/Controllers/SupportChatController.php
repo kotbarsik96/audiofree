@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\SupportChat\MessageEvent;
+use App\Http\Requests\SupportChat\SupportChatReadRequest;
+use App\Http\Requests\SupportChat\SupportChatRequest;
 use App\Http\Requests\SupportChat\SupportChatsListRequest;
 use App\Http\Requests\SupportChat\SupporterNewMessageRequest;
 use App\Http\Requests\SupportChat\SupporterRequest;
@@ -19,11 +21,6 @@ class SupportChatController extends Controller
     $user = auth()->user();
 
     $supportChat = $user->supportChat;
-    if (!$supportChat) {
-      $supportChat = SupportChat::create([
-        'user_id' => $user->id
-      ]);
-    }
 
     $messages = SupportChat::chatHistory(
       $supportChat->id
@@ -40,19 +37,14 @@ class SupportChatController extends Controller
     $message = SupportChatMessage::create([
       'chat_id' => $user->supportChat->id,
       'message_author' => $user->id,
-      'message_text' => strip_tags($request->message)
+      'message_text' => strip_tags($request->message),
+      'was_read' => false
     ]);
     $message->by_user = true;
-    $messageAttrs = $message->only([
-      'id',
-      'message_text',
-      'by_user',
-      'created_at',
-      'updated_at'
-    ]);
+    $messageAttrs = $message->attrsToFront();
 
     $chat = SupportChat::where('user_id', $user->id)->first();
-    MessageEvent::dispatch(User::find($chat->user_id), $message, $chat);
+    MessageEvent::broadcast(User::find($chat->user_id), $message, $chat)->toOthers();
 
     return response([
       'ok' => true,
@@ -76,19 +68,14 @@ class SupportChatController extends Controller
     $message = SupportChatMessage::create([
       'chat_id' => $request->chat_id,
       'message_author' => auth()->user()->id,
-      'message_text' => strip_tags($request->message)
+      'message_text' => strip_tags($request->message),
+      'was_read' => false
     ]);
     $message->by_user = false;
-    $messageAttrs = $message->only([
-      'id',
-      'message_text',
-      'by_user',
-      'created_at',
-      'updated_at'
-    ]);
+    $messageAttrs = $message->attrsToFront();
 
     $chat = SupportChat::find($request->chat_id);
-    MessageEvent::dispatch(User::find($chat->user_id), $message, $chat);
+    MessageEvent::broadcast(User::find($chat->user_id), $message, $chat)->toOthers();
 
     return response([
       'ok' => true,
@@ -106,12 +93,25 @@ class SupportChatController extends Controller
     return response($chats, 200);
   }
 
-  public function currentUserChat()
+  public function chatInfo(SupportChatRequest $request)
   {
+    $chatId = $request->get('chat_id');
+    $chat = $chatId ? SupportChat::find($chatId) : auth()->user()->supportChat;
+
     return response([
       'data' => [
-        'chat_id' => auth()->user()->supportChat->id
+        'chat_id' => $chat->id,
       ]
+    ], 200);
+  }
+
+  public function read(SupportChatReadRequest $request)
+  {
+    SupportChatMessage::whereIn('id', $request->messages_ids_safe)
+      ->update(['read' => true]);
+
+    return response([
+      'ok' => true,
     ], 200);
   }
 }
