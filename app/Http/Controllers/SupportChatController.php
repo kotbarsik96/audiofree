@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\SupportChat\MessageEvent;
+use App\Events\SupportChat\MessageReadEvent;
 use App\Http\Requests\SupportChat\SupportChatReadRequest;
 use App\Http\Requests\SupportChat\SupportChatRequest;
 use App\Http\Requests\SupportChat\SupportChatsListRequest;
@@ -31,7 +32,7 @@ class SupportChatController extends Controller
 
   public function userWriteMessage(Request $request)
   {
-    throw_if(!$request->message, new BadRequestHttpException());
+    throw_if(!(str($request->message)), new BadRequestHttpException());
 
     $user = auth()->user();
     $message = SupportChatMessage::create([
@@ -101,6 +102,8 @@ class SupportChatController extends Controller
     return response([
       'data' => [
         'chat_id' => $chat->id,
+        'unread_messages_count' =>
+          SupportChatMessage::unreadMessages($chat)->count()
       ]
     ], 200);
   }
@@ -109,6 +112,8 @@ class SupportChatController extends Controller
   {
     SupportChatMessage::whereIn('id', $request->messages_ids_safe)
       ->update(['read' => true]);
+
+    MessageReadEvent::broadcast($request->messages_ids_safe)->toOthers();
 
     return response([
       'ok' => true,

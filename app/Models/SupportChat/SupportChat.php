@@ -18,7 +18,8 @@ class SupportChat extends Model
   ];
 
   protected $casts = [
-    'by_user' => 'boolean'
+    'by_user' => 'boolean',
+    'was_read' => 'boolean'
   ];
 
   public function scopeChatHistory(Builder $query, $chatId)
@@ -27,11 +28,14 @@ class SupportChat extends Model
       'messages.id',
       'messages.message_text',
       DB::raw('IF(support_chats.user_id = messages.message_author, 1, 0) as by_user'),
+      'users.name as author',
       'messages.created_at',
-      'messages.updated_at'
+      'messages.updated_at',
+      'messages.was_read'
     )
       ->where('support_chats.id', $chatId)
       ->join('support_chat_messages as messages', 'messages.chat_id', '=', 'support_chats.id')
+      ->join('users', 'users.id', '=', 'messages.message_author')
       ->orderByDesc('created_at');
   }
 

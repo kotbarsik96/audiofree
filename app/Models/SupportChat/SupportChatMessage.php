@@ -4,6 +4,7 @@ namespace App\Models\SupportChat;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class SupportChatMessage extends Model
 {
@@ -32,5 +33,27 @@ class SupportChatMessage extends Model
       'created_at',
       'updated_at'
     ]);
+  }
+
+  public function scopeUnreadMessages(Builder $query, SupportChat $chat)
+  {
+    $userId = auth()->user()->id;
+    $ofCurrentUser = $chat->user_id === $userId;
+
+    $returnQuery = null;
+
+    if ($ofCurrentUser) {
+      $returnQuery = $query->where('chat_id', $chat->id)
+        ->where('message_author', '!=', $userId)
+        ->where('was_read', 0)
+        ->orWhere('was_read', null);
+    } else {
+      $returnQuery = $query->where('chat_id', $chat->id)
+        ->where('message_author', '==', $chat->user_id)
+        ->where('was_read', 0)
+        ->orWhere('was_read', null);
+    }
+
+    return $returnQuery;
   }
 }

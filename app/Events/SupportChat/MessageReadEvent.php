@@ -3,7 +3,7 @@
 namespace App\Events\SupportChat;
 
 use App\Models\SupportChat\SupportChat;
-use App\Models\SupportChat\SupportChatMessage;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,15 +11,13 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
 
-class MessageEvent implements ShouldBroadcast
+class MessageReadEvent implements ShouldBroadcast
 {
   use Dispatchable, InteractsWithSockets, SerializesModels;
 
   public function __construct(
-    public User $user,
-    public SupportChatMessage $message,
+    public array $readMessagesIds,
     public SupportChat $chat
   ) {
   }
@@ -33,13 +31,11 @@ class MessageEvent implements ShouldBroadcast
 
   public function broadcastAs(): string
   {
-    return 'support-message';
+    return 'support-read-message';
   }
 
   public function broadcastWith()
   {
-    $this->message->by_user = $this->chat->user_id === $this->message->message_author;
-
-    return $this->message->attrsToFront();
+    return $this->readMessagesIds;
   }
 }
