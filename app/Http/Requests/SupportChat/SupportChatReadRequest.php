@@ -11,9 +11,9 @@ class SupportChatReadRequest extends FormRequest
   public ?SupportChat $chat;
 
   /**
-   * id'шники только тех сообщений, которые автор запроса мог прочитать
+   * id'шники только тех сообщений, которые автор запроса смог прочитать
    */
-  public ?array $messages_ids_safe;
+  public ?array $read_messages_ids;
 
   public function prepareForValidation()
   {
@@ -22,7 +22,7 @@ class SupportChatReadRequest extends FormRequest
 
   public function passedValidation()
   {
-    $messagesQuery = SupportChatMessage::whereIn('id', $this->get('messages_ids'))
+    $messagesQuery = SupportChatMessage::where('id', '>=', $this->get('first_message_id'))
       ->where('chat_id', $this->chat->id);
 
     $userId = auth()->user()->id;
@@ -35,7 +35,11 @@ class SupportChatReadRequest extends FormRequest
       $messagesQuery = $messagesQuery->where('message_author', $userId);
     }
 
-    $this->messages_ids_safe = $messagesQuery->get()->pluck('id')->toArray();
+    $this->read_messages_ids = $messagesQuery
+      ->limit($this->get('read_count'))
+      ->get()
+      ->pluck('id')
+      ->toArray();
   }
 
   public function authorize(): bool
@@ -47,7 +51,8 @@ class SupportChatReadRequest extends FormRequest
   {
     return [
       'chat_id' => ['required'],
-      'messages_ids' => ['required', 'array']
+      'first_message_id' => ['required', 'integer'],
+      'read_count' => ['required', 'integer', 'min:1']
     ];
   }
 }

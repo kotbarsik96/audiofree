@@ -22,10 +22,24 @@ class SupportChatController extends Controller
     $user = auth()->user();
 
     $supportChat = $user->supportChat;
+    $perPage = intval($request->get('per_page') ?? 10);
 
-    $messages = SupportChat::chatHistory(
-      $supportChat->id
-    )->paginate($request->get('per_page') ?? 10);
+    $messages = null;
+
+    /** Если страница в запросе не передана - найти страницу самого старого непрочитанного сообщения  */
+    if (!$request->get('page')) {
+      $unreadCount = SupportChatMessage::unreadMessages($supportChat)->count();
+      $totalCount = SupportChatMessage::where('chat_id', $supportChat->id)->count();
+      $readCount = $totalCount - $unreadCount;
+      $totalPages = ceil($totalCount / $perPage);
+      $skippedPages = round($readCount / $perPage);
+
+      $messages = SupportChat::chatHistory($supportChat->id)->paginate(perPage: $perPage, page: $totalPages - $skippedPages);
+    } else {
+      $messages = SupportChat::chatHistory(
+        $supportChat->id
+      )->paginate(perPage: $perPage);
+    }
 
     return response($messages, 200);
   }
@@ -110,13 +124,16 @@ class SupportChatController extends Controller
 
   public function read(SupportChatReadRequest $request)
   {
-    SupportChatMessage::whereIn('id', $request->messages_ids_safe)
-      ->update(['read' => true]);
+    SupportChatMessage::whereIn('id', $request->read_messages_ids)
+      ->update(['was_read' => true]);
 
-    MessageReadEvent::broadcast($request->messages_ids_safe)->toOthers();
+    MessageReadEvent::broadcast($request->read_messages_ids, $request->chat)->toOthers();
 
     return response([
       'ok' => true,
+      'data' => [
+        'read_messages' => $request->read_messages_ids
+      ]
     ], 200);
   }
 }

@@ -35,6 +35,11 @@ class SupportChatMessage extends Model
     ]);
   }
 
+  public function chat()
+  {
+    return $this->hasOne(SupportChat::class, 'id', 'chat_id');
+  }
+
   public function scopeUnreadMessages(Builder $query, SupportChat $chat)
   {
     $userId = auth()->user()->id;
