@@ -48,17 +48,35 @@ class SupportChatMessage extends Model
     $returnQuery = null;
 
     if ($ofCurrentUser) {
-      $returnQuery = $query->where('chat_id', $chat->id)
+      $returnQuery = $query
+        ->where('chat_id', $chat->id)
         ->where('message_author', '!=', $userId)
-        ->where('was_read', 0)
-        ->orWhere('was_read', null);
+        ->where(function ($query) {
+          $query->where('was_read', '=', 0)
+            ->orWhereNull('was_read');
+        });
     } else {
       $returnQuery = $query->where('chat_id', $chat->id)
-        ->where('message_author', '==', $chat->user_id)
-        ->where('was_read', 0)
-        ->orWhere('was_read', null);
+        ->where('message_author', '=', $chat->user_id)
+        ->where(function ($query) {
+          $query->where('was_read', '=', 0)
+            ->orWhereNull('was_read');
+        });
     }
-
+    
     return $returnQuery;
+  }
+
+  public function fromFirstUnreadMessage(SupportChat $chat, SupportChatMessage $firstUnreadMessage, int $perPage)
+  {
+    $previousMessagesCount = SupportChatMessage::where('created_at', '<', $firstUnreadMessage->created_at)
+      ->where('chat_id', $chat->id)
+      ->count();
+    $pagesBefore = floor($previousMessagesCount / $perPage);
+    $totalPages = ceil(SupportChatMessage::where('chat_id', $chat->id)->count() / $perPage);
+    $page = $totalPages - $pagesBefore;
+
+    return SupportChat::chatHistory($chat->id)
+      ->paginate(perPage: $perPage, page: $page);
   }
 }

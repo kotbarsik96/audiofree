@@ -23,19 +23,19 @@ class SupportChatController extends Controller
 
     $supportChat = $user->supportChat;
     $perPage = intval($request->get('per_page') ?? 10);
-
     $messages = null;
 
-    /** Если страница в запросе не передана - найти страницу самого старого непрочитанного сообщения  */
     if (!$request->get('page')) {
-      $unreadCount = SupportChatMessage::unreadMessages($supportChat)->count();
-      $totalCount = SupportChatMessage::where('chat_id', $supportChat->id)->count();
-      $readCount = $totalCount - $unreadCount;
-      $totalPages = ceil($totalCount / $perPage);
-      $skippedPages = round($readCount / $perPage);
+      $firstUnreadMessage = SupportChatMessage::unreadMessages($supportChat)
+        ->orderBy('created_at')
+        ->first();
 
-      $messages = SupportChat::chatHistory($supportChat->id)->paginate(perPage: $perPage, page: $totalPages - $skippedPages);
-    } else {
+      if ($firstUnreadMessage) {
+        $messages = SupportChatMessage::fromFirstUnreadMessage($supportChat, $firstUnreadMessage, $perPage);
+      }
+    }
+
+    if (!$messages) {
       $messages = SupportChat::chatHistory(
         $supportChat->id
       )->paginate(perPage: $perPage);
@@ -71,9 +71,25 @@ class SupportChatController extends Controller
 
   public function supporterGetMessages(SupporterRequest $request)
   {
-    $messages = SupportChat::chatHistory(
-      $request->chat_id
-    )->paginate($request->get('per_page') ?? 10);
+    $supportChat = SupportChat::find($request->chat_id);
+    $perPage = intval($request->get('per_page') ?? 10);
+    $messages = null;
+
+    if (!$request->get('page')) {
+      $firstUnreadMessage = SupportChatMessage::unreadMessages($supportChat)
+        ->orderBy('created_at')
+        ->first();
+
+      if ($firstUnreadMessage) {
+        $messages = SupportChatMessage::fromFirstUnreadMessage($supportChat, $firstUnreadMessage, $perPage);
+      }
+    }
+
+    if (!$messages) {
+      $messages = SupportChat::chatHistory(
+        $supportChat->id
+      )->paginate(perPage: $perPage);
+    }
 
     return response($messages, 200);
   }

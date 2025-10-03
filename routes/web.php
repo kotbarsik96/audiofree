@@ -4,6 +4,7 @@ use App\DTO\Enums\ProductFilterEnum;
 use App\DTO\ProductFilterCheckboxDTO;
 use App\DTO\ProductFilterInfoDTO;
 use App\DTO\ProductFilterRangeDTO;
+use App\Models\SupportChat\SupportChatMessage;
 use App\Services\Image\ImageService;
 use App\Services\Search\SearchProduct\SearchProductResult;
 use Illuminate\Support\Facades\Route;
@@ -26,15 +27,17 @@ Route::get('/', function () {
 
 if (env('DEV_MODE') && env('DEV_MODE') !== 'false') {
     Route::get('/test', function (Request $request) {
-        // return collect(ProductFilterEnum::dtoCases($request))
-        //     ->map(fn(ProductFilterCheckboxDTO|ProductFilterRangeDTO|ProductFilterInfoDTO $filterItem) => $filterItem);
+        $user = auth()->user();
 
-        $imagesProducts = File::allFiles(storage_path('seeders/'.env('APP_NAME_SLUG').'/images/products'));
-        $imagesBrand = File::allFiles(storage_path('seeders/'.env('APP_NAME_SLUG').'/images/taxonomies/brand'));
-        
-        return [
-            ImageService::imageToWebp($imagesBrand[0])            
-        ];
+        $supportChat = $user->supportChat;
+        $perPage = intval($request->get('per_page') ?? 10);
+
+        $firstUnreadMessage = SupportChatMessage::unreadMessages($supportChat)
+            ->orderBy('created_at')
+            ->first();
+
+        return SupportChatMessage::where('created_at', '<', $firstUnreadMessage->created_at)
+            ->where('chat_id', $supportChat->id)->count();
     });
 }
 
