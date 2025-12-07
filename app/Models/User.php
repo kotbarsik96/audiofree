@@ -253,4 +253,9 @@ class User extends Authenticatable
 
     return Confirmation::createCode($purpose, $this);
   }
+
+  public function supportChat()
+  {
+    return $this->hasOne(SupportChat::class, 'user_id');
+  }
 }

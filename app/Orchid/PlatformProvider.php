@@ -81,7 +81,8 @@ class PlatformProvider extends OrchidServiceProvider
         ->addPermission('platform.systems.roles', __('orchid.roles'))
         ->addPermission('platform.systems.users', __('orchid.users'))
         ->addPermission('platform.systems.products', __('orchid.product.products'))
-        ->addPermission('platform.systems.seo', 'SEO'),
+        ->addPermission('platform.systems.seo', 'SEO')
+        ->addPermission('platform.systems.support', __('orchid.support.role')),
     ];
   }
 }

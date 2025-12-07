@@ -35,5 +35,12 @@ class RolesSeeder extends Seeder
       'created_at' => $now,
       'updated_at' => $now
     ]);
+    DB::table('roles')->insert([
+      'slug' => 'support',
+      'name' => 'Сотрудник тех.поддержки',
+      'permissions' => '{"platform.index": "1", "platform.systems.roles": "0", "platform.systems.users": "0", "platform.systems.products": "0", "platform.platform.systems.support: "1", systems.attachment": "1"}',
+      'created_at' => $now,
+      'updated_at' => $now
+    ]);
   }
 }
