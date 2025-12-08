@@ -10,7 +10,7 @@ class SupportChatWriteMessageRequest extends SupportChatBaseRequest
     {
         return [
             'chat_id' => 'nullable|exists:support_chats,id',
-            'text' => 'required|string'
+            'text' => 'required|string|max:5000'
         ];
     }
 }

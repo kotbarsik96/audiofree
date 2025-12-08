@@ -98,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('search/address', [SearchController::class, 'address'])
     ->middleware(['throttle:search-address']); // 8.1
 
+  // 9. Chat
   Route::get('support-chat', [SupportChatController::class, 'getChatInfo']); // 9.1
   Route::get('support-chat/messages', [SupportChatController::class, 'getMessages']); // 9.2
   Route::post('support-chat/message', [SupportChatController::class, 'writeMessage']); // 9.3

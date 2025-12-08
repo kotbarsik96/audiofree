@@ -68,7 +68,7 @@ class SupportChatController extends Controller
         } else {
             $oldestUnreadMessage = $chat->unreadMessages()->first();
 
-            // загрузить сообщения до первого непрочитанного и после первого непрочитанного
+            // загрузить сообщения до первого непрочитанного (включительно) и после первого непрочитанного
             if ($oldestUnreadMessage) {
                 $messages = SupportChatMessage::where('chat_id', $chat->id)
                     ->where('id', '<=', $oldestUnreadMessage->id)
@@ -137,7 +137,7 @@ class SupportChatController extends Controller
 
     public function getChatsList(SupportChatGetListRequest $request)
     {
-
+        
     }
 
     public function markAsRead(SupportChatMarkAsReadRequest $request)
