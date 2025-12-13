@@ -32,7 +32,7 @@ class SupportChatController extends Controller
         return response([
             'data' => [
                 'unread_messages' => $chat->unreadMessages()->count(),
-                'total_messages' => $chat->messages->count(),
+                'total_messages' => $chat->messages()->count(),
                 'first_message_id' => SupportChatMessage::where('chat_id', $chat->id)->first()?->id,
                 'last_message_id' => SupportChatMessage::where('chat_id', $chat->id)->orderBy('created_at', 'desc')->first()->id
             ],
@@ -59,6 +59,7 @@ class SupportChatController extends Controller
             $messages = SupportChatMessage::where('chat_id', $chat->id)
                 ->where('created_at', '<', $earliestMessage->created_at)
                 ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
                 ->limit($limit)
                 ->get()
                 ->reverse()
@@ -80,6 +81,7 @@ class SupportChatController extends Controller
                 $messages = SupportChatMessage::where('chat_id', $chat->id)
                     ->where('created_at', '<', $oldestUnreadMessage->created_at)
                     ->orderBy('created_at', 'desc')
+                    ->orderBy('id', 'desc')
                     ->limit(3)
                     ->get()
                     ->reverse()
@@ -95,6 +97,7 @@ class SupportChatController extends Controller
             else {
                 $messages = SupportChatMessage::where('chat_id', $chat->id)
                     ->orderBy('created_at', 'desc')
+                    ->orderBy('id', 'desc')
                     ->limit($limit)
                     ->reverse()
                     ->get()
@@ -102,10 +105,16 @@ class SupportChatController extends Controller
             }
         }
 
+        $messagesCount = count($messages);
+        $earliestLoadedMessage = $messagesCount > 0 ? $messages[0] : 0;
+        $latestLoadedMessage = $messagesCount > 0 ? $messages[$messagesCount - 1] : 0;
+
         return response([
             'ok' => true,
             'data' => [
                 'messages' => $messages,
+                'earliest_loaded_id' => $earliestLoadedMessage->id,
+                'latest_loaded_id' => $latestLoadedMessage->id
             ]
         ], 200);
     }
@@ -143,7 +152,10 @@ class SupportChatController extends Controller
 
         return response([
             'ok' => true,
-            'message' => $message
+            'data' => [
+                'message' => $message,
+                'latest_loaded_id' => $message->id
+            ]
         ], 201);
     }
 

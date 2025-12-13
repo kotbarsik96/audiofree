@@ -22,6 +22,6 @@ class SupportChat extends Model
 
     public function unreadMessages()
     {
-        return $this->messages->whereNull('read_at');
+        return $this->messages()->whereNull('read_at');
     }
 }
