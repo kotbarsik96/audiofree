@@ -18,7 +18,7 @@ class OrderFilter extends QueryFilter
     }
   }
 
-  public function search(string $string = null)
+  public function search(string | null $string = null)
   {
     if ($string) {
       $this->builder

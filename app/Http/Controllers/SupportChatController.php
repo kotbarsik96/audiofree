@@ -161,11 +161,28 @@ class SupportChatController extends Controller
 
     public function getChatsList(SupportChatGetListRequest $request)
     {
+        $chats = SupportChat::select([
+            'support_chats.id',
+            'support_chats.status',
+            'support_chats.created_at',
+            'support_chats.updated_at',
+            'users.name as user_name',
+            'users.email as user_email',
+            'users.phone_number as user_phone'
+        ])
+            ->with('latesetMessage:id,sender_type,text,support_chat_messages.chat_id,support_chat_messages.created_at')
+            ->filter($request->filterableRequest)
+            ->orderBy('status', 'asc')
+            ->paginate();
 
+        return response([
+            'ok' => true,
+            'data' => $chats
+        ], 200);
     }
 
     public function markAsRead(SupportChatMarkAsReadRequest $request)
     {
-
+        
     }
 }
