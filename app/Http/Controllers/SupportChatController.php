@@ -14,6 +14,7 @@ use App\Models\SupportChatMessage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Http\Requests\SupportChat\SupportChatChangeStatusRequest;
 
 class SupportChatController extends Controller
 {
@@ -183,6 +184,21 @@ class SupportChatController extends Controller
 
     public function markAsRead(SupportChatMarkAsReadRequest $request)
     {
-        
+
+    }
+
+    public function changeStatus(SupportChatChangeStatusRequest $request)
+    {
+        $chat = SupportChat::find($request->chat_id);
+        $chat->update([
+            'status' => $request->status
+        ]);
+
+        return response([
+            'ok' => true,
+            'data' => [
+                'chat' => $chat
+            ]
+        ], 201);
     }
 }
