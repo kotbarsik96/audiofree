@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,5 +35,10 @@ class SupportChat extends Model
     public function latesetMessage()
     {
         return $this->hasOne(SupportChatMessage::class, 'chat_id')->latestOfMany();
+    }
+
+    public function unreadMessagesFromCompanion(SupportChatSenderTypeEnum $currentSender)
+    {
+        return $this->unreadMessages()->where('sender_type', '!=', $currentSender->value);
     }
 }

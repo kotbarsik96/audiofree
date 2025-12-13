@@ -184,7 +184,17 @@ class SupportChatController extends Controller
 
     public function markAsRead(SupportChatMarkAsReadRequest $request)
     {
+        $updated = $request->chat->unreadMessagesFromCompanion($request->currentSenderType)
+            ->where('created_at', '>=', $request->firstReadMessage->created_at)
+            ->limit($request->read_count)
+            ->update([
+                'read_at' => Carbon::now()
+            ]);
 
+        return response([
+            'ok' => true,
+            'read_count' => $updated
+        ], 201);
     }
 
     public function changeStatus(SupportChatChangeStatusRequest $request)
