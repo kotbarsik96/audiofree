@@ -10,8 +10,6 @@ class SupportChatGetListRequest extends SupportChatBaseRequest
     {
         return [
             'chat_id' => 'nullable|exists:support_chats,id',
-            'earliest_message_id' => 'nullable|exists:support_chat_messages,id',
-            'latest_message_id' => 'nullable|exists:support_chat_messages,id',
         ];
     }
 }
