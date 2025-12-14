@@ -96,7 +96,7 @@ class User extends Authenticatable
     'created_at',
   ];
 
-  protected $appends = ['confirmations'];
+  protected $appends = ['confirmations', 'permissions_list'];
 
   protected function confirmations(): Attribute
   {
@@ -110,6 +110,16 @@ class User extends Authenticatable
 
     return new Attribute(get: fn() => [
       'verify_email' => $verifyEmail || false
+    ]);
+  }
+
+  public function permissionsList(): Attribute
+  {
+    if (!$this)
+      return new Attribute(get: fn() => []);
+
+    return new Attribute(get: fn() => [
+      'support' => $this->hasAccess('platform.systems.support')
     ]);
   }
 
