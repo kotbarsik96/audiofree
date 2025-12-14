@@ -23,24 +23,12 @@ class SupportChatsListFilter extends QueryFilter
     }
   }
 
-  public function user_name($value)
+  public function search($value)
   {
     if ($value) {
-      $this->builder->whereLike('users.name', "%$value%");
-    }
-  }
-
-  public function user_email($value)
-  {
-    if ($value) {
-      $this->builder->whereLike('users.email', "%$value%");
-    }
-  }
-
-  public function user_phone_number($value)
-  {
-    if ($value) {
-      $this->builder->whereLike('users.phone_number', "%$value%");
+      $this->builder->whereLike('users.name', "%$value%")
+        ->orWhereLike('users.email', "%$value%")
+        ->orWhereLike('users.phone_number', "%$value%");
     }
   }
 }
