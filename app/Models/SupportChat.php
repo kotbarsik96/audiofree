@@ -32,7 +32,7 @@ class SupportChat extends Model
         return $this->hasOne(SupportChatMessage::class, 'chat_id')->oldestOfMany();
     }
 
-    public function latesetMessage()
+    public function latestMessage()
     {
         return $this->hasOne(SupportChatMessage::class, 'chat_id')->latestOfMany();
     }

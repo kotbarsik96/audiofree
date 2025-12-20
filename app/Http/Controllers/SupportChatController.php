@@ -177,8 +177,18 @@ class SupportChatController extends Controller
             'users.email as user_email',
             'users.phone_number as user_phone'
         ])
-            ->with('latesetMessage:id,sender_type,text,support_chat_messages.chat_id,support_chat_messages.created_at')
+            ->addSelect([
+                'latest_message' => SupportChatMessage::select('text')
+                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(1),
+                'latest_message_created_at' => SupportChatMessage::select('created_at')
+                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(1)
+            ])
             ->filter($request->filterableRequest)
+            ->orderBy('latest_message_created_at', 'desc')
             ->orderBy('status', 'asc')
             ->paginate();
 
