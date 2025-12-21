@@ -190,7 +190,7 @@ class SupportChatController extends Controller
             ->filter($request->filterableRequest)
             ->orderBy('latest_message_created_at', 'desc')
             ->orderBy('status', 'asc')
-            ->paginate();
+            ->paginate($request->per_page);
 
         return response([
             'ok' => true,
