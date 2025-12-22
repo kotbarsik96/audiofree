@@ -33,10 +33,11 @@ class SupportChatController extends Controller
         return response([
             'data' => [
                 'chat_id' => $chat->id,
-                'unread_messages' => $chat->unreadMessages()->count(),
+                'unread_messages' => $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())->count(),
                 'total_messages' => $chat->messages()->count(),
                 'first_message_id' => SupportChatMessage::where('chat_id', $chat->id)->first()?->id,
-                'last_message_id' => SupportChatMessage::where('chat_id', $chat->id)->orderBy('created_at', 'desc')->first()->id
+                'last_message_id' => SupportChatMessage::where('chat_id', $chat->id)->orderBy('created_at', 'desc')->first()->id,
+                'user_name' => $chat->user->name
             ],
             'ok' => true,
         ]);
@@ -54,7 +55,7 @@ class SupportChatController extends Controller
             $chat = auth()->user()->supportChat;
         }
 
-        // загрузить предыдущие сообщения
+        // загрузить предыдущие сообщения (прокрутка чата вверх)
         if ($request->has('earliest_message_id')) {
             $earliestMessage = SupportChatMessage::find($request->earliest_message_id);
 
@@ -69,7 +70,7 @@ class SupportChatController extends Controller
                     ->values();
             }
         }
-        // загрузить новые сообщения
+        // загрузить новые сообщения (прокрутка чата вниз)
         elseif ($request->has('latest_message_id')) {
             $latestMessage = SupportChatMessage::find($request->latest_message_id);
 
@@ -80,8 +81,10 @@ class SupportChatController extends Controller
                     ->get()
                     ->values();
             }
-        } else {
-            $oldestUnreadMessage = $chat->unreadMessages()->first();
+        }
+        // первая загрузка (открытие чата)
+        else {
+            $oldestUnreadMessage = $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())->first();
 
             // загрузить сообщения до первого непрочитанного (включительно) и после первого непрочитанного
             if ($oldestUnreadMessage) {
@@ -106,8 +109,8 @@ class SupportChatController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->orderBy('id', 'desc')
                     ->limit($limit)
-                    ->reverse()
                     ->get()
+                    ->reverse()
                     ->values();
             }
         }
@@ -200,7 +203,7 @@ class SupportChatController extends Controller
 
     public function markAsRead(SupportChatMarkAsReadRequest $request)
     {
-        $updated = $request->chat->unreadMessagesFromCompanion($request->currentSenderType)
+        $updated = $request->chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
             ->where('created_at', '>=', $request->firstReadMessage->created_at)
             ->limit($request->read_count)
             ->update([

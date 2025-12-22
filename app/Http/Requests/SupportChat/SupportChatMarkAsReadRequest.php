@@ -11,16 +11,11 @@ use Closure;
 class SupportChatMarkAsReadRequest extends SupportChatBaseRequest
 {
     public SupportChat|null $chat = null;
-    public SupportChatSenderTypeEnum|null $currentSenderType = null;
     public SupportChatMessage|null $firstReadMessage = null;
 
     public function prepareForValidation()
     {
         $this->chat = $this->chat_id ? SupportChat::find($this->chat_id) : auth()->user()->supportChat;
-
-        $this->currentSenderType = SupportChatSenderTypeEnum::USER;
-        if ($this->chat_id)
-            $this->currentSenderType = SupportChatSenderTypeEnum::STAFF;
 
         $this->firstReadMessage = SupportChatMessage::find($this->first_read_message_id);
     }
@@ -39,7 +34,7 @@ class SupportChatMarkAsReadRequest extends SupportChatBaseRequest
                         return;
                     }
 
-                    if ($this->currentSenderType->value === $this->firstReadMessage?->sender_type) {
+                    if ($this->getCurrentSenderType()->value === $this->firstReadMessage?->sender_type) {
                         $fail('Необходимо сообщение от собеседника');
                         return;
                     }

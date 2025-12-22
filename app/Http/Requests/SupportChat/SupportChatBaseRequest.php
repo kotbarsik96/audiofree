@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\SupportChat;
 
+use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SupportChatBaseRequest extends FormRequest
@@ -26,5 +27,10 @@ class SupportChatBaseRequest extends FormRequest
         return [
             'chat_id.exists' => 'Chat not found'
         ];
+    }
+
+    public function getCurrentSenderType()
+    {
+        return $this->has('chat_id') ? SupportChatSenderTypeEnum::STAFF : SupportChatSenderTypeEnum::USER;
     }
 }

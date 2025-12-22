@@ -41,4 +41,9 @@ class SupportChat extends Model
     {
         return $this->unreadMessages()->where('sender_type', '!=', $currentSender->value);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
