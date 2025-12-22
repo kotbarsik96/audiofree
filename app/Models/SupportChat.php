@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Events\SupportChatMessage\SupportChatMessageCreated;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ class SupportChat extends Model
         'user_id',
         'status',
     ];
-
+    
     public function messages()
     {
         return $this->hasMany(SupportChatMessage::class, 'chat_id');

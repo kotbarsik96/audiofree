@@ -151,7 +151,6 @@ class SupportChatController extends Controller
                 'status' => SupportChatStatusesEnum::OPEN->value
             ]);
 
-
             $message = SupportChatMessage::create([
                 'chat_id' => $chat->id,
                 'author_id' => $user->id,
