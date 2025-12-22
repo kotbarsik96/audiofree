@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Events\SupportChatMessage;
-use App\Models\SupportChatMessage;
+namespace App\Events\SupportChat;
+
+use App\Models\SupportChat;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,14 +11,14 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SupportChatMessageCreated implements ShouldBroadcast
+class SupportChatReadEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public SupportChatMessage $message)
+    public function __construct(public array $readMessagesIds, private SupportChat|null $chat)
     {
     }
 
@@ -28,14 +29,14 @@ class SupportChatMessageCreated implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [
-            new PrivateChannel('support-chat.'.$this->message->chat->id),
-            new PrivateChannel('support-chat'),
-        ];
+        if ($this->chat)
+            return [new PrivateChannel('support-chat.'.$this->chat->id)];
+
+        return [new PrivateChannel('support-chat')];
     }
 
     public function broadcastAs()
     {
-        return 'support-chat-message-created';
+        return 'support-chat-read';
     }
 }

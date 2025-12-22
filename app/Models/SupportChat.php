@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
-use App\Events\SupportChatMessage\SupportChatMessageCreated;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

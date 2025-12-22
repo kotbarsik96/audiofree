@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Events\SupportChatMessage\SupportChatMessageCreated;
+use App\Events\SupportChat\SupportChatMessageCreated;
 
 class SupportChatMessage extends Model
 {

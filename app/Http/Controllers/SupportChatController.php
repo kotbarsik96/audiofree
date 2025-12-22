@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
+use App\Events\SupportChat\SupportChatReadEvent;
 use App\Http\Requests\SupportChat\SupportChatGetListRequest;
 use App\Http\Requests\SupportChat\SupportChatGetMessagesRequest;
 use App\Http\Requests\SupportChat\SupportChatInfoRequest;
@@ -60,11 +61,13 @@ class SupportChatController extends Controller
             $earliestMessage = SupportChatMessage::find($request->earliest_message_id);
 
             if ($earliestMessage) {
-                $messages = SupportChatMessage::where('chat_id', $chat->id)
+                $builder = SupportChatMessage::where('chat_id', $chat->id)
                     ->where('created_at', '<', $earliestMessage->created_at)
                     ->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->limit($limit)
+                    ->orderBy('id', 'desc');
+                if (!$request->has('load_all'))
+                    $builder->limit($limit);
+                $messages = $builder
                     ->get()
                     ->reverse()
                     ->values();
@@ -75,9 +78,19 @@ class SupportChatController extends Controller
             $latestMessage = SupportChatMessage::find($request->latest_message_id);
 
             if ($latestMessage) {
-                $messages = SupportChatMessage::where('chat_id', $chat->id)
-                    ->where('created_at', '>', $latestMessage->created_at)
-                    ->limit($limit)
+                $builder = SupportChatMessage::where('chat_id', $chat->id)
+                    ->where('created_at', '>', $latestMessage->created_at);
+
+                // если нужно загрузить все оставшиеся - отметить все сообщения прочитанными и не выставлять лимит
+                if ($request->has('load_all')) {
+                    $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
+                        ->update([
+                            'read_at' => Carbon::now()
+                        ]);
+                } else
+                    $builder->limit($limit);
+
+                $messages = $builder
                     ->get()
                     ->values();
             }
@@ -202,12 +215,16 @@ class SupportChatController extends Controller
 
     public function markAsRead(SupportChatMarkAsReadRequest $request)
     {
-        $updated = $request->chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
+        $builder = $request->chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
             ->where('created_at', '>=', $request->firstReadMessage->created_at)
-            ->limit($request->read_count)
-            ->update([
-                'read_at' => Carbon::now()
-            ]);
+            ->limit($request->read_count);
+        $updatedIds = $builder->clone()->select('id')->get()->pluck('id')->toArray();
+        $updated = $builder->update([
+            'read_at' => Carbon::now()
+        ]);
+
+        $chatForEvent = $request->getCurrentSenderType() === SupportChatSenderTypeEnum::USER ? auth()->user()->supportChat : null;
+        SupportChatReadEvent::dispatch($updatedIds, $chatForEvent);
 
         return response([
             'ok' => true,
