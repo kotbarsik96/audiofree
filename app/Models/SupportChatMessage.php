@@ -16,6 +16,7 @@ class SupportChatMessage extends Model
         'sender_type',
         'text',
         'read_at',
+        'edited_at'
     ];
 
     public function scopeUnreadMessages(Builder $query)

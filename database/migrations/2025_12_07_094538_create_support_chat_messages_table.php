@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->enum('sender_type', SupportChatSenderTypeEnum::values());
             $table->text('text');
             $table->timestamp('read_at')->nullable();
+            $table->timestamp('edited_at')->nullable();
             $table->timestamps();
         });
     }
