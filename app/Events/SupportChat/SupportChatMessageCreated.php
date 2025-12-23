@@ -29,13 +29,22 @@ class SupportChatMessageCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('support-chat.'.$this->message->chat->id),
-            new PrivateChannel('support-chat'),
+            new PrivateChannel('support-chat-staff.'.$this->message->chat->id),
+            new PrivateChannel('support-chat-user.'.$this->message->chat->user_id),
+            new PrivateChannel('support-chats-list'),
         ];
     }
 
     public function broadcastAs()
     {
         return 'support-chat-message-created';
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'message' => $this->message,
+            'chat_info' => $this->message->chat
+        ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Events\SupportChat;
 
 use App\Models\SupportChat;
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -16,9 +17,10 @@ class SupportChatReadEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new event instance.
+     * @param $chat - передаётся, если прочитано пользователем
+     * @param $user - передаётся, если прочитано сотрудником
      */
-    public function __construct(public array $readMessagesIds, private SupportChat|null $chat)
+    public function __construct(public array $readMessagesIds, private SupportChat|null $chat, private User|null $user)
     {
     }
 
@@ -30,9 +32,9 @@ class SupportChatReadEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         if ($this->chat)
-            return [new PrivateChannel('support-chat.'.$this->chat->id)];
+            return [new PrivateChannel('support-chat-staff.'.$this->chat->id)];
 
-        return [new PrivateChannel('support-chat')];
+        return [new PrivateChannel('support-chat-user.'.$this->user->id)];
     }
 
     public function broadcastAs()

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DTO\SupportChatInfoDTO;
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ class SupportChat extends Model
         'user_id',
         'status',
     ];
-    
+
     public function messages()
     {
         return $this->hasMany(SupportChatMessage::class, 'chat_id');
@@ -45,5 +46,17 @@ class SupportChat extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getInfo(SupportChatSenderTypeEnum $senderType)
+    {
+        return new SupportChatInfoDTO(
+            chat_id: $this->id,
+            unread_messages: $this->unreadMessagesFromCompanion($senderType)->count(),
+            total_messages: $this->messages()->count(),
+            first_message_id: SupportChatMessage::where('chat_id', $this->id)->first()?->id,
+            last_message_id: SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()->id,
+            user_name: $this->user->name
+        );
     }
 }

@@ -32,14 +32,7 @@ class SupportChatController extends Controller
         throw_if(!$chat, new NotFoundHttpException(__('abortions.chatNotFound')));
 
         return response([
-            'data' => [
-                'chat_id' => $chat->id,
-                'unread_messages' => $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())->count(),
-                'total_messages' => $chat->messages()->count(),
-                'first_message_id' => SupportChatMessage::where('chat_id', $chat->id)->first()?->id,
-                'last_message_id' => SupportChatMessage::where('chat_id', $chat->id)->orderBy('created_at', 'desc')->first()->id,
-                'user_name' => $chat->user->name
-            ],
+            'data' => $chat->getInfo($request->getCurrentSenderType()),
             'ok' => true,
         ]);
     }
@@ -223,8 +216,13 @@ class SupportChatController extends Controller
             'read_at' => Carbon::now()
         ]);
 
-        $chatForEvent = $request->getCurrentSenderType() === SupportChatSenderTypeEnum::USER ? auth()->user()->supportChat : null;
-        SupportChatReadEvent::dispatch($updatedIds, $chatForEvent);
+        $readEventChat = null;
+        $readEventUser = null;
+        if ($request->getCurrentSenderType() === SupportChatSenderTypeEnum::USER)
+            $readEventChat = $request->chat;
+        else
+            $readEventUser = $request->chat->user;
+        SupportChatReadEvent::dispatch($updatedIds, $readEventChat, $readEventUser);
 
         return response([
             'ok' => true,
