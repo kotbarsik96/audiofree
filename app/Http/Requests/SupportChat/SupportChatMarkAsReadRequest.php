@@ -10,13 +10,15 @@ use Closure;
 
 class SupportChatMarkAsReadRequest extends SupportChatBaseRequest
 {
-    public SupportChat|null $chat = null;
     public SupportChatMessage|null $firstReadMessage = null;
 
     public function prepareForValidation()
     {
-        $this->chat = $this->chat_id ? SupportChat::find($this->chat_id) : auth()->user()->supportChat;
+        parent::prepareForValidation();
 
+        $this->chat = $this->chat_id
+            ? SupportChat::find($this->chat_id)
+            : auth()->user()->supportChat;
         $this->firstReadMessage = SupportChatMessage::find($this->first_read_message_id);
     }
 
