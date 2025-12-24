@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
 use App\Events\SupportChat\SupportChatReadEvent;
+use App\Events\SupportChat\SupportChatWriteStatusEvent;
 use App\Http\Requests\SupportChat\SupportChatGetListRequest;
 use App\Http\Requests\SupportChat\SupportChatGetMessagesRequest;
 use App\Http\Requests\SupportChat\SupportChatInfoRequest;
 use App\Http\Requests\SupportChat\SupportChatMarkAsReadRequest;
+use App\Http\Requests\SupportChat\SupportChatUpdateWritingStatusRequest;
 use App\Http\Requests\SupportChat\SupportChatWriteMessageRequest;
 use App\Models\SupportChat;
 use App\Models\SupportChatMessage;
@@ -244,5 +246,18 @@ class SupportChatController extends Controller
                 'chat' => $chat
             ]
         ], 201);
+    }
+
+    public function updateWritingStatus(SupportChatUpdateWritingStatusRequest $request)
+    {
+        $senderType = $request->getCurrentSenderType();
+        $chat = $request->has('chat_id')
+            ? SupportChat::find($request->chat_id)
+            : auth()->user()->supportChat;
+        SupportChatWriteStatusEvent::dispatch($request->is_writing, $senderType, $chat);
+
+        return [
+            'ok' => true
+        ];
     }
 }
