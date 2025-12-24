@@ -47,6 +47,7 @@ class SupportChatController extends Controller
             $chat = SupportChat::find($request->chat_id);
         } else {
             $chat = auth()->user()->supportChat;
+            throw_if(!$chat, new NotFoundHttpException(__('abortions.chatNotFound')));
         }
 
         // загрузить предыдущие сообщения (прокрутка чата вверх)
