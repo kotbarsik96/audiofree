@@ -10,7 +10,8 @@ class SupportChatInfoDTO
     public int $total_messages,
     public int $first_message_id,
     public int $last_message_id,
-    public string $user_name
+    public string $user_name,
+    public bool $is_companion_writing
   ) {
   }
 }

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Models\SupportChat\SupportChat;
 
 class User extends Authenticatable
 {

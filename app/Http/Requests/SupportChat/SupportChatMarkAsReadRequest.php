@@ -4,8 +4,8 @@ namespace App\Http\Requests\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Http\Requests\SupportChat\SupportChatBaseRequest;
-use App\Models\SupportChat;
-use App\Models\SupportChatMessage;
+use App\Models\SupportChat\SupportChat;
+use App\Models\SupportChat\SupportChatMessage;
 use Closure;
 
 class SupportChatMarkAsReadRequest extends SupportChatBaseRequest

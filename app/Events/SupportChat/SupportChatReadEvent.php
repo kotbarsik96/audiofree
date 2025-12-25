@@ -2,7 +2,7 @@
 
 namespace App\Events\SupportChat;
 
-use App\Models\SupportChat;
+use App\Models\SupportChat\SupportChat;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

@@ -6,8 +6,8 @@ namespace Database\Seeders;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
-use App\Models\SupportChat;
-use App\Models\SupportChatMessage;
+use App\Models\SupportChat\SupportChat;
+use App\Models\SupportChat\SupportChatMessage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;

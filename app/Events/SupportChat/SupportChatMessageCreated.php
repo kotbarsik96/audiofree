@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Events\SupportChat;
-use App\Models\SupportChatMessage;
+use App\Models\SupportChat\SupportChatMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;

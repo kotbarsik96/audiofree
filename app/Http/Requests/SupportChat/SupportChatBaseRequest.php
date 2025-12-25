@@ -3,7 +3,7 @@
 namespace App\Http\Requests\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
-use App\Models\SupportChat;
+use App\Models\SupportChat\SupportChat;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

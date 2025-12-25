@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\SupportChat;
 
 use App\DTO\SupportChatInfoDTO;
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Models\User;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,10 @@ class SupportChat extends Model
     protected $fillable = [
         'user_id',
         'status',
+    ];
+
+    protected $casts = [
+        'is_writing' => 'boolean'
     ];
 
     public function messages()
@@ -56,7 +61,10 @@ class SupportChat extends Model
             total_messages: $this->messages()->count(),
             first_message_id: SupportChatMessage::where('chat_id', $this->id)->first()?->id,
             last_message_id: SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()->id,
-            user_name: $this->user->name
+            user_name: $this->user->name,
+            is_companion_writing: !!SupportChatWritingStatus::where('chat_id', $this->id)
+                ->whereNotNull('started_writing_at')
+                ->first()
         );
     }
 }

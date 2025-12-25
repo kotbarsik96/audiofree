@@ -3,7 +3,8 @@
 namespace App\Events\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
-use App\Models\SupportChat;
+use App\Models\SupportChat\SupportChat;
+use App\Models\SupportChat\SupportChatWritingStatus;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -17,14 +18,16 @@ class SupportChatWriteStatusEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    private SupportChatSenderTypeEnum|null $sender = null;
     /**
      * Create a new event instance.
      */
     public function __construct(
-        public bool $is_writing,
-        private SupportChatSenderTypeEnum $sender,
-        private SupportChat $chat
+        private SupportChatWritingStatus $status
     ) {
+        $this->sender = $status->chat->user_id === $status->writer_id
+            ? SupportChatSenderTypeEnum::USER
+            : SupportChatSenderTypeEnum::STAFF;
     }
 
     /**
@@ -36,11 +39,11 @@ class SupportChatWriteStatusEvent implements ShouldBroadcast
     {
         if ($this->sender === SupportChatSenderTypeEnum::USER)
             return [
-                new PrivateChannel('support-chat-staff.'.$this->chat->id),
+                new PrivateChannel('support-chat-staff.'.$this->status->chat->id),
                 new PrivateChannel('support-chats-list')
             ];
 
-        return [new PrivateChannel('support-chat-user.'.$this->chat->user->id)];
+        return [new PrivateChannel('support-chat-user.'.$this->status->chat->user->id)];
     }
 
     public function broadcastAs()
@@ -51,9 +54,9 @@ class SupportChatWriteStatusEvent implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'is_writing' => $this->is_writing,
+            'is_writing' => $this->status->isWriting(),
             'sender' => $this->sender->value,
-            'chat_id' => $this->chat->id
+            'chat_info' => $this->status->chat->getInfo($this->sender)
         ];
     }
 }

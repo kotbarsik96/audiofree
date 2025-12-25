@@ -12,8 +12,9 @@ use App\Http\Requests\SupportChat\SupportChatInfoRequest;
 use App\Http\Requests\SupportChat\SupportChatMarkAsReadRequest;
 use App\Http\Requests\SupportChat\SupportChatUpdateWritingStatusRequest;
 use App\Http\Requests\SupportChat\SupportChatWriteMessageRequest;
-use App\Models\SupportChat;
-use App\Models\SupportChatMessage;
+use App\Models\SupportChat\SupportChat;
+use App\Models\SupportChat\SupportChatMessage;
+use App\Models\SupportChat\SupportChatWritingStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -186,7 +187,8 @@ class SupportChatController extends Controller
             'support_chats.updated_at',
             'users.name as user_name',
             'users.email as user_email',
-            'users.phone_number as user_phone'
+            'users.phone_number as user_phone',
+            'users.telegram as user_telegram'
         ])
             ->addSelect([
                 'latest_message' => SupportChatMessage::select('text')
@@ -196,6 +198,10 @@ class SupportChatController extends Controller
                 'latest_message_created_at' => SupportChatMessage::select('created_at')
                     ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
                     ->orderBy('created_at', 'desc')
+                    ->limit(1),
+                'is_writing' => SupportChatWritingStatus::selectRaw('if(support_chat_writing_statuses.started_writing_at, TRUE, FALSE)')
+                    ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
+                    ->whereColumn('support_chat_writing_statuses.writer_id', 'support_chats.user_id')
                     ->limit(1)
             ])
             ->filter($request->filterableRequest)
@@ -250,11 +256,19 @@ class SupportChatController extends Controller
 
     public function updateWritingStatus(SupportChatUpdateWritingStatusRequest $request)
     {
-        $senderType = $request->getCurrentSenderType();
+        $user = auth()->user();
         $chat = $request->has('chat_id')
             ? SupportChat::find($request->chat_id)
-            : auth()->user()->supportChat;
-        SupportChatWriteStatusEvent::dispatch($request->is_writing, $senderType, $chat);
+            : $user->supportChat;
+
+        $status = SupportChatWritingStatus::firstOrCreate([
+            'chat_id' => $chat->id,
+            'writer_id' => $user->id
+        ]);
+        // запускает SupportChatWriteStatusEvent::dispatch
+        $status->update([
+            'started_writing_at' => $request->is_writing ? Carbon::now() : null
+        ]);
 
         return [
             'ok' => true
