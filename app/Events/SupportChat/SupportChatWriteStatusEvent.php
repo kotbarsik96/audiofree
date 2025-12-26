@@ -19,6 +19,7 @@ class SupportChatWriteStatusEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private SupportChatSenderTypeEnum|null $sender = null;
+    private SupportChatSenderTypeEnum|null $companion = null;
     /**
      * Create a new event instance.
      */
@@ -28,6 +29,10 @@ class SupportChatWriteStatusEvent implements ShouldBroadcast
         $this->sender = $status->chat->user_id === $status->writer_id
             ? SupportChatSenderTypeEnum::USER
             : SupportChatSenderTypeEnum::STAFF;
+
+        $this->companion = $status->chat->user_id === $status->writer_id
+            ? SupportChatSenderTypeEnum::STAFF
+            : SupportChatSenderTypeEnum::USER;
     }
 
     /**
@@ -56,7 +61,7 @@ class SupportChatWriteStatusEvent implements ShouldBroadcast
         return [
             'is_writing' => $this->status->isWriting(),
             'sender' => $this->sender->value,
-            'chat_info' => $this->status->chat->getInfo($this->sender)
+            'chat_info' => $this->status->chat->getInfo($this->companion)
         ];
     }
 }

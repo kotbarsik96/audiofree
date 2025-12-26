@@ -2,6 +2,7 @@
 
 namespace App\Events\SupportChat;
 
+use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Models\SupportChat\SupportChat;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
@@ -17,11 +18,15 @@ class SupportChatReadEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * @param $chat - передаётся, если прочитано пользователем
-     * @param $user - передаётся, если прочитано сотрудником
+     * кому отправляется уведомление о прочтении
      */
-    public function __construct(public array $readMessagesIds, private SupportChat|null $chat, private User|null $user)
+    private SupportChatSenderTypeEnum|null $companionSenderType = null;
+
+    public function __construct(public array $readMessagesIds, private SupportChat $chat, private User $reader)
     {
+        $this->companionSenderType = $chat->user_id === $reader->id
+            ? SupportChatSenderTypeEnum::STAFF
+            : SupportChatSenderTypeEnum::USER;
     }
 
     /**
@@ -31,14 +36,22 @@ class SupportChatReadEvent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        if ($this->chat)
+        if ($this->companionSenderType === SupportChatSenderTypeEnum::STAFF)
             return [new PrivateChannel('support-chat-staff.'.$this->chat->id)];
 
-        return [new PrivateChannel('support-chat-user.'.$this->user->id)];
+        return [new PrivateChannel('support-chat-user.'.$this->chat->user->id)];
     }
 
     public function broadcastAs()
     {
         return 'support-chat-read';
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'read_messages_ids' => $this->readMessagesIds,
+            'chat_info' => $this->chat->getInfo($this->companionSenderType)
+        ];
     }
 }

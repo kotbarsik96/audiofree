@@ -225,17 +225,14 @@ class SupportChatController extends Controller
             'read_at' => Carbon::now()
         ]);
 
-        $readEventChat = null;
-        $readEventUser = null;
-        if ($request->getCurrentSenderType() === SupportChatSenderTypeEnum::USER)
-            $readEventChat = $request->chat;
-        else
-            $readEventUser = $request->chat->user;
-        SupportChatReadEvent::dispatch($updatedIds, $readEventChat, $readEventUser);
+        SupportChatReadEvent::dispatch($updatedIds, $request->chat, auth()->user());
 
         return response([
             'ok' => true,
-            'read_count' => $updated
+            'data' => [
+                'read_count' => $updated,
+                'chat_info' => $request->chat->getInfo($request->getCurrentSenderType())
+            ],
         ], 201);
     }
 
