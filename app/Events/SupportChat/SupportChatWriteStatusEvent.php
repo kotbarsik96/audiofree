@@ -3,6 +3,8 @@
 namespace App\Events\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Events\SupportChat\BroadcastsToStaff\WriteStatusChangeStaff;
+use App\Events\SupportChat\BroadcastsToUser\WriteStatusChangeUser;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatWritingStatus;
 use App\Models\User;
@@ -14,54 +16,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SupportChatWriteStatusEvent implements ShouldBroadcast
+class SupportChatWriteStatusEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private SupportChatSenderTypeEnum|null $sender = null;
-    private SupportChatSenderTypeEnum|null $companion = null;
-    /**
-     * Create a new event instance.
-     */
     public function __construct(
-        private SupportChatWritingStatus $status
+        public SupportChatWritingStatus $status
     ) {
-        $this->sender = $status->chat->user_id === $status->writer_id
-            ? SupportChatSenderTypeEnum::USER
-            : SupportChatSenderTypeEnum::STAFF;
-
-        $this->companion = $status->chat->user_id === $status->writer_id
-            ? SupportChatSenderTypeEnum::STAFF
-            : SupportChatSenderTypeEnum::USER;
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        if ($this->sender === SupportChatSenderTypeEnum::USER)
-            return [
-                new PrivateChannel('support-chat-staff.'.$this->status->chat->id),
-                new PrivateChannel('support-chats-list')
-            ];
-
-        return [new PrivateChannel('support-chat-user.'.$this->status->chat->user->id)];
-    }
-
-    public function broadcastAs()
-    {
-        return 'support-chat-write-status';
-    }
-
-    public function broadcastWith()
-    {
-        return [
-            'is_writing' => $this->status->isWriting(),
-            'sender' => $this->sender->value,
-            'chat_info' => $this->status->chat->getInfo($this->companion)
-        ];
+        if ($status->writer_id === $status->chat->user_id)
+            WriteStatusChangeStaff::dispatch($status);
+        else {
+            WriteStatusChangeStaff::dispatch($status);
+            WriteStatusChangeUser::dispatch($status);
+        }
     }
 }

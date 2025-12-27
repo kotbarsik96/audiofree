@@ -64,6 +64,7 @@ class SupportChat extends Model
             user_name: $this->user->name,
             is_companion_writing: !!SupportChatWritingStatus::where('chat_id', $this->id)
                 ->whereNotNull('started_writing_at')
+                ->whereNot('writer_id', auth()->user()->id)
                 ->first()
         );
     }
