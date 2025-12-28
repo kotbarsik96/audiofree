@@ -39,7 +39,6 @@ class WriteStatusChangeStaff implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'is_writing' => $this->status->isWriting(),
             'writer_id' => $this->status->writer_id,
             'chat_info' => $this->status->chat->getInfo(SupportChatSenderTypeEnum::STAFF)
         ];

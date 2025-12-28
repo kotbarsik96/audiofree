@@ -6,6 +6,7 @@ use App\Events\SupportChat\SupportChatWriteStatusEvent;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class SupportChatWritingStatus extends Model
 {
@@ -38,5 +39,17 @@ class SupportChatWritingStatus extends Model
     public function isWriting()
     {
         return $this->started_writing_at !== null;
+    }
+
+    public function scopeWritingNow(Builder $query, int $chatId)
+    {
+        return $query->where('chat_id', $chatId)->whereNotNull('started_writing_at');
+    }
+
+    public function scopeWritingNowExceptUser(Builder $query, int $chatId, int $exceptUserId)
+    {
+        return $query->where('chat_id', $chatId)
+            ->whereNotNull('started_writing_at')
+            ->where('writer_id', '!=', $exceptUserId);
     }
 }
