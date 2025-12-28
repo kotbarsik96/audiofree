@@ -199,10 +199,10 @@ class SupportChatController extends Controller
                     ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
                     ->orderBy('created_at', 'desc')
                     ->limit(1),
-                'is_writing' => SupportChatWritingStatus::selectRaw('if(support_chat_writing_statuses.started_writing_at, TRUE, FALSE)')
+                'writers_count' => SupportChatWritingStatus::selectRaw('count(*)')
+                    ->whereNotNull('support_chat_writing_statuses.started_writing_at')
                     ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
-                    ->whereColumn('support_chat_writing_statuses.writer_id', 'support_chats.user_id')
-                    ->limit(1)
+                    ->where('support_chat_writing_statuses.writer_id', '!=', auth()->user()->id)
             ])
             ->filter($request->filterableRequest)
             ->orderBy('latest_message_created_at', 'desc')
