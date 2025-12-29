@@ -19,7 +19,7 @@ class SupportChatReadEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public array $readMessagesIds, private SupportChat $chat, private User $reader)
+    public function __construct(public iterable $readMessagesIds, private SupportChat $chat, private User $reader)
     {
         if ($chat->user_id === $reader->id)
             ReadMessageStaff::dispatch($readMessagesIds, $chat, $reader);

@@ -17,7 +17,7 @@ class ReadMessageUser implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public array $readMessagesIds, public SupportChat $chat, public User $reader)
+    public function __construct(public iterable $readMessagesIds, public SupportChat $chat, public User $reader)
     {
     }
 

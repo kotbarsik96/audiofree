@@ -78,13 +78,8 @@ class SupportChatController extends Controller
                 $builder = SupportChatMessage::where('chat_id', $chat->id)
                     ->where('created_at', '>', $latestMessage->created_at);
 
-                // если нужно загрузить все оставшиеся - отметить все сообщения прочитанными и не выставлять лимит
-                if ($request->has('load_all')) {
-                    $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
-                        ->update([
-                            'read_at' => Carbon::now()
-                        ]);
-                } else
+                // если нужно загрузить все оставшиеся - не выставлять лимит
+                if (!$request->has('load_all'))
                     $builder->limit($limit);
 
                 $messages = $builder
@@ -169,6 +164,19 @@ class SupportChatController extends Controller
             ]);
         }
 
+        if ($chat) {
+            $updatedIds = $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
+                ->select('id')
+                ->get()
+                ->pluck('id');
+            $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
+                ->update([
+                    'read_at' => Carbon::now()
+                ]);
+
+            SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
+        }
+
         return response([
             'ok' => true,
             'data' => [
@@ -220,7 +228,7 @@ class SupportChatController extends Controller
         $builder = $request->chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
             ->where('created_at', '>=', $request->firstReadMessage->created_at)
             ->limit($request->read_count);
-        $updatedIds = $builder->clone()->select('id')->get()->pluck('id')->toArray();
+        $updatedIds = $builder->clone()->select('id')->get()->pluck('id');
         $updated = $builder->update([
             'read_at' => Carbon::now()
         ]);
