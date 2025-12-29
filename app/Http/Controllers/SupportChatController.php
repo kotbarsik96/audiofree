@@ -44,7 +44,7 @@ class SupportChatController extends Controller
     {
         $chat = null;
         $messages = [];
-        $limit = 15;
+        $limit = 30;
 
         if ($request->has('chat_id')) {
             $chat = SupportChat::find($request->chat_id);
@@ -246,7 +246,7 @@ class SupportChatController extends Controller
         return response([
             'ok' => true,
             'data' => [
-                'chat' => $chat
+                'chat' => $chat->getInfo(SupportChatSenderTypeEnum::STAFF)
             ]
         ], 201);
     }
