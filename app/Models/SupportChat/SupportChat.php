@@ -78,4 +78,39 @@ class SupportChat extends Model
 
         return $data;
     }
+
+    public static function chatsList()
+    {
+        return static::select([
+            'support_chats.id',
+            'support_chats.status',
+            'support_chats.created_at',
+            'support_chats.updated_at',
+            'users.name as user_name',
+            'users.email as user_email',
+            'users.phone_number as user_phone',
+            'users.telegram as user_telegram'
+        ])
+            ->addSelect([
+                'latest_message' => SupportChatMessage::select('text')
+                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(1),
+                'latest_message_created_at' => SupportChatMessage::select('created_at')
+                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(1),
+                'writers_count' => SupportChatWritingStatus::selectRaw('count(*)')
+                    ->whereNotNull('support_chat_writing_statuses.started_writing_at')
+                    ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
+                    ->where('support_chat_writing_statuses.writer_id', '!=', auth()->user()->id),
+                'unread_messages' => SupportChatMessage::selectRaw('count(*)')
+                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                    ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
+                    ->whereNull('support_chat_messages.read_at')
+            ])
+
+            ->orderBy('latest_message_created_at', 'desc')
+            ->orderBy('status', 'asc');
+    }
 }

@@ -27,7 +27,8 @@ class ReadMessageStaff implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('support-chat-staff.'.$this->chat->id)
+            new PrivateChannel('support-chat-staff.'.$this->chat->id),
+            new PrivateChannel('support-chats-list')
         ];
     }
 
