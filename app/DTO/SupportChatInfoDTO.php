@@ -2,6 +2,8 @@
 
 namespace App\DTO;
 
+use App\Enums\SupportChat\SupportChatStatusesEnum;
+
 class SupportChatInfoDTO
 {
   /**
@@ -23,6 +25,7 @@ class SupportChatInfoDTO
     public int $first_message_id,
     public int $last_message_id,
     public string $user_name,
+    public SupportChatStatusesEnum|string $status,
     public bool $user_writing,
     public bool $staff_writing,
     public iterable|null $staff_writers

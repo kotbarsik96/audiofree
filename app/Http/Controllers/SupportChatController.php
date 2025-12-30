@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
+use App\Events\SupportChat\SupportChatChangeInfoEvent;
 use App\Events\SupportChat\SupportChatReadEvent;
-use App\Events\SupportChat\SupportChatWriteStatusEvent;
 use App\Http\Requests\SupportChat\SupportChatGetListRequest;
 use App\Http\Requests\SupportChat\SupportChatGetMessagesRequest;
 use App\Http\Requests\SupportChat\SupportChatInfoRequest;
@@ -142,6 +142,7 @@ class SupportChatController extends Controller
 
         if ($request->has('chat_id')) {
             $chat = SupportChat::find($request->chat_id);
+            $chat->setOpenStatus();
             $message = SupportChatMessage::create([
                 'chat_id' => $chat->id,
                 'author_id' => $user->id,
@@ -156,6 +157,8 @@ class SupportChatController extends Controller
                 'status' => SupportChatStatusesEnum::OPEN->value
             ]);
 
+            $chat->setOpenStatus();
+
             $message = SupportChatMessage::create([
                 'chat_id' => $chat->id,
                 'author_id' => $user->id,
@@ -164,18 +167,16 @@ class SupportChatController extends Controller
             ]);
         }
 
-        if ($chat) {
-            $updatedIds = $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
-                ->select('id')
-                ->get()
-                ->pluck('id');
-            $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
-                ->update([
-                    'read_at' => Carbon::now()
-                ]);
+        $updatedIds = $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
+            ->select('id')
+            ->get()
+            ->pluck('id');
+        $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
+            ->update([
+                'read_at' => Carbon::now()
+            ]);
 
-            SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
-        }
+        SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
 
         return response([
             'ok' => true,
@@ -225,6 +226,8 @@ class SupportChatController extends Controller
         $chat->update([
             'status' => $request->status
         ]);
+
+        SupportChatChangeInfoEvent::dispatch($chat);
 
         return response([
             'ok' => true,

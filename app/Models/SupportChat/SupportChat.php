@@ -4,6 +4,7 @@ namespace App\Models\SupportChat;
 
 use App\DTO\SupportChatInfoDTO;
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Enums\SupportChat\SupportChatStatusesEnum;
 use App\Models\User;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,6 +54,20 @@ class SupportChat extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function setOpenStatus()
+    {
+        return $this->update([
+            'status' => SupportChatStatusesEnum::OPEN
+        ]);
+    }
+
+    public function setClosedStatus()
+    {
+        return $this->update([
+            'status' => SupportChatStatusesEnum::CLOSED
+        ]);
+    }
+
     public function getInfo(SupportChatSenderTypeEnum $senderType)
     {
         $data = new SupportChatInfoDTO(
@@ -62,6 +77,7 @@ class SupportChat extends Model
             first_message_id: SupportChatMessage::where('chat_id', $this->id)->first()?->id,
             last_message_id: SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()->id,
             user_name: $this->user->name,
+            status: $this->status,
             user_writing: !!SupportChatWritingStatus::writingNow($this->id)
                 ->where('writer_id', $this->user_id)
                 ->first(),
@@ -109,8 +125,8 @@ class SupportChat extends Model
                     ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
                     ->whereNull('support_chat_messages.read_at')
             ])
-
-            ->orderBy('latest_message_created_at', 'desc')
-            ->orderBy('status', 'asc');
+            ->join('users', 'users.id', '=', 'support_chats.user_id')
+            ->orderBy('status', 'asc')
+            ->orderBy('latest_message_created_at', 'desc');
     }
 }
