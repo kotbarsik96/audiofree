@@ -41,5 +41,5 @@ return [
   'product' => 'Товар',
   'catalog' => 'Каталог',
   'upToNumber' => 'До :number',
-  'fromNumber' => 'От :number'
+  'fromNumber' => 'От :number',
 ];

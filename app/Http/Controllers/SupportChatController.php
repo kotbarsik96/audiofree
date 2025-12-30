@@ -43,7 +43,7 @@ class SupportChatController extends Controller
     public function getMessages(SupportChatGetMessagesRequest $request)
     {
         $chat = null;
-        $messages = [];
+        $messages = null;
         $limit = 30;
 
         if ($request->has('chat_id')) {
@@ -123,6 +123,17 @@ class SupportChatController extends Controller
         $messagesCount = count($messages);
         $earliestLoadedMessage = $messagesCount > 0 ? $messages[0] : null;
         $latestLoadedMessage = $messagesCount > 0 ? $messages[$messagesCount - 1] : null;
+
+        if ($messages) {
+            $messages
+                ->filter(fn(SupportChatMessage $message) => $message->isSystem())
+                ->each(function (SupportChatMessage $message) use ($request) {
+                    if ($request->getCurrentSenderType() === SupportChatSenderTypeEnum::USER)
+                        $message->replaceTextForUser();
+                    else
+                        $message->replaceTextForStaff();
+                });
+        }
 
         return response([
             'ok' => true,
@@ -223,16 +234,26 @@ class SupportChatController extends Controller
     public function changeStatus(SupportChatChangeStatusRequest $request)
     {
         $chat = SupportChat::find($request->chat_id);
-        $chat->update([
-            'status' => $request->status
-        ]);
+        $shouldChange = $request->status !== $chat->status;
 
-        SupportChatChangeInfoEvent::dispatch($chat);
+        if ($shouldChange) {
+            $chat->update([
+                'status' => $request->status
+            ]);
+
+            SupportChatChangeInfoEvent::dispatch($chat);
+
+            if ($request->status === SupportChatStatusesEnum::OPEN->value)
+                $chat->writeSystemMessage(__('chat.opened'));
+            if ($request->status === SupportChatStatusesEnum::CLOSED->value)
+                $chat->writeSystemMessage(__('chat.closed'));
+        }
 
         return response([
             'ok' => true,
             'data' => [
-                'chat' => $chat->getInfo(SupportChatSenderTypeEnum::STAFF)
+                'chat' => $chat->getInfo(SupportChatSenderTypeEnum::STAFF),
+                'changed' => $shouldChange,
             ]
         ], 201);
     }

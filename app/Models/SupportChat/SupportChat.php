@@ -21,7 +21,7 @@ class SupportChat extends Model
     ];
 
     protected $casts = [
-        'is_writing' => 'boolean'
+        'is_writing' => 'boolean',
     ];
 
     public function messages()
@@ -56,16 +56,22 @@ class SupportChat extends Model
 
     public function setOpenStatus()
     {
-        return $this->update([
-            'status' => SupportChatStatusesEnum::OPEN
-        ]);
+        $changed = false;
+
+        if ($this->status !== SupportChatStatusesEnum::OPEN)
+            $changed = $this->update(['status' => SupportChatStatusesEnum::OPEN]);
+
+        return $changed;
     }
 
     public function setClosedStatus()
     {
-        return $this->update([
-            'status' => SupportChatStatusesEnum::CLOSED
-        ]);
+        $changed = false;
+
+        if ($this->status !== SupportChatStatusesEnum::CLOSED)
+            $changed = $this->update(['status' => SupportChatStatusesEnum::CLOSED]);
+
+        return $changed;
     }
 
     public function getInfo(SupportChatSenderTypeEnum $senderType)
@@ -128,5 +134,18 @@ class SupportChat extends Model
             ->join('users', 'users.id', '=', 'support_chats.user_id')
             ->orderBy('status', 'asc')
             ->orderBy('latest_message_created_at', 'desc');
+    }
+
+    public function writeSystemMessage(string $text, array|null $replacesUser = null, array|null $replacesStaff = null)
+    {
+        $msg = SupportChatMessage::create([
+            'chat_id' => $this->id,
+            'author_id' => auth()->user()->id,
+            'sender_type' => SupportChatSenderTypeEnum::SYSTEM->value,
+            'text' => $text,
+            'replaces_user' => $replacesUser,
+            'replaces_staff' => $replacesStaff,
+        ]);
+        return $msg;
     }
 }
