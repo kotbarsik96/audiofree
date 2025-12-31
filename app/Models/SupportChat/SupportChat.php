@@ -39,7 +39,7 @@ class SupportChat extends Model
         return $this->hasOne(SupportChatMessage::class, 'chat_id')->oldestOfMany();
     }
 
-    public function latestMessage()
+    public function latest_message()
     {
         return $this->hasOne(SupportChatMessage::class, 'chat_id')->latestOfMany();
     }
@@ -114,10 +114,6 @@ class SupportChat extends Model
             'users.telegram as user_telegram'
         ])
             ->addSelect([
-                'latest_message' => SupportChatMessage::select('text')
-                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(1),
                 'latest_message_created_at' => SupportChatMessage::select('created_at')
                     ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
                     ->orderBy('created_at', 'desc')
@@ -131,6 +127,7 @@ class SupportChat extends Model
                     ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
                     ->whereNull('support_chat_messages.read_at')
             ])
+            ->with('latest_message')
             ->join('users', 'users.id', '=', 'support_chats.user_id')
             ->orderBy('status', 'asc')
             ->orderBy('latest_message_created_at', 'desc');

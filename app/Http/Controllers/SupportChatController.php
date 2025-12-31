@@ -124,17 +124,6 @@ class SupportChatController extends Controller
         $earliestLoadedMessage = $messagesCount > 0 ? $messages[0] : null;
         $latestLoadedMessage = $messagesCount > 0 ? $messages[$messagesCount - 1] : null;
 
-        if ($messages) {
-            $messages
-                ->filter(fn(SupportChatMessage $message) => $message->isSystem())
-                ->each(function (SupportChatMessage $message) use ($request) {
-                    if ($request->getCurrentSenderType() === SupportChatSenderTypeEnum::USER)
-                        $message->replaceTextForUser();
-                    else
-                        $message->replaceTextForStaff();
-                });
-        }
-
         return response([
             'ok' => true,
             'data' => [
