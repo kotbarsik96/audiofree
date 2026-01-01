@@ -12,6 +12,7 @@ use App\Http\Requests\SupportChat\SupportChatInfoRequest;
 use App\Http\Requests\SupportChat\SupportChatMarkAsReadRequest;
 use App\Http\Requests\SupportChat\SupportChatUpdateWritingStatusRequest;
 use App\Http\Requests\SupportChat\SupportChatWriteMessageRequest;
+use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
 use App\Models\SupportChat\SupportChatWritingStatus;
@@ -124,6 +125,12 @@ class SupportChatController extends Controller
         $earliestLoadedMessage = $messagesCount > 0 ? $messages[0] : null;
         $latestLoadedMessage = $messagesCount > 0 ? $messages[$messagesCount - 1] : null;
 
+        $messages = $messages
+            ->map(
+                fn($message) => (new SupportChatMessageResource($message))
+                    ->setSenderType($request->getCurrentSenderType())
+            );
+
         return response([
             'ok' => true,
             'data' => [
@@ -191,7 +198,16 @@ class SupportChatController extends Controller
     {
         $chats = SupportChat::chatsList()
             ->filter($request->filterableRequest)
-            ->paginate($request->per_page);
+            ->paginate($request->per_page)
+            ->through(function ($item) {
+                $msg = $item->latest_message;
+                if ($msg) {
+                    unset($item->latest_message);
+                    $item->latest_message = (new SupportChatMessageResource($msg))
+                        ->setSenderType(SupportChatSenderTypeEnum::STAFF);
+                }
+                return $item;
+            });
 
         return response([
             'ok' => true,

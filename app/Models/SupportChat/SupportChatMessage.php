@@ -2,7 +2,6 @@
 
 namespace App\Models\SupportChat;
 
-use App\Casts\SupportChat\AsMessageText;
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,7 +27,6 @@ class SupportChatMessage extends Model
     protected $casts = [
         'replaces_user' => 'json',
         'replaces_staff' => 'json',
-        'text' => AsMessageText::class
     ];
 
     protected $hidden = [

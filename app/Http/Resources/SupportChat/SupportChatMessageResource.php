@@ -1,12 +1,51 @@
 <?php
 
-namespace App\Casts\SupportChat;
+namespace App\Http\Resources\SupportChat;
 
-use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use Illuminate\Database\Eloquent\Model;
+use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Models\SupportChat\SupportChatMessage;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class AsMessageTextBase implements CastsAttributes
+class SupportChatMessageResource extends JsonResource
 {
+    public SupportChatSenderTypeEnum $senderType;
+
+    public function setSenderType(SupportChatSenderTypeEnum $senderType)
+    {
+        $this->senderType = $senderType;
+        return $this;
+    }
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return array_merge(parent::toArray($request), [
+            'text' => $this->replaceText($this->resource)
+        ]);
+    }
+
+    public function replaceText(SupportChatMessage $message): mixed
+    {
+        $modifiedValue = $message->text;
+
+        if ($message->sender_type === SupportChatSenderTypeEnum::SYSTEM->value) {
+            if ($this->senderType === SupportChatSenderTypeEnum::USER) {
+                $modifiedValue = $this->replaceUser($modifiedValue, $message->replaces_user);
+            } else {
+                $modifiedValue = $this->replaceStaff($modifiedValue, $message->replaces_staff, $message->author->name);
+            }
+
+            $modifiedValue = str_replace(':__user_name:', $message->chat->user->name, $modifiedValue);
+        }
+
+        return $modifiedValue;
+    }
+
     /** заменяет переменные в системных сообщениях (sender_type === SupportChatSenderTypeEnum::SYSTEM) для вывода сотруднику
      * 
      * зарезервированные переменные: 
@@ -51,15 +90,5 @@ class AsMessageTextBase implements CastsAttributes
         $_value = str_replace(':__staff_name:', __('chat.staff'), $_value);
 
         return $_value;
-    }
-
-    public function get(Model $model, string $key, mixed $value, array $attributes): mixed
-    {
-        return $value;
-    }
-
-    public function set(Model $model, string $key, mixed $value, array $attributes): mixed
-    {
-        return $value;
     }
 }

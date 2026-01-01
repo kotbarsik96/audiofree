@@ -3,6 +3,7 @@
 namespace App\Events\SupportChat\BroadcastsToStaff;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChatMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -39,7 +40,7 @@ class NewMessageStaff implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'message' => $this->message,
+            'message' => (new SupportChatMessageResource($this->message))->setSenderType(SupportChatSenderTypeEnum::STAFF),
             'chat_info' => $this->message->chat->getInfo(SupportChatSenderTypeEnum::STAFF)
         ];
     }
