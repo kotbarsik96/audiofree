@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Models\SupportChat\SupportChat;
 
 class User extends Authenticatable
 {
@@ -96,7 +97,7 @@ class User extends Authenticatable
     'created_at',
   ];
 
-  protected $appends = ['confirmations'];
+  protected $appends = ['confirmations', 'permissions_list'];
 
   protected function confirmations(): Attribute
   {
@@ -110,6 +111,16 @@ class User extends Authenticatable
 
     return new Attribute(get: fn() => [
       'verify_email' => $verifyEmail || false
+    ]);
+  }
+
+  public function permissionsList(): Attribute
+  {
+    if (!$this)
+      return new Attribute(get: fn() => []);
+
+    return new Attribute(get: fn() => [
+      'support' => $this->hasAccess('platform.systems.support')
     ]);
   }
 
@@ -252,5 +263,10 @@ class User extends Authenticatable
     );
 
     return Confirmation::createCode($purpose, $this);
+  }
+
+  public function supportChat()
+  {
+    return $this->hasOne(SupportChat::class, 'user_id');
   }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTO\AuthDTO;
 use App\DTO\Enums\AuthEnum;
 use App\DTO\Enums\ConfirmationPurposeEnum;
+use App\DTO\Enums\MessagesToUserEnum;
 use App\Models\User;
 use App\Services\MessagesToUser\Telegramable\ResetPasswordTelegramable;
 use Illuminate\Http\Request;
@@ -212,6 +213,10 @@ class AuthController extends Controller
    */
   public function sendLoginCode(User $user, string $able)
   {
+    if (env('DEV_MODE')) {
+      return MessagesToUserEnum::EMAIL->value;
+    }
+
     $sentTo = $user->createAndSendCode(
       ConfirmationPurposeEnum::LOGIN,
       [new $able($user)]

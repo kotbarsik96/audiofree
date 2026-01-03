@@ -373,7 +373,7 @@
 							"formdata": [
 								{
 									"key": "login",
-									"value": "kotbarsik96@gmail.com",
+									"value": "kotbarsik96@mail.ru",
 									"type": "text"
 								},
 								{
@@ -5935,7 +5935,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/api/search/products",
+							"raw": "{{url}}/api/search/products?value=синий",
 							"host": [
 								"{{url}}"
 							],
@@ -5943,6 +5943,975 @@
 								"api",
 								"search",
 								"products"
+							],
+							"query": [
+								{
+									"key": "value",
+									"value": "синий"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "searchbar",
+									"description": "Тип поиска. \n\"searchbar\" - поиск в поисковой строке из шапки. Отдаётся меньше результатов за страницу\n\n\"full\" - поиск через отдельную страницу. Отдаётся больше результатов за страницу",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 Search Samsung (brand)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/search/products?value=samsung",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"search",
+										"products"
+									],
+									"query": [
+										{
+											"key": "value",
+											"value": "samsung"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "searchbar",
+											"description": "Тип поиска. \n\"searchbar\" - поиск в поисковой строке из шапки. Отдаётся меньше результатов за страницу\n\n\"full\" - поиск через отдельную страницу. Отдаётся больше результатов за страницу",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 31 Aug 2025 06:53:40 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6Ilh6Nzhrd2MrR1pRdXE0bDRJTU5ma3c9PSIsInZhbHVlIjoieXRnVnI4S2RFcE5qMUszaEdiU3RocUZjQ1B2UjMwV1p4eDE0NndsaEk5d1NQNlkyZ2tJMWI4MkpST21VdUVJcUtYdzJYcFNsTnFwZmVpcUJPWTU3ZWlQajJTL0VWUXhoWUVCb3hScWp2SjIrZ0VYOGJNcWtzRWh4Qmc2WXFSaVYiLCJtYWMiOiIyNTZmNDczMDdjYzYwZTg1MjU1MTQ5NzU5ZjBkMWRiZDZmMGU5YTAyYWQ1YTM5MjM4NmM1MDRlZDkxMjgwMzkwIiwidGFnIjoiIn0%3D; expires=Sun, 31 Aug 2025 08:53:40 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6IlQvaCtVbFRMMEFSeVhoQkNhTHRESXc9PSIsInZhbHVlIjoiK2FLMWJBMmpmOVU3RktmYjhWQmpmMWhNVG14cmtxZThVenRZdHFTWlkycTV1cjEyTWpIVTNGa05MOUowYk5COEZxaGZUejg3elFUN1pLNHN5bHBRMTBZL09GZ0dXRXFpU2oyWmFrYjdKZERSdTdrWFVzdVd1OVd3RnhlRGwzbHAiLCJtYWMiOiI5MzhiOGZkOWNiNDM4OTQxZTNjZDlmMjg5ZmYzNjM3MzEyYTg1OWNhMzllMmZmNzJmOGQ5ZTA0NjU5ZDhkMjc1IiwidGFnIjoiIn0%3D; expires=Sun, 31 Aug 2025 08:53:40 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"title\": \"Бренд Samsung\",\n            \"description\": \"Каталог\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/catalog?brand=samsung\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/taxonomies/brand/samsung.webp\"\n        },\n        {\n            \"title\": \"AirPods Pro(Красный)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/airpods-pro/krasniy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14986.webp\"\n        },\n        {\n            \"title\": \"AirPods Pro(Голубой)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/airpods-pro/goluboy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14986.webp\"\n        },\n        {\n            \"title\": \"QuietComfort Earbuds(Голубой)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/quietcomfort-earbuds/goluboy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14990.webp\"\n        },\n        {\n            \"title\": \"QuietComfort Earbuds(Синий)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/quietcomfort-earbuds/siniy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14990.webp\"\n        },\n        {\n            \"title\": \"Aeropex(Красный)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/aeropex/krasniy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14981.webp\"\n        },\n        {\n            \"title\": \"Aeropex(Пурпурный)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/aeropex/purpurniy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14981.webp\"\n        },\n        {\n            \"title\": \"Aeropex(Белый)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/aeropex/beliy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14981.webp\"\n        }\n    ]\n}"
+						},
+						{
+							"name": "200 Seach flyBuds (product)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/search/products?value=flybuds",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"search",
+										"products"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "searchbar",
+											"description": "Тип поиска. \n\"searchbar\" - поиск в поисковой строке из шапки. Отдаётся меньше результатов за страницу\n\n\"full\" - поиск через отдельную страницу. Отдаётся больше результатов за страницу",
+											"disabled": true
+										},
+										{
+											"key": "value",
+											"value": "flybuds"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 31 Aug 2025 06:54:23 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6ImN4QkJCajkzYlh3SDVMR01FNW9qY3c9PSIsInZhbHVlIjoiellFMFdNcjdEVS9qVUlTb0NlOStHdHhHNmJLLzc2OEtDcDVwWUJPcEU5N3YwZXRPK2ZOWGt3WGV4cDdZZlRUTGFUdVRHaUJwUU5WYVBvNldOSGNMNSttem1kZ1hLSllwbnJDQldjSkxOL21jOERMSjBncVFJWTFQbnJURW15RWUiLCJtYWMiOiI5NGMwOTQ5ZDc2MzIzMTFiOTkzOTA5NGNlODY1ZjMyNGNkNTFmYjNhZmZjZDY0YTE1ZmUwNjk5MDUxOGQ0MTc1IiwidGFnIjoiIn0%3D; expires=Sun, 31 Aug 2025 08:54:23 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6ImhqT3I1QkdjUVJtNDNteWFTMkltWWc9PSIsInZhbHVlIjoiMG9sdlRIcExPT3VzMTFGdlhDeTBVSDQ0TEpJbUlKdUVldVdCeHpZaVc2MVM4YTBsNmdkd2dEcWVXOGRMeHArNkg0ZEREb2V2aUdEOGQ3YU9MK2lHSHZleEV0VEpMWkh5dnVvWGRCR2Nmenlkd1k0eWYvV3ZhdktTN1lMMnBoNlIiLCJtYWMiOiJjYzg2OTJhMjQ5NzQzYjNmNDM0OTI0MDk5NWIxMzQxMmRhMDYzZmU5NmJjYzZmYzRhYTk5ODg1ZGFjOWZiYmNmIiwidGFnIjoiIn0%3D; expires=Sun, 31 Aug 2025 08:54:23 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"title\": \"FlyBuds 3(Синий)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/flybuds-3/siniy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14990.webp\"\n        },\n        {\n            \"title\": \"FlyBuds 3(Красный)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/flybuds-3/krasniy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14990.webp\"\n        },\n        {\n            \"title\": \"FlyBuds 3(Белый)\",\n            \"description\": \"Товар\",\n            \"match\": \"\",\n            \"link\": \"http://localhost:3002/product/flybuds-3/beliy\",\n            \"image\": \"https://8b3126d5bba2-shrewd-ian.s3.ru1.storage.beget.cloud/audiofree/images/products/headphones-png-14990.webp\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "9. Support chat",
+			"item": [
+				{
+					"name": "9.1 Chat info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/support-chat",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "1",
+									"description": "Необязателен (передаётся сотрудником тех.поддержки)",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/support-chat",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"support-chat"
+									],
+									"query": [
+										{
+											"key": "chat_id",
+											"value": "3",
+											"description": "Необязателен (передаётся сотрудником тех.поддержки)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 18 Dec 2025 12:27:36 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IllQZmNLSmhEK1RwNHNXUzh5czZPNmc9PSIsInZhbHVlIjoicmdPVUMyVFRFWlZyZy9yNDhxYVhFeGlkbFVvU2tvaGRybnkrYXQ0a1RmYXcvZkdOTjVuUnliLzJELzhsVXdYWUdiSG1jemtNTmJNQ1hlVkU0eXIrbHZCWkptVnlhbG9Zait1NzBZU1dnZE1ibVhiWFNLcDZ1bm1WMzErVDFuOTkiLCJtYWMiOiI5ZGU4ZDJhYWM0Mjg2ZTI3YWUwOGU3Zjk3NTIxODljN2JkYjdkNWIwNGM4YWE5NWQ0N2ZiMmNmZTU2ZjVjOWI2IiwidGFnIjoiIn0%3D; expires=Thu, 18 Dec 2025 14:27:36 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6IiszQTBtTEY5aXZMTnY4eDlXR0lMdWc9PSIsInZhbHVlIjoiWkI2MkU2M3ZWN0JiQ2RDN0wwYUozYTIzNjlCOSttL0ROaVRvVkMxL3dyNWQ1QncvcEJDTWNNNUlyM3dQRVk4b0w1clA3U1Y1Ung1dkU5QWRYek5wTlNPRVpidCtIL2JxbFhjNk41N2xoOEJTZEE2ZnZzNVBYSUFaRzlyMmlzV2wiLCJtYWMiOiIzODk2YWEwYjg1MDAyMDM0YTk1YjZlYTQ1NjA0MjYxMjUyZDNkNmUxZjYxYzRhMDI4N2RhMDEzODc1ZmMzNGRiIiwidGFnIjoiIn0%3D; expires=Thu, 18 Dec 2025 14:27:36 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"chat_id\": 2,\n        \"unread_messages\": 8,\n        \"total_messages\": 8,\n        \"first_message_id\": 37,\n        \"last_message_id\": 86\n    },\n    \"ok\": true\n}"
+						}
+					]
+				},
+				{
+					"name": "9.2 Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/support-chat/messages",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat",
+								"messages"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "1",
+									"description": "Необязателен (передаётся сотрудником тех.поддержки)",
+									"disabled": true
+								},
+								{
+									"key": "earliest_message_id",
+									"value": "1",
+									"description": "Необязателен. Если передан - загружает сообщения до указанного",
+									"disabled": true
+								},
+								{
+									"key": "latest_message_id",
+									"value": "2",
+									"description": "Необязателен. Если передан - загружает сообщения после указанного",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/support-chat/messages?earliest_message_id=52",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"support-chat",
+										"messages"
+									],
+									"query": [
+										{
+											"key": "chat_id",
+											"value": "1",
+											"description": "Необязателен (передаётся сотрудником тех.поддержки)",
+											"disabled": true
+										},
+										{
+											"key": "earliest_message_id",
+											"value": "52",
+											"description": "Необязателен. Если передан - загружает сообщения до указанного"
+										},
+										{
+											"key": "latest_message_id",
+											"value": "81",
+											"description": "Необязателен. Если передан - загружает сообщения после указанного",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 13 Dec 2025 13:29:13 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6Ink5NEVhOWR6OURlMHEzNStuUmQ3Z3c9PSIsInZhbHVlIjoiU3E1dnhuNjFscHFGN3pZb0FuZmI2bzVsSEF1eUxKZXNPZm5vbXlYY1l4UFVGblJ0dDNWVzB5LzI2R2lpT2ZvbTJIckNSZ090bTNCWHM0NTJZTUd3RFdjNksxQ0dsNU1TUFhhcXMvOE5peEwwc282V0JNN2RwbWI5cm05WXZlaHIiLCJtYWMiOiI1MTUxZjZmOGVhNzY5YWEyYjdlNmVkZjU1YzJiMzE5ZGVlZDlkMGI1YWMxNjA0NDIzMWY3M2ZlNjIzZjY3ZDdmIiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:29:13 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6IjhLT2d2eGJoaVJTWkJzOWJYOHpRcXc9PSIsInZhbHVlIjoic2RablF3aFRuZUJYdGJvbnhZVmZnOFRMR2FNNldxdDFJN2dDQ1p4bDlNd2JwVHgrRkRXcGI2N1NHZkcxRnFSRFhLWjQ1Vk03Y3ZCUGxWa2R5M2MwdE1nNU8wc0U4azJ1R2M2d1VlZENwQ0s4N0FyUHU0bFV6eW9IMmFlUWVITjMiLCJtYWMiOiJlYjE5MGI4NDc1NDMzMDk5M2RlNjIzZGVhNjE0OGYwMzkyYTgyMDlkNjM0ZDc0NWFiZDczODMyNzIxYzM2NmYxIiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:29:13 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"ok\": true,\n    \"data\": {\n        \"messages\": [\n            {\n                \"id\": 37,\n                \"chat_id\": 2,\n                \"author_id\": 103,\n                \"sender_type\": \"user\",\n                \"text\": \"Сообщение 2\",\n                \"read_at\": null,\n                \"created_at\": \"2025-12-12T16:47:01.000000Z\",\n                \"updated_at\": \"2025-12-12T16:47:01.000000Z\"\n            },\n            {\n                \"id\": 38,\n                \"chat_id\": 2,\n                \"author_id\": 103,\n                \"sender_type\": \"user\",\n                \"text\": \"Сообщение 3\",\n                \"read_at\": null,\n                \"created_at\": \"2025-12-12T16:47:03.000000Z\",\n                \"updated_at\": \"2025-12-12T16:47:03.000000Z\"\n            },\n            {\n                \"id\": 39,\n                \"chat_id\": 2,\n                \"author_id\": 103,\n                \"sender_type\": \"user\",\n                \"text\": \"Сообщение 4\",\n                \"read_at\": null,\n                \"created_at\": \"2025-12-12T16:47:03.000000Z\",\n                \"updated_at\": \"2025-12-12T16:47:03.000000Z\"\n            },\n            {\n                \"id\": 40,\n                \"chat_id\": 2,\n                \"author_id\": 103,\n                \"sender_type\": \"user\",\n                \"text\": \"Сообщение 5\",\n                \"read_at\": null,\n                \"created_at\": \"2025-12-12T16:47:06.000000Z\",\n                \"updated_at\": \"2025-12-12T16:47:06.000000Z\"\n            }\n        ],\n        \"earliest_loaded_id\": 37,\n        \"latest_loaded_id\": 40\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "9.3 Write message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/support-chat/message?text=Текст сообщения",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat",
+								"message"
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "1",
+									"description": "Необязателен (передаётся сотрудником тех.поддержки)",
+									"disabled": true
+								},
+								{
+									"key": "text",
+									"value": "Текст сообщения"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "201",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/support-chat/message?text=Сообщение 44",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"support-chat",
+										"message"
+									],
+									"query": [
+										{
+											"key": "chat_id",
+											"value": "3",
+											"description": "Необязателен (передаётся сотрудником тех.поддержки)",
+											"disabled": true
+										},
+										{
+											"key": "text",
+											"value": "Сообщение 44"
+										}
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 13 Dec 2025 13:34:48 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IjgySUliOHZ6WWlHbFRsRnRsdVE4Zmc9PSIsInZhbHVlIjoiNVA5ZXo4Q2gzV3AxbXpFanJ3djRmY2VlZnlJK2JzbTR3OTViYnE1RnZCOERXSG9LNU5peVlxTHNMTzZEU2wvcXJhTEU1YjNyVk4vZGw3Z1JaRWxreVpqU21vUis5YU5DeWJNWWcreDFQM3ZBNXR6WHBpTGcyNGVmSkJwamR1bUciLCJtYWMiOiJkZjczMzM0Mzg4ODVhMzg4MDUyNTZiYTBhYWM4OTIwNzM3ZDg1NjY3ZTFhNzk3N2ViMDgxOTk5Y2MyNzE0ZDhkIiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:34:48 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6InZjVExUL1NnT0pCV3dFN0xZdEJ2eHc9PSIsInZhbHVlIjoicmFBK1AwUW5WMTNpNElCZTRYOENhM1BxcDQrK3dtd0QxQTNZQ3dIUUZ5eHRqTnprTzZVYTRYSkJMWmZxOGJCWmlJNzNTL0FiNDhmVUIzWG1nQlgzRFNvSC81a0xzU2QwTmpoc2ovWWMxaEVCckJ6Z1lhT1Mrc2oyWVAvNUh5VHQiLCJtYWMiOiI5OGJiZjNiMDM3MjU0ODFhMjA5OTRhMGY4MjgwNTQ5ODFhOGRmMmE2OGIzMjY3ZmU5ZTE1MDU0YWE2NDI5ZWMzIiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:34:48 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"data\": {\n        \"message\": {\n            \"chat_id\": 2,\n            \"author_id\": 103,\n            \"sender_type\": \"user\",\n            \"text\": \"Сообщение 44\",\n            \"updated_at\": \"2025-12-13T13:34:48.000000Z\",\n            \"created_at\": \"2025-12-13T13:34:48.000000Z\",\n            \"id\": 85\n        },\n        \"latest_loaded_id\": 85\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "9.4 Chats list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/support-chat/list?search=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat",
+								"list"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"description": "Поиск по значению. Ищет по: email, ФИО, номеру телефона пользователя"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/support-chat/list?search=",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"support-chat",
+										"list"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "",
+											"description": "Поиск по значению. Ищет по: email, ФИО, номеру телефона пользователя"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Dec 2025 08:31:41 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "180"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "179"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IkEvM3JoZUtuazZKRWtLRHNXL1c0a3c9PSIsInZhbHVlIjoiSWV4M1MrR2JCem5OTHpZM2IyTTU1S0tYclBoU2pCUElHSWtUbWtsenZvSWEyNXJMUlV3WjhxMU56WlRLTjFGSC9uNzFreWllREZMbHdUR291UkxobjZsWDlqZ3pyL1BCbExnTm1aVjZxRDk1dWRhaS96b0hSYnJvbytmSzBJNVkiLCJtYWMiOiI4MzM1ZWRlODFhODcxMmI2ZDM2ZmVjZDM1MGQ1Yjg4OWM1ZGZiOTExZTUxN2JmNzdlNmVmNDRkN2I5NjM4NzIwIiwidGFnIjoiIn0%3D; expires=Tue, 30 Dec 2025 10:31:41 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6Im9Xa3BqQnVhcTRXazQ0TnQweEw1MFE9PSIsInZhbHVlIjoiWkk2blhxSSs0d2VvQjhINXJITGhlRG5wR2dING5CaGprVWV2cVBmYU11VVBEcWF6VW8rWXRzVkovRlFQemZJVHIzZFVadjJVcEJQR25ZK09ueFVTTExyS3RIODVDazV2K3Z5WElHb1NLY2FqZzlxTUFYeGhkbnRhM3RHbllWTUMiLCJtYWMiOiI5NjE3YTM4MGU5MWE4ZGViNTExMzA5NGViZmQ3OTU4MWUxODg5OWYwNmZlNzQyOWJjNDEzM2ZiZjgyZDExNDkyIiwidGFnIjoiIn0%3D; expires=Tue, 30 Dec 2025 10:31:41 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"data\": {\n        \"current_page\": 1,\n        \"data\": [\n            {\n                \"id\": 3,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-07T14:37:10.000000Z\",\n                \"updated_at\": \"2025-12-13T13:36:38.000000Z\",\n                \"user_name\": \"Пользователь\",\n                \"user_email\": \"kotbarsik96@mail.ru\",\n                \"user_phone\": null,\n                \"user_telegram\": null,\n                \"latest_message\": \"7908-\",\n                \"latest_message_created_at\": \"2025-12-30 11:27:03\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 111,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-24T10:38:36.000000Z\",\n                \"updated_at\": \"2025-12-24T10:38:36.000000Z\",\n                \"user_name\": \"яндекс\",\n                \"user_email\": \"kotbarsik8@yandex.ru\",\n                \"user_phone\": null,\n                \"user_telegram\": null,\n                \"latest_message\": \"ыуеккуые\",\n                \"latest_message_created_at\": \"2025-12-29 14:17:33\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 95,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:43.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:43.000000Z\",\n                \"user_name\": \"Ярослава Сергеевна Сазонова\",\n                \"user_email\": \"rnovikova@example.net\",\n                \"user_phone\": \"(495) 908-5709\",\n                \"user_telegram\": null,\n                \"latest_message\": \"testtest\",\n                \"latest_message_created_at\": \"2025-12-29 13:18:48\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 72,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"user_name\": \"Бобров Дан Евгеньевич\",\n                \"user_email\": \"anzelika30@example.com\",\n                \"user_phone\": \"(35222) 93-3004\",\n                \"user_telegram\": null,\n                \"latest_message\": \"gsdf\",\n                \"latest_message_created_at\": \"2025-12-25 18:55:49\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 60,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"user_name\": \"Юрий Борисович Якушев\",\n                \"user_email\": \"david.bykova@example.com\",\n                \"user_phone\": \"(35222) 52-9835\",\n                \"user_telegram\": null,\n                \"latest_message\": \"u3.\",\n                \"latest_message_created_at\": \"2025-12-23 17:11:54\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 57,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"user_name\": \"Уваров Артемий Романович\",\n                \"user_email\": \"grisina.rada@example.org\",\n                \"user_phone\": \"(495) 116-9056\",\n                \"user_telegram\": null,\n                \"latest_message\": \"че как\",\n                \"latest_message_created_at\": \"2025-12-21 10:22:52\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 104,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:43.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:43.000000Z\",\n                \"user_name\": \"Журавлёва Алла Ивановна\",\n                \"user_email\": \"inessa67@example.net\",\n                \"user_phone\": \"(495) 313-1234\",\n                \"user_telegram\": null,\n                \"latest_message\": \";ehf\",\n                \"latest_message_created_at\": \"2025-12-21 10:16:59\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 81,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"user_name\": \"Юдина Эмилия Александровна\",\n                \"user_email\": \"maja31@example.org\",\n                \"user_phone\": \"(495) 771-1502\",\n                \"user_telegram\": null,\n                \"latest_message\": \"тест\",\n                \"latest_message_created_at\": \"2025-12-21 10:16:09\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 59,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"user_name\": \"Сазонов Юрий Дмитриевич\",\n                \"user_email\": \"lidia.melnikov@example.com\",\n                \"user_phone\": \"8-800-168-7206\",\n                \"user_telegram\": null,\n                \"latest_message\": \"rere\",\n                \"latest_message_created_at\": \"2025-12-21 10:13:39\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 67,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"user_name\": \"Зайцев Платон Сергеевич\",\n                \"user_email\": \"valeria.petrova@example.com\",\n                \"user_phone\": \"(495) 914-6681\",\n                \"user_telegram\": null,\n                \"latest_message\": \"куку\",\n                \"latest_message_created_at\": \"2025-12-21 10:11:30\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 78,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"user_name\": \"Инесса Максимовна Соколова\",\n                \"user_email\": \"albina.potapov@example.org\",\n                \"user_phone\": \"(812) 934-60-12\",\n                \"user_telegram\": null,\n                \"latest_message\": \"test2\",\n                \"latest_message_created_at\": \"2025-12-21 10:10:54\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 87,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:43.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:43.000000Z\",\n                \"user_name\": \"Максимова Анна Евгеньевна\",\n                \"user_email\": \"zuev.lidia@example.org\",\n                \"user_phone\": \"+7 (922) 728-2617\",\n                \"user_telegram\": null,\n                \"latest_message\": \"Привет\",\n                \"latest_message_created_at\": \"2025-12-21 09:59:24\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 56,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:41.000000Z\",\n                \"user_name\": \"Антонина Сергеевна Николаева\",\n                \"user_email\": \"ukalasnikov@example.net\",\n                \"user_phone\": \"8-800-900-7496\",\n                \"user_telegram\": null,\n                \"latest_message\": \"У вас\",\n                \"latest_message_created_at\": \"2025-12-21 09:57:51\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 73,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"user_name\": \"Русаков Григорий Львович\",\n                \"user_email\": \"trabov@example.net\",\n                \"user_phone\": \"(812) 973-40-45\",\n                \"user_telegram\": null,\n                \"latest_message\": \"Здарова\",\n                \"latest_message_created_at\": \"2025-12-20 11:47:15\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            },\n            {\n                \"id\": 74,\n                \"status\": \"open\",\n                \"created_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"updated_at\": \"2025-12-19T14:31:42.000000Z\",\n                \"user_name\": \"Арсений Андреевич Вишняков\",\n                \"user_email\": \"viktor.suvorov@example.net\",\n                \"user_phone\": \"(35222) 38-6946\",\n                \"user_telegram\": null,\n                \"latest_message\": \"Здарова\",\n                \"latest_message_created_at\": \"2025-12-20 11:47:10\",\n                \"writers_count\": 0,\n                \"unread_messages\": 0\n            }\n        ],\n        \"first_page_url\": \"http://localhost:8000/api/support-chat/list?page=1\",\n        \"from\": 1,\n        \"last_page\": 4,\n        \"last_page_url\": \"http://localhost:8000/api/support-chat/list?page=4\",\n        \"links\": [\n            {\n                \"url\": null,\n                \"label\": \"&laquo; Назад\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://localhost:8000/api/support-chat/list?page=1\",\n                \"label\": \"1\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://localhost:8000/api/support-chat/list?page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://localhost:8000/api/support-chat/list?page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://localhost:8000/api/support-chat/list?page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://localhost:8000/api/support-chat/list?page=2\",\n                \"label\": \"Вперед &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"next_page_url\": \"http://localhost:8000/api/support-chat/list?page=2\",\n        \"path\": \"http://localhost:8000/api/support-chat/list\",\n        \"per_page\": 15,\n        \"prev_page_url\": null,\n        \"to\": 15,\n        \"total\": 54\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "9.5 Mark as read",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "chat_id",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "first_read_message_id",
+									"value": "",
+									"description": "id первого прочитанного сообщения. Должно быть сообщением от собеседника",
+									"type": "text"
+								},
+								{
+									"key": "read_count",
+									"value": "",
+									"description": "сколько сообщений всего прочитано (включая первое)",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/support-chat/read",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat",
+								"read"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "201",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "chat_id",
+											"value": "3",
+											"type": "text"
+										},
+										{
+											"key": "first_read_message_id",
+											"value": "61",
+											"description": "id первого прочитанного сообщения. Должно быть сообщением от собеседника",
+											"type": "text"
+										},
+										{
+											"key": "read_count",
+											"value": "1",
+											"description": "сколько сообщений всего прочитано (включая первое)",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/support-chat/read",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"support-chat",
+										"read"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 13 Dec 2025 13:36:15 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6Ik5WcnE0d0ZzODRrNVBwQzJISFUyblE9PSIsInZhbHVlIjoiMy96WWRpWFNkRG1td0FEV1pZM0wxZWNzRGVYbUJMREJjb243dFRrQ2ZUb2RrWWN3RzNuMG4yMkE5L2FHdGxZTDVaNjBvR0JweVlWbUdXRWdDL1JwdDZCZTlWRE8xUTd3NmJsZzhNdjhUWVVjNWVKRS9vS2libHFQV05sNFNIa2QiLCJtYWMiOiI0YWUyMWU0MTU5NWFiZWU1NjAwYTRiYzYxZDg2ZWQwYTFiYjYzODI2NzhlYmZkNzA5NTJhYTI2ZjQzZWQ1ZTAwIiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:36:15 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6IkU3dWJadnhpT2ZzUFpWTkNCa0Z1a0E9PSIsInZhbHVlIjoiREExSWF4Q2Nyc21uZHFoYkpnTkNaME0zbEd2dHpmU0lZNytIcnBadzBXWWZUcXpkdjJxelJCT1ZSeGJWMTdzN0Z5emJVbUNrbXdIZWd6MVZINUlDczVQTjRxWThkQ0tacnNRNUR1bkhZQklkS2hvNk4rRm0ya1JiR2ZUdkJLMFQiLCJtYWMiOiIxNWIyZWNiMjk1NTZmNzY3ZmM4MGViYmRkZDZkMjg1YzMyYWM4NjMxZTQyMzgxZWRmODFkNzM3MzU2NTQzMzA5IiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:36:15 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"read_count\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "9.6 Change status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "chat_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "open|closed",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/support-chat/change-status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat",
+								"change-status"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "201",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "chat_id",
+											"value": "3",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "open",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/support-chat/change-status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"support-chat",
+										"change-status"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.28.0"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.2.29"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 13 Dec 2025 13:36:38 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IlZkMkxFTTc0SytmYW80Nmk2RE5nbFE9PSIsInZhbHVlIjoiU3FJbmxtaEVOcGJ1S3BGNnEyeWxBdlVURjRhUTMyYmdKc1BXOHlqbzJybEJjdk51MWRzdzZjWHM0cElBOU5iYXpkaFVWNXJnRWZ2ZHJ3aHpmZXRsT2g4b25VZEVVZU53a0NFSVRlcGRaa1dFcUUyeGh2QmExVncycjdZM2U4T3EiLCJtYWMiOiJkYTQ2YmMyNzE5NGM3ZmU4NTUxNGY5MTkxMjhhMjgzMDg1Y2JiZTlmNjlmMGJiNTMxYWVhOTUzMGZiNWE1NmQ2IiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:36:38 GMT; Max-Age=7200; path=/; domain=localhost; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "audiofree_session=eyJpdiI6IkxLbVVwRkw1OEFjajNZVVM4OXhZcXc9PSIsInZhbHVlIjoiQzdSc2hvcmJnMitBbDVSN0tGQTRyZjdNSGdzaVFncWo4TnV4RVp1T2hQM1RqMEtZTVRJWUgxaHY2NlZjbloyRDBXZ1U5bzRFMURNc1hucXlFTjZXWWVNWk5pWWIzbC9zM0ZjbmFGUG5LWSsxVFpMd1hlU1ZYcnRzTlhrcExsYXQiLCJtYWMiOiI5YTQ2NmY4N2E3NDUxN2FiZDY0ZmE5MzQ0OTgwZDI5Yzc4YmZlZTAyNzYxN2RmMTU1NWQ1MDVlMzc0MjNhNGI1IiwidGFnIjoiIn0%3D; expires=Sat, 13 Dec 2025 15:36:38 GMT; Max-Age=7200; path=/; domain=localhost; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"data\": {\n        \"chat\": {\n            \"id\": 3,\n            \"user_id\": 102,\n            \"status\": \"open\",\n            \"created_at\": \"2025-12-07T14:37:10.000000Z\",\n            \"updated_at\": \"2025-12-13T13:36:38.000000Z\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "9.7 Change writing status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // \"chat_id\": 3, // optional\r\n    \"is_writing\": true // true/false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/support-chat/update-writing-status",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"support-chat",
+								"update-writing-status"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},

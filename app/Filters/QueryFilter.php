@@ -34,9 +34,14 @@ class QueryFilter
     }, ARRAY_FILTER_USE_KEY);
   }
 
-  public function apply(Builder $builder)
+  public function prepareBuilder(Builder $builder)
   {
     $this->builder = $builder;
+  }
+
+  public function apply(Builder $builder)
+  {
+    $this->prepareBuilder($builder);
 
     foreach ($this->queries() as $name => $value) {
       if (method_exists($this, $name)) {
@@ -60,7 +65,8 @@ class QueryFilter
    * @param $value значение фильтра
    * @return $this->builder если метод не переопределён
    */
-  public function handleDynamicQuery(string $name, $value) {
+  public function handleDynamicQuery(string $name, $value)
+  {
     return $this->builder;
   }
 }

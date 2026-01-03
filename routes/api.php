@@ -7,6 +7,7 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SeoController;
+use App\Http\Controllers\SupportChatController;
 use App\Http\Controllers\TaxonomiesController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UsersController;
@@ -96,6 +97,15 @@ Route::middleware('auth:sanctum')->group(function () {
   // 8. Search
   Route::get('search/address', [SearchController::class, 'address'])
     ->middleware(['throttle:search-address']); // 8.1
+
+  // 9. Chat
+  Route::get('support-chat', [SupportChatController::class, 'getChatInfo']); // 9.1
+  Route::get('support-chat/messages', [SupportChatController::class, 'getMessages']); // 9.2
+  Route::post('support-chat/message', [SupportChatController::class, 'writeMessage']); // 9.3
+  Route::get('support-chat/list', [SupportChatController::class, 'getChatsList']); // 9.4
+  Route::post('support-chat/read', [SupportChatController::class, 'markAsRead']); // 9.5
+  Route::post('support-chat/change-status', [SupportChatController::class, 'changeStatus']); // 9.6
+  Route::post('support-chat/update-writing-status', [SupportChatController::class, 'updateWritingStatus']); // 9.7
 
   // 99. Test
   Route::post('test', [TestController::class, 'test']);

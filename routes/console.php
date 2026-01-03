@@ -20,10 +20,11 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::call(function(){
+Schedule::call(function () {
     ScheduleTask::clearExpiredConfirmations();
+    ScheduleTask::clearExpiredSupportChatWritingStatuses();
 })->everyMinute();
 
-Schedule::call(function(){
+Schedule::call(function () {
     ScheduleTask::setOrderStatus();
 })->hourly();
