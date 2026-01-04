@@ -37,4 +37,21 @@ class SupportChatService
       'text' => $text,
     ]);
   }
+
+  public function writeSystemMessage(
+    SupportChat $chat,
+    string $text,
+    int $userId,
+    array|null $replacesUser = null,
+    array|null $replacesStaff = null
+  ) {
+    return SupportChatMessage::create([
+      'chat_id' => $chat->id,
+      'author_id' => $userId,
+      'sender_type' => SupportChatSenderTypeEnum::SYSTEM->value,
+      'text' => $text,
+      'replaces_user' => $replacesUser,
+      'replaces_staff' => $replacesStaff,
+    ]);
+  }
 }

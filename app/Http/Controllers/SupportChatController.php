@@ -212,7 +212,7 @@ class SupportChatController extends Controller
         ], 201);
     }
 
-    public function changeStatus(SupportChatChangeStatusRequest $request)
+    public function changeStatus(SupportChatChangeStatusRequest $request, SupportChatService $service)
     {
         $chat = SupportChat::find($request->chat_id);
         $shouldChange = $request->status !== $chat->status;
@@ -225,9 +225,9 @@ class SupportChatController extends Controller
             SupportChatChangeInfoEvent::dispatch($chat);
 
             if ($request->status === SupportChatStatusesEnum::OPEN->value)
-                $chat->writeSystemMessage(__('chat.opened'));
+                $service->writeSystemMessage($chat, __('chat.opened'), auth()->user()->id);
             if ($request->status === SupportChatStatusesEnum::CLOSED->value)
-                $chat->writeSystemMessage(__('chat.closed'));
+                $service->writeSystemMessage($chat, __('chat.closed'), auth()->user()->id);
         }
 
         return response([

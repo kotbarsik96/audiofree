@@ -100,17 +100,4 @@ class SupportChat extends Model
             ->orderBy('status', 'asc')
             ->orderBy('latest_message_created_at', 'desc');
     }
-
-    public function writeSystemMessage(string $text, array|null $replacesUser = null, array|null $replacesStaff = null)
-    {
-        $msg = SupportChatMessage::create([
-            'chat_id' => $this->id,
-            'author_id' => auth()->user()->id,
-            'sender_type' => SupportChatSenderTypeEnum::SYSTEM->value,
-            'text' => $text,
-            'replaces_user' => $replacesUser,
-            'replaces_staff' => $replacesStaff,
-        ]);
-        return $msg;
-    }
 }
