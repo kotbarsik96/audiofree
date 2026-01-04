@@ -74,9 +74,9 @@ class SupportChat extends Model
         return $changed;
     }
 
-    public static function chatsList()
+    public function scopeChatsList(Builder $query, int $userId)
     {
-        return static::select([
+        return $query->addSelect([
             'support_chats.id',
             'support_chats.status',
             'support_chats.created_at',
@@ -84,23 +84,18 @@ class SupportChat extends Model
             'users.name as user_name',
             'users.email as user_email',
             'users.phone_number as user_phone',
-            'users.telegram as user_telegram'
+            'users.telegram as user_telegram',
+            'writers_count' => SupportChatWritingStatus::selectRaw('count(*)')
+                ->whereNotNull('support_chat_writing_statuses.started_writing_at')
+                ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
+                ->where('support_chat_writing_statuses.writer_id', '!=', $userId),
+            'unread_messages' => SupportChatMessage::selectRaw('count(*)')
+                ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
+                ->whereNull('support_chat_messages.read_at')
         ])
-            ->addSelect([
-                'latest_message_created_at' => SupportChatMessage::select('created_at')
-                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(1),
-                'writers_count' => SupportChatWritingStatus::selectRaw('count(*)')
-                    ->whereNotNull('support_chat_writing_statuses.started_writing_at')
-                    ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
-                    ->where('support_chat_writing_statuses.writer_id', '!=', auth()->user()->id),
-                'unread_messages' => SupportChatMessage::selectRaw('count(*)')
-                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
-                    ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
-                    ->whereNull('support_chat_messages.read_at')
-            ])
             ->with('latest_message')
+            ->withMax('messages as latest_message_created_at', 'created_at')
             ->join('users', 'users.id', '=', 'support_chats.user_id')
             ->orderBy('status', 'asc')
             ->orderBy('latest_message_created_at', 'desc');

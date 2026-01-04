@@ -172,7 +172,7 @@ class SupportChatController extends Controller
 
     public function getChatsList(SupportChatGetListRequest $request)
     {
-        $chats = SupportChat::chatsList()
+        $chats = SupportChat::chatsList(auth()->user()->id)
             ->filter($request->filterableRequest)
             ->paginate($request->per_page)
             ->through(function ($item) {
