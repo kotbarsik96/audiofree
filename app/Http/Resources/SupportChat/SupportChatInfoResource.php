@@ -28,7 +28,7 @@ class SupportChatInfoResource extends JsonResource
             'unread_messages' => $this->unreadMessagesFromCompanion($this->senderType)->count(),
             'total_messages' => $this->messages()->count(),
             'first_message_id' => SupportChatMessage::where('chat_id', $this->id)->first()?->id,
-            'last_message_id' => SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()->id,
+            'last_message_id' => SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()?->id,
             'user_name' => $this->user->name,
             'status' => $this->status,
             'user_writing' => !!SupportChatWritingStatus::writingNow($this->id)

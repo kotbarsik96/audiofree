@@ -17,6 +17,7 @@ use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
 use App\Models\SupportChat\SupportChatWritingStatus;
+use App\Services\SupportChat\SupportChatService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -45,7 +46,7 @@ class SupportChatController extends Controller
     public function getMessages(SupportChatGetMessagesRequest $request)
     {
         $chat = null;
-        $messages = null;
+        $messages = collect();
         $limit = 30;
 
         if ($request->has('chat_id')) {
@@ -142,21 +143,13 @@ class SupportChatController extends Controller
         ], 200);
     }
 
-    public function writeMessage(SupportChatWriteMessageRequest $request)
+    public function writeMessage(SupportChatWriteMessageRequest $request, SupportChatService $service)
     {
-        $message = null;
         $chat = null;
         $user = auth()->user();
 
         if ($request->has('chat_id')) {
             $chat = SupportChat::find($request->chat_id);
-            $chat->setOpenStatus();
-            $message = SupportChatMessage::create([
-                'chat_id' => $chat->id,
-                'author_id' => $user->id,
-                'sender_type' => SupportChatSenderTypeEnum::STAFF->value,
-                'text' => $request->text,
-            ]);
         } else {
             $chat = SupportChat::firstOrCreate([
                 'user_id' => $user->id
@@ -164,27 +157,9 @@ class SupportChatController extends Controller
                 'user_id' => $user->id,
                 'status' => SupportChatStatusesEnum::OPEN->value
             ]);
-
-            $chat->setOpenStatus();
-
-            $message = SupportChatMessage::create([
-                'chat_id' => $chat->id,
-                'author_id' => $user->id,
-                'sender_type' => SupportChatSenderTypeEnum::USER->value,
-                'text' => $request->text,
-            ]);
         }
 
-        $updatedIds = $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
-            ->select('id')
-            ->get()
-            ->pluck('id');
-        $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
-            ->update([
-                'read_at' => Carbon::now()
-            ]);
-
-        SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
+        $message = $service->writeMessage($chat, $request->getCurrentSenderType(), $request->text);
 
         return response([
             'ok' => true,
@@ -271,14 +246,16 @@ class SupportChatController extends Controller
             ? SupportChat::find($request->chat_id)
             : $user->supportChat;
 
-        $status = SupportChatWritingStatus::firstOrCreate([
-            'chat_id' => $chat->id,
-            'writer_id' => $user->id
-        ]);
-        // запускает SupportChatWriteStatusEvent::dispatch
-        $status->update([
-            'started_writing_at' => $request->is_writing ? Carbon::now() : null
-        ]);
+        if ($chat) {
+            $status = SupportChatWritingStatus::firstOrCreate([
+                'chat_id' => $chat->id,
+                'writer_id' => $user->id
+            ]);
+            // запускает SupportChatWriteStatusEvent::dispatch
+            $status->update([
+                'started_writing_at' => $request->is_writing ? Carbon::now() : null
+            ]);
+        }
 
         return [
             'ok' => true
