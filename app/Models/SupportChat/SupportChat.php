@@ -74,33 +74,6 @@ class SupportChat extends Model
         return $changed;
     }
 
-    public function getInfo(SupportChatSenderTypeEnum $senderType)
-    {
-        $data = new SupportChatInfoDTO(
-            chat_id: $this->id,
-            unread_messages: $this->unreadMessagesFromCompanion($senderType)->count(),
-            total_messages: $this->messages()->count(),
-            first_message_id: SupportChatMessage::where('chat_id', $this->id)->first()?->id,
-            last_message_id: SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()->id,
-            user_name: $this->user->name,
-            status: $this->status,
-            user_writing: !!SupportChatWritingStatus::writingNow($this->id)
-                ->where('writer_id', $this->user_id)
-                ->first(),
-            staff_writing: !!SupportChatWritingStatus::writingNowExceptUser($this->id, $this->user_id)
-                ->first(),
-            staff_writers: SupportChatWritingStatus::writingNowExceptUser($this->id, $this->user_id)
-                ->with('writer:id,name')
-                ->get()
-                ->pluck('writer.name')
-        );
-
-        if ($senderType !== SupportChatSenderTypeEnum::STAFF)
-            unset($data->staff_writers);
-
-        return $data;
-    }
-
     public static function chatsList()
     {
         return static::select([

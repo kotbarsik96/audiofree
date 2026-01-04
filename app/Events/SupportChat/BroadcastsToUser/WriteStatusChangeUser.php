@@ -3,6 +3,7 @@
 namespace App\Events\SupportChat\BroadcastsToUser;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Models\SupportChat\SupportChatWritingStatus;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -39,7 +40,7 @@ class WriteStatusChangeUser implements ShouldBroadcast
     {
         return [
             'writer_id' => $this->status->writer_id,
-            'chat_info' => $this->status->chat->getInfo(SupportChatSenderTypeEnum::USER)
+            'chat_info' => (new SupportChatInfoResource($this->status->chat))->setSenderType(SupportChatSenderTypeEnum::USER)
         ];
     }
 }

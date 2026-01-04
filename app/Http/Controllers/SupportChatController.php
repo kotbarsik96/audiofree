@@ -12,6 +12,7 @@ use App\Http\Requests\SupportChat\SupportChatInfoRequest;
 use App\Http\Requests\SupportChat\SupportChatMarkAsReadRequest;
 use App\Http\Requests\SupportChat\SupportChatUpdateWritingStatusRequest;
 use App\Http\Requests\SupportChat\SupportChatWriteMessageRequest;
+use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
@@ -36,7 +37,7 @@ class SupportChatController extends Controller
         throw_if(!$chat, new NotFoundHttpException(__('abortions.chatNotFound')));
 
         return response([
-            'data' => $chat->getInfo($request->getCurrentSenderType()),
+            'data' => (new SupportChatInfoResource($chat))->setSenderType($request->getCurrentSenderType()),
             'ok' => true,
         ]);
     }
@@ -231,7 +232,7 @@ class SupportChatController extends Controller
             'ok' => true,
             'data' => [
                 'read_count' => $updated,
-                'chat_info' => $request->chat->getInfo($request->getCurrentSenderType())
+                'chat_info' => (new SupportChatInfoResource($request->chat))->setSenderType($request->getCurrentSenderType())
             ],
         ], 201);
     }
@@ -257,7 +258,7 @@ class SupportChatController extends Controller
         return response([
             'ok' => true,
             'data' => [
-                'chat' => $chat->getInfo(SupportChatSenderTypeEnum::STAFF),
+                'chat' => (new SupportChatInfoResource($chat))->setSenderType(SupportChatSenderTypeEnum::STAFF),
                 'changed' => $shouldChange,
             ]
         ], 201);

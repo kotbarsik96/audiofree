@@ -3,6 +3,7 @@
 namespace App\Events\SupportChat\BroadcastsToUser;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChatMessage;
 use Illuminate\Broadcasting\Channel;
@@ -40,7 +41,7 @@ class NewMessageUser implements ShouldBroadcast
     {
         return [
             'message' => (new SupportChatMessageResource($this->message))->setSenderType(SupportChatSenderTypeEnum::USER),
-            'chat_info' => $this->message->chat->getInfo(SupportChatSenderTypeEnum::USER)
+            'chat_info' => (new SupportChatInfoResource($this->message->chat))->setSenderType(SupportChatSenderTypeEnum::USER)
         ];
     }
 }

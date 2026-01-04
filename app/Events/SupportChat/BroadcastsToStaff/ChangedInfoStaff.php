@@ -3,6 +3,7 @@
 namespace App\Events\SupportChat\BroadcastsToStaff;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Models\SupportChat\SupportChat;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -39,7 +40,7 @@ class ChangedInfoStaff implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'chat_info' => $this->chat->getInfo(SupportChatSenderTypeEnum::STAFF)
+            'chat_info' => (new SupportChatInfoResource($this->chat))->setSenderType(SupportChatSenderTypeEnum::STAFF)
         ];
     }
 }
