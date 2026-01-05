@@ -11,4 +11,13 @@ enum SupportChatStatusesEnum: string
   {
     return array_column(self::cases(), 'value');
   }
+
+  public static function fromValue(string $value)
+  {
+    return match ($value) {
+      'open' => static::OPEN,
+
+      'closed' => static::CLOSED
+    };
+  }
 }

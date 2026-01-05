@@ -215,26 +215,14 @@ class SupportChatController extends Controller
     public function changeStatus(SupportChatChangeStatusRequest $request, SupportChatService $service)
     {
         $chat = SupportChat::find($request->chat_id);
-        $shouldChange = $request->status !== $chat->status;
 
-        if ($shouldChange) {
-            $chat->update([
-                'status' => $request->status
-            ]);
-
-            SupportChatChangeInfoEvent::dispatch($chat);
-
-            if ($request->status === SupportChatStatusesEnum::OPEN->value)
-                $service->writeSystemMessage($chat, __('chat.opened'), auth()->user()->id);
-            if ($request->status === SupportChatStatusesEnum::CLOSED->value)
-                $service->writeSystemMessage($chat, __('chat.closed'), auth()->user()->id);
-        }
+        $changed = $service->changeChatStatus($chat, SupportChatStatusesEnum::fromValue($request->status));
 
         return response([
             'ok' => true,
             'data' => [
                 'chat' => (new SupportChatInfoResource($chat))->setSenderType(SupportChatSenderTypeEnum::STAFF),
-                'changed' => $shouldChange,
+                'changed' => $changed,
             ]
         ], 201);
     }
