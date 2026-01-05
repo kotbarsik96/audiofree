@@ -224,23 +224,14 @@ class SupportChatController extends Controller
         ], 201);
     }
 
-    public function updateWritingStatus(SupportChatUpdateWritingStatusRequest $request)
+    public function updateWritingStatus(SupportChatUpdateWritingStatusRequest $request, SupportChatService $service)
     {
-        $user = auth()->user();
         $chat = $request->has('chat_id')
             ? SupportChat::find($request->chat_id)
-            : $user->supportChat;
+            : auth()->user()->supportChat;
 
-        if ($chat) {
-            $status = SupportChatWritingStatus::firstOrCreate([
-                'chat_id' => $chat->id,
-                'writer_id' => $user->id
-            ]);
-            // запускает SupportChatWriteStatusEvent::dispatch
-            $status->update([
-                'started_writing_at' => $request->is_writing ? Carbon::now() : null
-            ]);
-        }
+        if ($chat)
+            $service->updateWritingStatus($chat, $request->is_writing);
 
         return [
             'ok' => true

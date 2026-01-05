@@ -8,6 +8,7 @@ use App\Events\SupportChat\SupportChatChangeInfoEvent;
 use App\Events\SupportChat\SupportChatReadEvent;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
+use App\Models\SupportChat\SupportChatWritingStatus;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -107,5 +108,17 @@ class SupportChatService
         SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
 
         return $updated;
+    }
+
+    public function updateWritingStatus(SupportChat $chat, bool $isWriting)
+    {
+        $status = SupportChatWritingStatus::firstOrCreate([
+            'chat_id' => $chat->id,
+            'writer_id' => auth()->user()->id
+        ]);
+        // запускает SupportChatWriteStatusEvent::dispatch
+        $status->update([
+            'started_writing_at' => $isWriting ? Carbon::now() : null
+        ]);
     }
 }
