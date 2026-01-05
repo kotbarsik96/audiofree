@@ -191,17 +191,14 @@ class SupportChatController extends Controller
         ], 200);
     }
 
-    public function markAsRead(SupportChatMarkAsReadRequest $request)
+    public function markAsRead(SupportChatMarkAsReadRequest $request, SupportChatService $service)
     {
-        $builder = $request->chat->unreadMessagesFromCompanion($request->getCurrentSenderType())
-            ->where('created_at', '>=', $request->firstReadMessage->created_at)
-            ->limit($request->read_count);
-        $updatedIds = $builder->clone()->select('id')->get()->pluck('id');
-        $updated = $builder->update([
-            'read_at' => Carbon::now()
-        ]);
-
-        SupportChatReadEvent::dispatch($updatedIds, $request->chat, auth()->user());
+        $updated = $service->markMessagesAsRead(
+            $request->chat,
+            $request->firstReadMessage,
+            $request->read_count,
+            $request->getCurrentSenderType()
+        );
 
         return response([
             'ok' => true,

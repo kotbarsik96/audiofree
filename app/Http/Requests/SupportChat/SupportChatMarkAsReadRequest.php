@@ -32,12 +32,12 @@ class SupportChatMarkAsReadRequest extends SupportChatBaseRequest
                 'exists:support_chat_messages,id',
                 function (string $attribute, mixed $value, Closure $fail) {
                     if ($this->firstReadMessage?->chat_id !== $this->chat->id) {
-                        $fail('Необходимо сообщение из текущего чата');
+                        $fail(__('abortions.requiredMessageFromCurrentChat'));
                         return;
                     }
 
                     if ($this->getCurrentSenderType()->value === $this->firstReadMessage?->sender_type) {
-                        $fail('Необходимо сообщение от собеседника');
+                        $fail(__('abortions.requiredMessageFromCompanion'));
                         return;
                     }
                 }

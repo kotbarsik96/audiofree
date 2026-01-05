@@ -9,6 +9,7 @@ use App\Events\SupportChat\SupportChatReadEvent;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
 use Carbon\Carbon;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class SupportChatService
 {
@@ -75,5 +76,36 @@ class SupportChatService
         }
 
         return $shouldChange;
+    }
+
+    public function markMessagesAsRead(
+        SupportChat $chat,
+        SupportChatMessage $firstReadMessage,
+        int $readCount,
+        SupportChatSenderTypeEnum $senderType
+    ) {
+        // не совпадают чаты
+        throw_if(
+            $firstReadMessage?->chat_id !== $chat->id,
+            new UnprocessableEntityHttpException(__('abortions.requiredMessageFromCurrentChat'))
+        );
+
+        // первое сообщение не от собеседника
+        throw_if(
+            $senderType === $firstReadMessage->sender_type,
+            new UnprocessableEntityHttpException(__('abortions.requiredMessageFromCompanion'))
+        );
+
+        $builder = $chat->unreadMessagesFromCompanion($senderType)
+            ->where('created_at', '>=', $firstReadMessage->created_at)
+            ->limit($readCount);
+        $updatedIds = $builder->clone()->select('id')->get()->pluck('id');
+        $updated = $builder->update([
+            'read_at' => Carbon::now()
+        ]);
+
+        SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
+
+        return $updated;
     }
 }
