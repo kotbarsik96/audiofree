@@ -6,6 +6,7 @@ use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Http\Requests\SupportChat\SupportChatBaseRequest;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
+use App\Rules\SupportChat\MarkAsRead;
 use Closure;
 
 class SupportChatMarkAsReadRequest extends SupportChatBaseRequest
@@ -30,17 +31,7 @@ class SupportChatMarkAsReadRequest extends SupportChatBaseRequest
             'first_read_message_id' => [
                 'required',
                 'exists:support_chat_messages,id',
-                function (string $attribute, mixed $value, Closure $fail) {
-                    if ($this->firstReadMessage?->chat_id !== $this->chat->id) {
-                        $fail(__('abortions.requiredMessageFromCurrentChat'));
-                        return;
-                    }
-
-                    if ($this->getCurrentSenderType()->value === $this->firstReadMessage?->sender_type) {
-                        $fail(__('abortions.requiredMessageFromCompanion'));
-                        return;
-                    }
-                }
+                new MarkAsRead($this->chat, $this->firstReadMessage, $this->getCurrentSenderType())
             ],
             // сколько сообщений всего прочитано (включая первое)
             'read_count' => 'required|integer|min:1'
