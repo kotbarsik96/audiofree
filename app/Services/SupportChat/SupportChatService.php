@@ -4,6 +4,7 @@ namespace App\Services\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
+use App\Events\SupportChat\ChangeWritingStatusEvent;
 use App\Events\SupportChat\SupportChatChangeInfoEvent;
 use App\Events\SupportChat\SupportChatReadEvent;
 use App\Models\SupportChat\SupportChat;
@@ -112,13 +113,6 @@ class SupportChatService
 
     public function updateWritingStatus(SupportChat $chat, bool $isWriting)
     {
-        $status = SupportChatWritingStatus::firstOrCreate([
-            'chat_id' => $chat->id,
-            'writer_id' => auth()->user()->id
-        ]);
-        // запускает SupportChatWriteStatusEvent::dispatch
-        $status->update([
-            'started_writing_at' => $isWriting ? Carbon::now() : null
-        ]);
+        ChangeWritingStatusEvent::dispatch($chat, auth()->user(), $isWriting);
     }
 }
