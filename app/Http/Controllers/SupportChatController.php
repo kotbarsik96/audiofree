@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
-use App\Events\SupportChat\SupportChatChangeInfoEvent;
-use App\Events\SupportChat\SupportChatReadEvent;
 use App\Http\Requests\SupportChat\SupportChatGetListRequest;
 use App\Http\Requests\SupportChat\SupportChatGetMessagesRequest;
 use App\Http\Requests\SupportChat\SupportChatInfoRequest;
@@ -16,10 +14,7 @@ use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
-use App\Models\SupportChat\SupportChatWritingStatus;
 use App\Services\SupportChat\SupportChatService;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Http\Requests\SupportChat\SupportChatChangeStatusRequest;
 

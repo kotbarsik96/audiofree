@@ -4,7 +4,6 @@ namespace App\Http\Resources\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Models\SupportChat\SupportChatMessage;
-use App\Models\SupportChat\SupportChatWritingStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,15 +30,6 @@ class SupportChatInfoResource extends JsonResource
             'last_message_id' => SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()?->id,
             'user_name' => $this->user->name,
             'status' => $this->status,
-            'user_writing' => !!SupportChatWritingStatus::writingNow($this->id)
-                ->where('writer_id', $this->user_id)
-                ->first(),
-            'staff_writing' => !!SupportChatWritingStatus::writingNowExceptUser($this->id, $this->user_id)
-                ->first(),
-            'staff_writers' => SupportChatWritingStatus::writingNowExceptUser($this->id, $this->user_id)
-                ->with('writer:id,name')
-                ->get()
-                ->pluck('writer.name')
         ];
     }
 }

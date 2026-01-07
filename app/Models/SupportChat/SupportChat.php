@@ -85,10 +85,6 @@ class SupportChat extends Model
             'users.email as user_email',
             'users.phone_number as user_phone',
             'users.telegram as user_telegram',
-            'writers_count' => SupportChatWritingStatus::selectRaw('count(*)')
-                ->whereNotNull('support_chat_writing_statuses.started_writing_at')
-                ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
-                ->where('support_chat_writing_statuses.writer_id', '!=', $userId),
             'unread_messages' => SupportChatMessage::selectRaw('count(*)')
                 ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
                 ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')

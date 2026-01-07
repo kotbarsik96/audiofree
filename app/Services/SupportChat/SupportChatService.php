@@ -9,7 +9,6 @@ use App\Events\SupportChat\SupportChatChangeInfoEvent;
 use App\Events\SupportChat\SupportChatReadEvent;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
-use App\Models\SupportChat\SupportChatWritingStatus;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
