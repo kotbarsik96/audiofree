@@ -14,6 +14,7 @@ use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
+use App\Services\SupportChat\SupportChatMessagesService;
 use App\Services\SupportChat\SupportChatService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Http\Requests\SupportChat\SupportChatChangeStatusRequest;
@@ -38,11 +39,9 @@ class SupportChatController extends Controller
         ]);
     }
 
-    public function getMessages(SupportChatGetMessagesRequest $request)
+    public function getMessages(SupportChatGetMessagesRequest $request, SupportChatMessagesService $service)
     {
         $chat = null;
-        $messages = collect();
-        $limit = 30;
 
         if ($request->has('chat_id')) {
             $chat = SupportChat::find($request->chat_id);
@@ -51,89 +50,20 @@ class SupportChatController extends Controller
             throw_if(!$chat, new NotFoundHttpException(__('abortions.chatNotFound')));
         }
 
-        // загрузить предыдущие сообщения (прокрутка чата вверх)
-        if ($request->has('earliest_message_id')) {
-            $earliestMessage = SupportChatMessage::find($request->earliest_message_id);
-
-            if ($earliestMessage) {
-                $builder = SupportChatMessage::where('chat_id', $chat->id)
-                    ->where('created_at', '<', $earliestMessage->created_at)
-                    ->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc');
-                if (!$request->has('load_all'))
-                    $builder->limit($limit);
-                $messages = $builder
-                    ->get()
-                    ->reverse()
-                    ->values();
-            }
-        }
-        // загрузить новые сообщения (прокрутка чата вниз)
-        elseif ($request->has('latest_message_id')) {
-            $latestMessage = SupportChatMessage::find($request->latest_message_id);
-
-            if ($latestMessage) {
-                $builder = SupportChatMessage::where('chat_id', $chat->id)
-                    ->where('created_at', '>', $latestMessage->created_at);
-
-                // если нужно загрузить все оставшиеся - не выставлять лимит
-                if (!$request->has('load_all'))
-                    $builder->limit($limit);
-
-                $messages = $builder
-                    ->get()
-                    ->values();
-            }
-        }
-        // первая загрузка (открытие чата)
-        else {
-            $oldestUnreadMessage = $chat->unreadMessagesFromCompanion($request->getCurrentSenderType())->first();
-
-            // загрузить сообщения до первого непрочитанного (включительно) и после первого непрочитанного
-            if ($oldestUnreadMessage) {
-                $messages = SupportChatMessage::where('chat_id', $chat->id)
-                    ->where('created_at', '<', $oldestUnreadMessage->created_at)
-                    ->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->limit(3)
-                    ->get()
-                    ->reverse()
-                    ->concat(
-                        SupportChatMessage::where('chat_id', $chat->id)
-                            ->where('created_at', '>=', $oldestUnreadMessage->created_at)
-                            ->limit($limit)
-                            ->get()
-                    )
-                    ->values();
-            }
-            // загрузить последние $limit сообщений
-            else {
-                $messages = SupportChatMessage::where('chat_id', $chat->id)
-                    ->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->limit($limit)
-                    ->get()
-                    ->reverse()
-                    ->values();
-            }
-        }
-
-        $messagesCount = count($messages);
-        $earliestLoadedMessage = $messagesCount > 0 ? $messages[0] : null;
-        $latestLoadedMessage = $messagesCount > 0 ? $messages[$messagesCount - 1] : null;
-
-        $messages = $messages
-            ->map(
-                fn($message) => (new SupportChatMessageResource($message))
-                    ->setSenderType($request->getCurrentSenderType())
-            );
+        $service->collectMessages(
+            $chat,
+            $request->getCurrentSenderType(),
+            $request->earliest_message_id,
+            $request->latest_message_id,
+            $request->load_all ?? false
+        );
 
         return response([
             'ok' => true,
             'data' => [
-                'messages' => $messages,
-                'earliest_loaded_id' => $earliestLoadedMessage?->id,
-                'latest_loaded_id' => $latestLoadedMessage?->id
+                'messages' => $service->messages,
+                'earliest_loaded_id' => $service->earliest_message_id,
+                'latest_loaded_id' => $service->latest_message_id
             ]
         ], 200);
     }
