@@ -4,9 +4,11 @@ namespace App\Services\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
 use App\Enums\SupportChat\SupportChatStatusesEnum;
+use App\Events\SupportChat\BroadcastsToStaff\ChangedInfoStaff;
+use App\Events\SupportChat\BroadcastsToStaff\ReadMessageStaff;
+use App\Events\SupportChat\BroadcastsToUser\ChangedInfoUser;
+use App\Events\SupportChat\BroadcastsToUser\ReadMessageUser;
 use App\Events\SupportChat\ChangeWritingStatusEvent;
-use App\Events\SupportChat\SupportChatChangeInfoEvent;
-use App\Events\SupportChat\SupportChatReadEvent;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
 use Carbon\Carbon;
@@ -32,7 +34,12 @@ class SupportChatService
                 'read_at' => Carbon::now()
             ]);
 
-        SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
+        if ($chat->user_id === $user->id)
+            ReadMessageStaff::dispatch($updatedIds, $chat, $user);
+        else {
+            ReadMessageStaff::dispatch($updatedIds, $chat, $user);
+            ReadMessageUser::dispatch($updatedIds, $chat, $user);
+        }
 
         return SupportChatMessage::create([
             'chat_id' => $chat->id,
@@ -68,7 +75,8 @@ class SupportChatService
                 'status' => $status->value
             ]);
 
-            SupportChatChangeInfoEvent::dispatch($chat);
+            ChangedInfoStaff::dispatch($chat);
+            ChangedInfoUser::dispatch($chat);
 
             if ($status === SupportChatStatusesEnum::OPEN)
                 $this->writeSystemMessage($chat, __('chat.opened'), auth()->user()->id);
@@ -105,7 +113,14 @@ class SupportChatService
             'read_at' => Carbon::now()
         ]);
 
-        SupportChatReadEvent::dispatch($updatedIds, $chat, auth()->user());
+        $user = auth()->user();
+
+        if ($chat->id === $user->id)
+            ReadMessageStaff::dispatch($updatedIds, $chat, $user);
+        else {
+            ReadMessageStaff::dispatch($updatedIds, $chat, $user);
+            ReadMessageUser::dispatch($updatedIds, $chat, $user);
+        }
 
         return $updated;
     }
