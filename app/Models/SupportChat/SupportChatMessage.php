@@ -3,11 +3,12 @@
 namespace App\Models\SupportChat;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Events\SupportChat\BroadcastsToStaff\NewMessageStaff;
+use App\Events\SupportChat\BroadcastsToUser\NewMessageUser;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Events\SupportChat\SupportChatMessageCreated;
 
 class SupportChatMessage extends Model
 {
@@ -36,9 +37,13 @@ class SupportChatMessage extends Model
         'chat'
     ];
 
-    protected $dispatchesEvents = [
-        'created' => SupportChatMessageCreated::class
-    ];
+    public static function booted()
+    {
+        static::created(function (SupportChatMessage $message) {
+            NewMessageStaff::dispatch($message);
+            NewMessageUser::dispatch($message);
+        });
+    }
 
     public function scopeUnreadMessages(Builder $query)
     {

@@ -31,4 +31,6 @@ return [
   'noSearchResults' => 'Результаты не найдены',
   'incorrectProductSearchType' => 'Неверный параметр type',
   'chatNotFound' => 'Чат не найден',
+  'requiredMessageFromCurrentChat' => 'Необходимо сообщение из текущего чата',
+  'requiredMessageFromCompanion' => 'Необходимо сообщение от собеседника'
 ];

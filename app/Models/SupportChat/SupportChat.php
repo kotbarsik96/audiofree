@@ -74,36 +74,9 @@ class SupportChat extends Model
         return $changed;
     }
 
-    public function getInfo(SupportChatSenderTypeEnum $senderType)
+    public function scopeChatsList(Builder $query, int $userId)
     {
-        $data = new SupportChatInfoDTO(
-            chat_id: $this->id,
-            unread_messages: $this->unreadMessagesFromCompanion($senderType)->count(),
-            total_messages: $this->messages()->count(),
-            first_message_id: SupportChatMessage::where('chat_id', $this->id)->first()?->id,
-            last_message_id: SupportChatMessage::where('chat_id', $this->id)->orderBy('created_at', 'desc')->first()->id,
-            user_name: $this->user->name,
-            status: $this->status,
-            user_writing: !!SupportChatWritingStatus::writingNow($this->id)
-                ->where('writer_id', $this->user_id)
-                ->first(),
-            staff_writing: !!SupportChatWritingStatus::writingNowExceptUser($this->id, $this->user_id)
-                ->first(),
-            staff_writers: SupportChatWritingStatus::writingNowExceptUser($this->id, $this->user_id)
-                ->with('writer:id,name')
-                ->get()
-                ->pluck('writer.name')
-        );
-
-        if ($senderType !== SupportChatSenderTypeEnum::STAFF)
-            unset($data->staff_writers);
-
-        return $data;
-    }
-
-    public static function chatsList()
-    {
-        return static::select([
+        return $query->addSelect([
             'support_chats.id',
             'support_chats.status',
             'support_chats.created_at',
@@ -111,38 +84,16 @@ class SupportChat extends Model
             'users.name as user_name',
             'users.email as user_email',
             'users.phone_number as user_phone',
-            'users.telegram as user_telegram'
+            'users.telegram as user_telegram',
+            'unread_messages' => SupportChatMessage::selectRaw('count(*)')
+                ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
+                ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
+                ->whereNull('support_chat_messages.read_at')
         ])
-            ->addSelect([
-                'latest_message_created_at' => SupportChatMessage::select('created_at')
-                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(1),
-                'writers_count' => SupportChatWritingStatus::selectRaw('count(*)')
-                    ->whereNotNull('support_chat_writing_statuses.started_writing_at')
-                    ->whereColumn('support_chat_writing_statuses.chat_id', 'support_chats.id')
-                    ->where('support_chat_writing_statuses.writer_id', '!=', auth()->user()->id),
-                'unread_messages' => SupportChatMessage::selectRaw('count(*)')
-                    ->whereColumn('support_chat_messages.chat_id', 'support_chats.id')
-                    ->whereColumn('support_chat_messages.author_id', 'support_chats.user_id')
-                    ->whereNull('support_chat_messages.read_at')
-            ])
             ->with('latest_message')
+            ->withMax('messages as latest_message_created_at', 'created_at')
             ->join('users', 'users.id', '=', 'support_chats.user_id')
             ->orderBy('status', 'asc')
             ->orderBy('latest_message_created_at', 'desc');
-    }
-
-    public function writeSystemMessage(string $text, array|null $replacesUser = null, array|null $replacesStaff = null)
-    {
-        $msg = SupportChatMessage::create([
-            'chat_id' => $this->id,
-            'author_id' => auth()->user()->id,
-            'sender_type' => SupportChatSenderTypeEnum::SYSTEM->value,
-            'text' => $text,
-            'replaces_user' => $replacesUser,
-            'replaces_staff' => $replacesStaff,
-        ]);
-        return $msg;
     }
 }

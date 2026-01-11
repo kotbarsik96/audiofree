@@ -22,7 +22,6 @@ Artisan::command('inspire', function () {
 
 Schedule::call(function () {
     ScheduleTask::clearExpiredConfirmations();
-    ScheduleTask::clearExpiredSupportChatWritingStatuses();
 })->everyMinute();
 
 Schedule::call(function () {

@@ -3,6 +3,7 @@
 namespace App\Events\SupportChat\BroadcastsToStaff;
 
 use App\Enums\SupportChat\SupportChatSenderTypeEnum;
+use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Models\SupportChat\SupportChat;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
@@ -41,7 +42,7 @@ class ReadMessageStaff implements ShouldBroadcast
     {
         return [
             'read_messages_ids' => $this->readMessagesIds,
-            'chat_info' => $this->chat->getInfo(SupportChatSenderTypeEnum::STAFF),
+            'chat_info' => (new SupportChatInfoResource($this->chat))->setSenderType(SupportChatSenderTypeEnum::STAFF),
             'reader_id' => $this->reader->id
         ];
     }
