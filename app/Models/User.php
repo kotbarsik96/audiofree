@@ -97,7 +97,7 @@ class User extends Authenticatable
     'created_at',
   ];
 
-  protected $appends = ['confirmations', 'permissions_list'];
+  protected $appends = ['confirmations', 'permissions_list', 'support_chat_id'];
 
   protected function confirmations(): Attribute
   {
@@ -122,6 +122,14 @@ class User extends Authenticatable
     return new Attribute(get: fn() => [
       'support' => $this->hasAccess('platform.systems.support')
     ]);
+  }
+
+  public function supportChatId(): Attribute
+  {
+    if (!$this)
+      return new Attribute(get: fn() => []);
+
+    return new Attribute(get: fn() => $this->supportChat()->first()?->id);
   }
 
   public static function newFactory(): Factory
