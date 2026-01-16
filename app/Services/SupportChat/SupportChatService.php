@@ -8,7 +8,6 @@ use App\Events\SupportChat\BroadcastsToStaff\ChangedInfoStaff;
 use App\Events\SupportChat\BroadcastsToStaff\ReadMessageStaff;
 use App\Events\SupportChat\BroadcastsToUser\ChangedInfoUser;
 use App\Events\SupportChat\BroadcastsToUser\ReadMessageUser;
-use App\Events\SupportChat\ChangeWritingStatusEvent;
 use App\Models\SupportChat\SupportChat;
 use App\Models\SupportChat\SupportChatMessage;
 use Carbon\Carbon;
@@ -31,8 +30,8 @@ class SupportChatService
             ->pluck('id');
         $chat->unreadMessagesFromCompanion($senderType)
             ->update([
-                'read_at' => Carbon::now()
-            ]);
+                    'read_at' => Carbon::now()
+                ]);
 
         if ($chat->user_id === $user->id)
             ReadMessageStaff::dispatch($updatedIds, $chat, $user);
@@ -123,10 +122,5 @@ class SupportChatService
         }
 
         return $updated;
-    }
-
-    public function updateWritingStatus(SupportChat $chat, bool $isWriting)
-    {
-        ChangeWritingStatusEvent::dispatch($chat, auth()->user(), $isWriting);
     }
 }

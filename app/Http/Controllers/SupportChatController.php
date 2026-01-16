@@ -8,12 +8,10 @@ use App\Http\Requests\SupportChat\SupportChatGetListRequest;
 use App\Http\Requests\SupportChat\SupportChatGetMessagesRequest;
 use App\Http\Requests\SupportChat\SupportChatInfoRequest;
 use App\Http\Requests\SupportChat\SupportChatMarkAsReadRequest;
-use App\Http\Requests\SupportChat\SupportChatUpdateWritingStatusRequest;
 use App\Http\Requests\SupportChat\SupportChatWriteMessageRequest;
 use App\Http\Resources\SupportChat\SupportChatInfoResource;
 use App\Http\Resources\SupportChat\SupportChatMessageResource;
 use App\Models\SupportChat\SupportChat;
-use App\Models\SupportChat\SupportChatMessage;
 use App\Services\SupportChat\SupportChatMessagesService;
 use App\Services\SupportChat\SupportChatService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -147,19 +145,5 @@ class SupportChatController extends Controller
                 'changed' => $changed,
             ]
         ], 201);
-    }
-
-    public function updateWritingStatus(SupportChatUpdateWritingStatusRequest $request, SupportChatService $service)
-    {
-        $chat = $request->has('chat_id')
-            ? SupportChat::find($request->chat_id)
-            : auth()->user()->supportChat;
-
-        if ($chat)
-            $service->updateWritingStatus($chat, $request->is_writing);
-
-        return [
-            'ok' => true
-        ];
     }
 }
